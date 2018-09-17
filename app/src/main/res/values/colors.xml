@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#53AD50</color>
+    <color name="colorPrimaryTransparent">#6653AD50</color>
+    <color name="colorPrimaryLight">#75be72</color>
+    <color name="colorPrimaryDark">#3a7938</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="black_cc">#cc000000</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00FFFFFF</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="red_amount">#FF3333</color>
+    <color name="tabs_text_normal">#E6E6E6</color>
+    <color name="tabs_text_selected">#FFFFFF</color>
+
+    <color name="contact_name">#333333</color>
+    <color name="contact_number">#8c8c8c</color>
+</resources>

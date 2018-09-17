@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    card_view:cardElevation="@dimen/card_album_elevation"
+    card_view:cardUseCompatPadding="true">
+
+    <RelativeLayout
+        android:id="@+id/card_view_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/produit_item_poster_iv"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/product_item_img_height"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/logo_isales_small"
+            android:scaleType="fitXY" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/produit_item_poster_iv"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/produit_item_label_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:gravity="center"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/produit_item_label_size"
+                tools:text="Libellé produit"/>
+
+            <TextView
+                android:id="@+id/produit_item_price_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/produit_item_price_size"
+                android:textStyle="bold"
+                tools:text="600 €" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/produit_item_details_ib"
+                    android:layout_toStartOf="@+id/produit_item_shopping_ib"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:foregroundGravity="center"
+                    android:src="@drawable/ic_details_black"
+                    android:background="?attr/selectableItemBackgroundBorderless"/>
+
+                <ImageButton
+                    android:id="@+id/produit_item_shopping_ib"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:foregroundGravity="center"
+                    android:layout_marginStart="6dp"
+                    android:src="@drawable/ic_shopping_black"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:layout_alignParentEnd="true"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
