@@ -30,6 +30,7 @@ import com.rainbow_cl.i_sales.interfaces.CategorieProduitAdapterListener;
 import com.rainbow_cl.i_sales.interfaces.DialogCategorieListener;
 import com.rainbow_cl.i_sales.interfaces.FindCategorieListener;
 import com.rainbow_cl.i_sales.model.CategorieParcelable;
+import com.rainbow_cl.i_sales.remote.ApiUtils;
 import com.rainbow_cl.i_sales.remote.ConnectionManager;
 import com.rainbow_cl.i_sales.remote.model.Categorie;
 import com.rainbow_cl.i_sales.remote.model.DolPhoto;
@@ -62,7 +63,11 @@ public class FullScreenCatPdtDialog extends DialogFragment implements FindCatego
     private FindCategorieTask mFindCategorieTask = null;
 
 //    Listener de sortie apres selection d'une categorie
-    private DialogCategorieListener dialogCategorieListener;
+    private static DialogCategorieListener dialogCategorieListener;
+
+//    Parametre de recuperation de la liste des categories
+    private static String mType = "";
+    private static int mPage = 0;
 
     //    Recupération de la liste des categories produits
     private void executeFindCategorieProducts() {
@@ -75,7 +80,8 @@ public class FullScreenCatPdtDialog extends DialogFragment implements FindCatego
         }
         if (mFindCategorieTask == null) {
 
-            mFindCategorieTask = new FindCategorieTask(FullScreenCatPdtDialog.this, "label", "asc", 100, 0, "product");
+            Log.e(TAG, "executeFindCategorieProducts: type="+mType+" page="+mPage);
+            mFindCategorieTask = new FindCategorieTask(FullScreenCatPdtDialog.this, "label", "asc", 100, mPage, mType);
             mFindCategorieTask.execute();
         }
     }
@@ -101,7 +107,7 @@ public class FullScreenCatPdtDialog extends DialogFragment implements FindCatego
         }
         if (findCategoriesREST.getCategories() == null) {
             if (findCategoriesREST.getErrorCode() == 404) {
-                Toast.makeText(getContext(), getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), getString(R.string.aucune_categorie_trouve), Toast.LENGTH_LONG).show();
                 return;
             }
             if (findCategoriesREST.getErrorCode() == 401) {
@@ -113,7 +119,7 @@ public class FullScreenCatPdtDialog extends DialogFragment implements FindCatego
             }
         }
         if (findCategoriesREST.getCategories().size() == 0) {
-            Toast.makeText(getContext(), getString(R.string.aucun_produit_trouve), Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), getString(R.string.aucune_categorie_trouve), Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -152,14 +158,26 @@ public class FullScreenCatPdtDialog extends DialogFragment implements FindCatego
         dismiss();
     }
 
-    public FullScreenCatPdtDialog(DialogCategorieListener dialogCategorieListener) {
-        this.dialogCategorieListener = dialogCategorieListener;
+    public FullScreenCatPdtDialog() {
+    }
+
+    public static FullScreenCatPdtDialog newInstance(DialogCategorieListener onDialogCategorieListener, String type, int page) {
+//        passage des parametres de la requete au fragment
+        mType = type;
+        mPage = page;
+        Bundle args = new Bundle();
+
+        FullScreenCatPdtDialog fragment = new FullScreenCatPdtDialog();
+        dialogCategorieListener = onDialogCategorieListener;
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.FullScreenDialogStyle);
+
     }
 
     @Override

@@ -32,6 +32,7 @@
     <string name="parametres_connexion_incorrect">Erreur d\'authentification. Paramètres de connexion incorrects.</string>
     <string name="service_indisponible">Service indisponible. Veuillez réessayer plustard.</string>
     <string name="aucun_produit_trouve">Aucun produit trouvé.</string>
+    <string name="aucune_categorie_trouve">Aucune catégorie trouvée.</string>
     <string name="permission_refusee">Permission refusée.</string>
     <string name="echec_authentification">Echec d\'authentification.</string>
     <string name="connection_error_find_products">Impossible de recupérer les produits sur le serveur. Veuillez vérifier votre connexion internet.</string>
@@ -50,4 +51,14 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="ajout_client">Ajout Client</string>
+    <string name="nom">Nom</string>
+    <string name="adresse">Adresse</string>
+    <string name="email">Email</string>
+    <string name="ville">Ville</string>
+    <string name="pays">Pays</string>
+    <string name="prenom">Prénom</string>
+    <string name="informations_generales">Informations Générales</string>
+    <string name="enregistrer">Enregistrer</string>
+    <string name="toutes_les_categories_client">Toutes les categories client</string>
 </resources>

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundSection"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/layout_padding_bottom">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/black" />
+
+    <TextView
+        android:id="@+id/securite_section_form1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingBottom="@dimen/form_paddingV"
+        android:paddingLeft="@dimen/form_paddingH"
+        android:paddingTop="@dimen/form_paddingV"
+        android:text="@string/informations_generales"
+        android:textColor="@color/black"
+        android:textSize="@dimen/form_input_size" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/black" />
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="@dimen/form_paddingV"
+        android:paddingLeft="@dimen/form_paddingH"
+        android:paddingTop="@dimen/form_paddingV">
+
+        <EditText
+            android:id="@+id/et_client_nom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hint="@string/nom"
+            android:inputType="textCapWords"
+            android:text=""
+            android:textColorHint="@null"
+            android:textSize="@dimen/form_input_size" />
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/black" />
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="@dimen/form_paddingV"
+        android:paddingLeft="@dimen/form_paddingH"
+        android:paddingTop="@dimen/form_paddingV">
+
+        <EditText
+            android:id="@+id/et_client_prenom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hint="@string/prenom"
+            android:inputType="textCapWords"
+            android:text=""
+            android:textColorHint="@null"
+            android:textSize="@dimen/form_input_size" />
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/black" />
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="@dimen/form_paddingV"
+        android:paddingStart="@dimen/form_paddingH"
+        android:paddingTop="@dimen/form_paddingV">
+
+        <EditText
+            android:id="@+id/et_client_adresse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hint="@string/adresse"
+            android:inputType="textCapWords"
+            android:text=""
+            android:textColorHint="@null"
+            android:textSize="@dimen/form_input_size" />
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/black" />
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="@dimen/form_paddingV"
+        android:paddingStart="@dimen/form_paddingH"
+        android:paddingTop="@dimen/form_paddingV"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/et_client_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress|textAutoComplete"
+            android:text=""
+            android:textColorHint="@null"
+            android:textSize="@dimen/form_section_size" />
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/black" />
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="@dimen/form_paddingV"
+        android:paddingLeft="@dimen/form_paddingH"
+        android:paddingTop="@dimen/form_paddingV">
+
+        <EditText
+            android:id="@+id/et_client_ville"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:focusable="false"
+            android:hint="@string/ville"
+            android:inputType="phone"
+            android:longClickable="false"
+            android:text=""
+            android:textColorHint="@null"
+            android:textSize="@dimen/form_input_size" />
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/black" />
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingBottom="@dimen/form_paddingV"
+        android:paddingLeft="@dimen/form_paddingH"
+        android:paddingTop="@dimen/form_paddingV">
+
+        <EditText
+            android:id="@+id/et_client_pays"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hint="@string/pays"
+            android:inputType="textCapWords"
+            android:text=""
+            android:textColorHint="@null"
+            android:textSize="@dimen/form_input_size" />
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/black" />
+
+    <LinearLayout
+        android:id="@+id/view_enregistrer_client"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/card_album_elevation"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginStart="@dimen/form_paddingH"
+        android:layout_marginEnd="@dimen/form_paddingH">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/ic_save_white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/enregistrer"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="@dimen/form_input_size" />
+    </LinearLayout>
+
+</LinearLayout>

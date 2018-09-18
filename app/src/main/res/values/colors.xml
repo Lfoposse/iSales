@@ -18,4 +18,6 @@
 
     <color name="contact_name">#333333</color>
     <color name="contact_number">#8c8c8c</color>
+
+    <color name="backgroundSection">#E5E5E5</color>
 </resources>

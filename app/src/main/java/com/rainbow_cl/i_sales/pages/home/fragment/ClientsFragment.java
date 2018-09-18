@@ -4,8 +4,12 @@ import com.rainbow_cl.i_sales.R;
 import com.rainbow_cl.i_sales.adapter.ClientsAdapter;
 import com.rainbow_cl.i_sales.decoration.MyDividerItemDecoration;
 import com.rainbow_cl.i_sales.interfaces.ClientsAdapterListener;
+import com.rainbow_cl.i_sales.interfaces.DialogCategorieListener;
 import com.rainbow_cl.i_sales.interfaces.FindThirdpartieListener;
+import com.rainbow_cl.i_sales.model.CategorieParcelable;
 import com.rainbow_cl.i_sales.model.ClientParcelable;
+import com.rainbow_cl.i_sales.pages.addcustomer.AddCustomerActivity;
+import com.rainbow_cl.i_sales.pages.home.dialog.FullScreenCatPdtDialog;
 import com.rainbow_cl.i_sales.remote.ApiUtils;
 import com.rainbow_cl.i_sales.remote.ConnectionManager;
 import com.rainbow_cl.i_sales.remote.model.DolPhoto;
@@ -13,31 +17,39 @@ import com.rainbow_cl.i_sales.remote.model.Thirdpartie;
 import com.rainbow_cl.i_sales.remote.rest.FindThirdpartieREST;
 import com.rainbow_cl.i_sales.task.FindThirdpartieTask;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class ClientsFragment extends Fragment implements ClientsAdapterListener, FindThirdpartieListener {
+public class ClientsFragment extends Fragment implements ClientsAdapterListener, FindThirdpartieListener, DialogCategorieListener {
     private static final String TAG = ClientsFragment.class.getSimpleName();
 
 //    elements de la vue
     private RecyclerView mRecyclerView;
-    private ImageView mProgressIV;
+    private ImageView mProgressIV, mCategoryIV;
     private EditText searchET;
+    private FloatingActionButton mAddClientFB;
+    private ImageButton mShowCategoriesDialog;
+    private TextView mCategoryTV;
+
     private ArrayList<ClientParcelable> clientParcelableList;
     private ClientsAdapter mAdapter;
 
@@ -134,6 +146,11 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 
     }
 
+    @Override
+    public void onCategorieSelected(CategorieParcelable categorieParcelable) {
+
+    }
+
     /**
      * fetches json by making http calls
      */
@@ -189,7 +206,12 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 //        referencement des vues
         mRecyclerView = rootView.findViewById(R.id.recycler_view);
         mProgressIV = rootView.findViewById(R.id.iv_progress);
-        searchET = rootView.findViewById(R.id.et_search);
+        searchET = rootView.findViewById(R.id.et_search_client);
+        mAddClientFB = rootView.findViewById(R.id.floatingbtn_add_client);
+        mShowCategoriesDialog = (ImageButton) rootView.findViewById(R.id.ib_categories_client_show);
+        mCategoryIV = (ImageView) rootView.findViewById(R.id.iv_selected_categorie_client);
+        mCategoryTV = (TextView) rootView.findViewById(R.id.tv_selected_categorie_client);
+
         clientParcelableList = new ArrayList<>();
 
         mAdapter = new ClientsAdapter(getContext(), clientParcelableList, ClientsFragment.this);
@@ -197,8 +219,18 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.addItemDecoration(new MyDividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL, 36));
+        mRecyclerView.addItemDecoration(new MyDividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL, 66));
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && mAddClientFB.getVisibility() == View.VISIBLE) {
+                    mAddClientFB.hide();
+                } else if (dy < 0 && mAddClientFB.getVisibility() != View.VISIBLE) {
+                    mAddClientFB.show();
+                }
+            }});
 
 //        ecoute de la recherche d'un client
         searchET.addTextChangedListener(new TextWatcher() {
@@ -218,6 +250,25 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
             @Override
             public void afterTextChanged(Editable editable) {
 
+            }
+        });
+
+//        ecoute du click de selection de la categorie de client
+        mShowCategoriesDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FullScreenCatPdtDialog dialog = FullScreenCatPdtDialog.newInstance(ClientsFragment.this, "customer", 0);
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_in_down, R.anim.slide_out_down, R.anim.slide_out_up);
+                dialog.show(ft, FullScreenCatPdtDialog.TAG);
+            }
+        });
+//        ecoute du click pour ajout d'un client
+        mAddClientFB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), AddCustomerActivity.class);
+                startActivity(intent);
             }
         });
 

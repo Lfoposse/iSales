@@ -30,4 +30,11 @@
     <dimen name="ed_search_textsize">15sp</dimen>
     <dimen name="loading_height">76dp</dimen>
     <dimen name="loading_width">66dp</dimen>
+
+    <dimen name="layout_padding_bottom">96dp</dimen>
+    <dimen name="form_paddingH">16dp</dimen>
+    <dimen name="form_paddingH_spinner">8dp</dimen>
+    <dimen name="form_paddingV">8dp</dimen>
+    <dimen name="form_section_size">18sp</dimen>
+    <dimen name="form_input_size">15dp</dimen>
 </resources>

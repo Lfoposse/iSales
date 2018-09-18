@@ -188,7 +188,7 @@ public class CategoriesFragment extends Fragment implements FindProductsListener
         mShowCategoriesDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FullScreenCatPdtDialog dialog = new FullScreenCatPdtDialog(CategoriesFragment.this);
+                FullScreenCatPdtDialog dialog = FullScreenCatPdtDialog.newInstance(CategoriesFragment.this, "product", 0);
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_in_down, R.anim.slide_out_down, R.anim.slide_out_up);
                 dialog.show(ft, FullScreenCatPdtDialog.TAG);
