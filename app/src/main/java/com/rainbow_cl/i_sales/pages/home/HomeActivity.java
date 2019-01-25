@@ -1,9 +1,19 @@
 package com.rainbow_cl.i_sales.pages.home;
 
 import com.rainbow_cl.i_sales.R;
+import com.rainbow_cl.i_sales.interfaces.ClientsAdapterListener;
+import com.rainbow_cl.i_sales.interfaces.DialogCategorieListener;
+import com.rainbow_cl.i_sales.interfaces.DialogClientListener;
+import com.rainbow_cl.i_sales.interfaces.MyCropImageListener;
+import com.rainbow_cl.i_sales.model.CategorieParcelable;
+import com.rainbow_cl.i_sales.model.ClientParcelable;
+import com.rainbow_cl.i_sales.pages.home.fragment.CategorieProduitFragment;
 import com.rainbow_cl.i_sales.pages.home.fragment.CategoriesFragment;
+import com.rainbow_cl.i_sales.pages.home.fragment.ClientProfileFragment;
 import com.rainbow_cl.i_sales.pages.home.fragment.ClientsFragment;
+import com.rainbow_cl.i_sales.pages.home.fragment.ClientsRadioFragment;
 import com.rainbow_cl.i_sales.pages.home.fragment.CommandesFragment;
+import com.rainbow_cl.i_sales.pages.home.fragment.AProposFragment;
 import com.rainbow_cl.i_sales.pages.home.fragment.PanierFragment;
 import com.rainbow_cl.i_sales.pages.home.fragment.ProfilFragment;
 
@@ -15,9 +25,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.LayoutInflater;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.view.ViewGroup;
 import android.content.res.ColorStateList;
@@ -30,11 +42,15 @@ import android.content.Context;
 
 public class HomeActivity extends AppCompatActivity {
 
+    private static final String TAG = HomeActivity.class.getSimpleName();
     private Toolbar toolbar;
 
     private TabLayout tablayout;
 
-    private String tabNames[] = {"clients", "categories", "panier", "commandes", "profil"};
+    private ClientsFragment masterClientFragment;
+    private ClientProfileFragment detailsClientProfileFragment;
+
+    private String tabNames[] = {"clients", "categories", "panier", "commandes", "profil", "a propos"};
 
     private int[] tabIconsUnSelected = {
             R.drawable.ic_clients_desactive,
@@ -49,6 +65,8 @@ public class HomeActivity extends AppCompatActivity {
             R.drawable.ic_panier_active,
             R.drawable.img_user,
             R.drawable.img_user};
+
+    private int activeTab = 0;
 
     public static Drawable setDrawableSelector(Context context, int normal, int selected) {
 
@@ -127,27 +145,128 @@ public class HomeActivity extends AppCompatActivity {
 
             case 0:
 
-                fragmentTransaction.replace(R.id.content_frame, ClientsFragment.newInstance());
+                if(isLayoutInDualPaneMode(true)){
+
+                    masterClientFragment = ClientsFragment.newInstance(new DialogClientListener() {
+                        @Override
+                        public void onClientDialogSelected(ClientParcelable clientParcelable, int position) {
+
+                            detailsClientProfileFragment.onClientDialogSelected(clientParcelable, position);
+                        }
+                    }, true);
+                    detailsClientProfileFragment = ClientProfileFragment.newInstance(null, -1, new MyCropImageListener() {
+                        @Override
+                        public void onClientLogoChange(ClientParcelable clientParcelable, int position) {
+                            masterClientFragment.onClientLogoChange(clientParcelable, position);
+                        }
+                    }, new ClientsAdapterListener() {
+                        @Override
+                        public void onClientsSelected(ClientParcelable clientParcelable, int position) {
+                            masterClientFragment.onClientsSelected(clientParcelable, position);
+                        }
+
+                        @Override
+                        public void onClientsUpdated(ClientParcelable clientParcelable, int position) {
+                            masterClientFragment.onClientsUpdated(clientParcelable, position);
+                        }
+                    });
+
+                    fragmentTransaction.replace(R.id.master_frame, masterClientFragment);
+                    fragmentTransaction.replace(R.id.details_frame, detailsClientProfileFragment);
+
+                } else {
+                    fragmentTransaction.replace(R.id.master_frame, ClientsFragment.newInstance(null, false));
+                }
+
+                activeTab = 0;
                 break;
 
             case 1:
+                if(isLayoutInDualPaneMode(true)) {
 
-                fragmentTransaction.replace(R.id.content_frame, CategoriesFragment.newInstance());
+                    final CategoriesFragment detailsFragment = CategoriesFragment.newInstance();
+                    fragmentTransaction.replace(R.id.master_frame, CategorieProduitFragment.newInstance(new DialogCategorieListener() {
+                        @Override
+                        public void onCategorieDialogSelected(CategorieParcelable categorieParcelable) {
+
+                            detailsFragment.onCategorieDialogSelected(categorieParcelable);
+                        }
+                    }, "product"));
+
+                    fragmentTransaction.replace(R.id.details_frame, detailsFragment);
+
+                } else {
+                    fragmentTransaction.replace(R.id.master_frame, CategoriesFragment.newInstance());
+                }
+
+                activeTab = 1;
                 break;
 
             case 2:
-                fragmentTransaction.replace(R.id.content_frame, PanierFragment.newInstance());
+                if(isLayoutInDualPaneMode(true)) {
+                    final PanierFragment detailsFragment = PanierFragment.newInstance();
+                    fragmentTransaction.replace(R.id.master_frame, ClientsRadioFragment.newInstance(new DialogClientListener() {
+                        @Override
+                        public void onClientDialogSelected(ClientParcelable clientParcelable, int position) {
+
+                            detailsFragment.onClientDialogSelected(clientParcelable, position);
+                        }
+                    }));
+
+                    fragmentTransaction.replace(R.id.details_frame, detailsFragment);
+                } else {
+                    fragmentTransaction.replace(R.id.master_frame, PanierFragment.newInstance());
+                }
+
+                activeTab = 2;
                 break;
 
             case 3:
-                fragmentTransaction.replace(R.id.content_frame, CommandesFragment.newInstance());
+                if(isLayoutInDualPaneMode(false)) {
+                    fragmentTransaction.replace(R.id.master_frame, CommandesFragment.newInstance());
+                } else {
+                    fragmentTransaction.replace(R.id.master_frame, CommandesFragment.newInstance());
+                }
+
+                activeTab = 3;
+                break;
+            case 4:
+                if(isLayoutInDualPaneMode(false)) {
+                    fragmentTransaction.replace(R.id.master_frame, ProfilFragment.newInstance());
+                } else {
+                    fragmentTransaction.replace(R.id.master_frame, ProfilFragment.newInstance());
+                }
+
+                activeTab = 4;
                 break;
             default:
-                fragmentTransaction.replace(R.id.content_frame, ProfilFragment.newInstance());
+                if(isLayoutInDualPaneMode(false)) {
+                    fragmentTransaction.replace(R.id.master_frame, AProposFragment.newInstance());
+                } else {
+                    fragmentTransaction.replace(R.id.master_frame, AProposFragment.newInstance());
+                }
+
+                activeTab = 5;
                 break;
         }
         fragmentTransaction.commit();
 
+    }
+    /**
+     *
+     * @param show_dual_pane indique si on veut que la vue s'affiche en dual pane au cas ou le mode est disponible
+     * @return True si l'apareil permet l'affiche en dual pane et false sinon
+     */
+    private boolean isLayoutInDualPaneMode(boolean show_dual_pane){
+
+        FrameLayout frameLayout = findViewById(R.id.details_frame);
+        if(frameLayout != null) {
+            if(show_dual_pane)
+                frameLayout.setVisibility(FrameLayout.VISIBLE);
+            else
+                frameLayout.setVisibility(FrameLayout.GONE);
+        }
+        return  frameLayout != null;
     }
 
     @Override
@@ -163,6 +282,13 @@ public class HomeActivity extends AppCompatActivity {
 
         initTab();
 
+        if (savedInstanceState != null) {
+
+            activeTab = savedInstanceState.getInt("activeTab");
+            Log.e(TAG, "onCreate: activeTab="+activeTab );
+
+            switchTab(activeTab);
+        }
     }
 
     private void setupTabLayout() {
@@ -194,7 +320,7 @@ public class HomeActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                onBackPressed();
                 return true;
         }
 
@@ -202,8 +328,15 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        finish();
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("activeTab", activeTab);
         super.onSaveInstanceState(outState);
+
     }
 
     @Override

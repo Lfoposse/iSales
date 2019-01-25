@@ -9,4 +9,5 @@ import com.rainbow_cl.i_sales.model.CommandeParcelable;
 
 public interface CommandeAdapterListener {
     void onCommandeSelected(CommandeParcelable commandeParcelable);
+    void onCommandeReStarted(CommandeParcelable commandeParcelable);
 }

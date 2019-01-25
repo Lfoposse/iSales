@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:mContext="com.rainbow_cl.i_sales.pages.detailscmde.DetailsCmdeActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_horizontal"
+                    android:orientation="vertical"
+                    android:showDividers="beginning">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimaryLight_aa"
+                        android:padding="6dp"
+                        android:text="@string/informations_sur_la_commande"
+                        android:textColor="@color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingBottom="2dp"
+                        android:paddingStart="6dp"
+                        android:paddingTop="2dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Référence :"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_detailscmde_ref"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            tools:text="CMD1810-122950" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingBottom="2dp"
+                        android:paddingStart="6dp"
+                        android:paddingTop="2dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Date :"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_detailscmde_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            tools:text="Mardi, 09 Octobre 2018" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingBottom="2dp"
+                        android:paddingStart="6dp"
+                        android:paddingTop="2dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total :"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_detailscmde_total"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:textColor="@color/red_amount"
+                            tools:text="450 E" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_horizontal"
+                    android:orientation="vertical"
+                    android:showDividers="beginning">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimaryLight_aa"
+                        android:padding="6dp"
+                        android:text="@string/informations_sur_le_client"
+                        android:textColor="@color/black" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingStart="6dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Nom :"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:id="@+id/tv_detailscmde_client_nom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="..."
+                            tools:text="Romuald YOUMSI"
+                            android:layout_marginStart="6dp"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingStart="6dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Email :"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:id="@+id/tv_detailscmde_client_email"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="..."
+                            tools:text="youmsijunior@gmail.com"
+                            android:layout_marginStart="6dp"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingStart="6dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Adresse :"
+                            android:textStyle="bold"/>
+                        <TextView
+                            android:id="@+id/tv_detailscmde_client_adresse"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="..."
+                            tools:text="Makepe, Douala"
+                            android:layout_marginStart="6dp"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:divider="@drawable/divider_horizontal"
+                        android:showDividers="middle"
+                        android:layout_marginBottom="3dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="3dp"
+                                android:text="@string/signature_client"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorPrimary"
+                                android:textStyle="bold" />
+                            <ImageView
+                                android:id="@+id/iv_detailscmde_signclient"
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/product_item_img_height"
+                                android:layout_margin="3dp"
+                                android:background="@drawable/isales_no_image"/>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="3dp"
+                                android:text="@string/signature_commercial"
+                                android:textAlignment="center"
+                                android:textColor="@color/colorPrimary"
+                                android:textStyle="bold" />
+                            <ImageView
+                                android:id="@+id/iv_detailscmde_signcomm"
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/product_item_img_height"
+                                android:layout_margin="3dp"
+                                android:background="@drawable/isales_no_image"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_horizontal"
+                    android:orientation="vertical"
+                    android:showDividers="beginning">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimaryLight_aa"
+                        android:padding="6dp"
+                        android:text="@string/liste_des_produits"
+                        android:textColor="@color/black" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerview_detailscmde_produits"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/white"
+                        tools:listitem="@layout/list_item_detailscmde_produit"/>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

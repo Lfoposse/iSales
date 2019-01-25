@@ -7,5 +7,5 @@ import com.rainbow_cl.i_sales.model.CategorieParcelable;
  */
 
 public interface DialogCategorieListener {
-    void onCategorieSelected(CategorieParcelable categorieParcelable);
+    void onCategorieDialogSelected(CategorieParcelable categorieParcelable);
 }

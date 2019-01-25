@@ -18,10 +18,10 @@ import android.widget.TextView;
 import com.rainbow_cl.i_sales.R;
 import com.rainbow_cl.i_sales.interfaces.CategorieProduitAdapterListener;
 import com.rainbow_cl.i_sales.model.CategorieParcelable;
-import com.rainbow_cl.i_sales.model.ProduitParcelable;
 import com.rainbow_cl.i_sales.remote.ApiUtils;
 import com.rainbow_cl.i_sales.remote.model.DolPhoto;
 import com.rainbow_cl.i_sales.remote.rest.FindDolPhotoREST;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,12 +45,13 @@ public class CategorieProduitAdapter extends RecyclerView.Adapter<CategorieProdu
 
     //    ViewHolder de l'adapter
     public class CategorieProduitViewHolder extends RecyclerView.ViewHolder {
-        public TextView label;
+        public TextView label, count_produits;
         public ImageView poster;
 
         public CategorieProduitViewHolder(View view) {
             super(view);
             label = view.findViewById(R.id.tv_label_catpdt);
+            count_produits = view.findViewById(R.id.tv_countproduits_catpdt);
             poster = view.findViewById(R.id.iv_poster_catpdt);
 
             view.setOnClickListener(new View.OnClickListener() {
@@ -58,7 +59,7 @@ public class CategorieProduitAdapter extends RecyclerView.Adapter<CategorieProdu
                 public void onClick(View view) {
                     // send selected contact in callback
                     if (mTask == null) {
-                        mListener.onCategorieSelected(categorieListFiltered.get(getAdapterPosition()));
+                        mListener.onCategorieAdapterSelected(categorieListFiltered.get(getAdapterPosition()));
                     }
                 }
             });
@@ -83,8 +84,22 @@ public class CategorieProduitAdapter extends RecyclerView.Adapter<CategorieProdu
 
     @Override
     public void onBindViewHolder(@NonNull CategorieProduitAdapter.CategorieProduitViewHolder holder, int position) {
+//        Log.e(TAG, "onBindViewHolder: countProduit="+categorieListFiltered.get(position).getCount_produits() );
         holder.label.setText(categorieListFiltered.get(position).getLabel().toUpperCase());
+        holder.count_produits.setText(String.format("%s produits", categorieListFiltered.get(position).getCount_produits()));
 
+//                    chargement de la photo dans la vue
+//        holder.poster.setBackground(mContext.getResources().getDrawable(R.drawable.logo_isales));
+
+        String original_file = categorieListFiltered.get(position).getId() + "/0/"+ categorieListFiltered.get(position).getId() + "/photos/" + categorieListFiltered.get(position).getPoster().getFilename();
+        String module_part = "category";
+        Log.e(TAG, "onBindViewHolder: module="+module_part+" original_file="+original_file );
+        Picasso.with(mContext)
+                .load(ApiUtils.getDownloadImg(mContext, module_part, original_file))
+                .placeholder(R.drawable.isales_no_image)
+                .error(R.drawable.isales_no_image)
+                .into(holder.poster);
+        /*
 //        Si l'image existe dejá on ne le recupére plus
         if (categorieListFiltered.get(position).getPoster().getContent() == null) {
             Log.e(TAG, "onBindViewHolder: content=null");
@@ -94,7 +109,7 @@ public class CategorieProduitAdapter extends RecyclerView.Adapter<CategorieProdu
 
 //        recuperation de la photo poster du produit
             if (mTask == null) {
-                mTask = new FindCategoriePosterTask(categorieListFiltered.get(position), holder);
+                mTask = new FindCategoriePosterTask(mContext, categorieListFiltered.get(position), holder);
                 mTask.execute();
                 mTask = null;
             }
@@ -105,7 +120,7 @@ public class CategorieProduitAdapter extends RecyclerView.Adapter<CategorieProdu
 
 //            chargement de la photo dans la vue
             holder.poster.setBackground(new BitmapDrawable(decodedByte));
-        }
+        } */
     }
 
     @Override
@@ -139,9 +154,12 @@ public class CategorieProduitAdapter extends RecyclerView.Adapter<CategorieProdu
         private CategorieParcelable categorieParcelable;
         private CategorieProduitAdapter.CategorieProduitViewHolder holder;
 
-        public FindCategoriePosterTask(CategorieParcelable categorieParcelable, CategorieProduitAdapter.CategorieProduitViewHolder holder) {
+        private Context context;
+
+        public FindCategoriePosterTask(Context context, CategorieParcelable categorieParcelable, CategorieProduitAdapter.CategorieProduitViewHolder holder) {
             this.categorieParcelable = categorieParcelable;
             this.holder = holder;
+            this.context = context;
         }
 
         @Override
@@ -150,7 +168,7 @@ public class CategorieProduitAdapter extends RecyclerView.Adapter<CategorieProdu
             String module_part = "category";
 
 //        Requete de connexion de l'internaute sur le serveur
-            Call<DolPhoto> call = ApiUtils.getISalesService().findProductsPoster(module_part, original_file);
+            Call<DolPhoto> call = ApiUtils.getISalesService(context).findProductsPoster(module_part, original_file);
             try {
                 Response<DolPhoto> response = call.execute();
                 if (response.isSuccessful()) {

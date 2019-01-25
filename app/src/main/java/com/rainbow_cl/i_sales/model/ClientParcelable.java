@@ -11,18 +11,30 @@ import com.rainbow_cl.i_sales.remote.model.DolPhoto;
 
 public class ClientParcelable implements Parcelable {
     private String name;
+    private String firstname;
+    private String lastname;
     private String address;
+    private String email;
+    private String phone;
+    private String region;
+    private String departement;
+    private String pays;
+    private Long date_modification;
+    private Long date_creation;
+    private String town;
     private String logo;
+    private String code_client;
     private long id;
+    private int is_synchro;
 
     private DolPhoto poster;
 
-    public ClientParcelable() {
-    }
+    public ClientParcelable() {}
 
-    public ClientParcelable(String name, String address, String logo) {
+    public ClientParcelable(String name, String address, String town, String logo) {
         this.name = name;
         this.address = address;
+        this.town = town;
         this.logo = logo;
     }
 
@@ -58,6 +70,14 @@ public class ClientParcelable implements Parcelable {
         this.id = id;
     }
 
+    public String getTown() {
+        return town;
+    }
+
+    public void setTown(String town) {
+        this.town = town;
+    }
+
     public DolPhoto getPoster() {
         return poster;
     }
@@ -66,29 +86,144 @@ public class ClientParcelable implements Parcelable {
         this.poster = poster;
     }
 
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public String getDepartement() {
+        return departement;
+    }
+
+    public void setDepartement(String departement) {
+        this.departement = departement;
+    }
+
+    public String getPays() {
+        return pays;
+    }
+
+    public void setPays(String pays) {
+        this.pays = pays;
+    }
+
+    public Long getDate_modification() {
+        return date_modification;
+    }
+
+    public void setDate_modification(Long date_modification) {
+        this.date_modification = date_modification;
+    }
+
+    public Long getDate_creation() {
+        return date_creation;
+    }
+
+    public void setDate_creation(Long date_creation) {
+        this.date_creation = date_creation;
+    }
+
+    public int getIs_synchro() {
+        return is_synchro;
+    }
+
+    public void setIs_synchro(int is_synchro) {
+        this.is_synchro = is_synchro;
+    }
+
+    public String getCode_client() {
+        return code_client;
+    }
+
+    public void setCode_client(String code_client) {
+        this.code_client = code_client;
+    }
+
     @Override
     public int describeContents() {
         return 0;
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(name);
-        parcel.writeString(address);
-        parcel.writeString(logo);
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.name);
+        dest.writeString(this.firstname);
+        dest.writeString(this.lastname);
+        dest.writeString(this.address);
+        dest.writeString(this.email);
+        dest.writeString(this.phone);
+        dest.writeString(this.region);
+        dest.writeString(this.departement);
+        dest.writeString(this.pays);
+        dest.writeValue(this.date_modification);
+        dest.writeValue(this.date_creation);
+        dest.writeString(this.town);
+        dest.writeString(this.logo);
+        dest.writeString(this.code_client);
+        dest.writeLong(this.id);
+        dest.writeInt(this.is_synchro);
+        dest.writeParcelable(this.poster, flags);
     }
-    private ClientParcelable(Parcel in) {
 
-        name = in.readString();
-        address = in.readString();
-        logo = in.readString();
+    protected ClientParcelable(Parcel in) {
+        this.name = in.readString();
+        this.firstname = in.readString();
+        this.lastname = in.readString();
+        this.address = in.readString();
+        this.email = in.readString();
+        this.phone = in.readString();
+        this.region = in.readString();
+        this.departement = in.readString();
+        this.pays = in.readString();
+        this.date_modification = (Long) in.readValue(Long.class.getClassLoader());
+        this.date_creation = (Long) in.readValue(Long.class.getClassLoader());
+        this.town = in.readString();
+        this.logo = in.readString();
+        this.code_client = in.readString();
+        this.id = in.readLong();
+        this.is_synchro = in.readInt();
+        this.poster = in.readParcelable(DolPhoto.class.getClassLoader());
     }
-    public static final Parcelable.Creator<ClientParcelable> CREATOR
-            = new Parcelable.Creator<ClientParcelable>() {
 
+    public static final Creator<ClientParcelable> CREATOR = new Creator<ClientParcelable>() {
         @Override
-        public ClientParcelable createFromParcel(Parcel in) {
-            return new ClientParcelable(in);
+        public ClientParcelable createFromParcel(Parcel source) {
+            return new ClientParcelable(source);
         }
 
         @Override

@@ -18,6 +18,8 @@ public class CategorieParcelable {
     private String visible;
     private String entity;
 
+    private int count_produits;
+
     private DolPhoto poster;
 
     public CategorieParcelable() {
@@ -109,5 +111,13 @@ public class CategorieParcelable {
 
     public void setPoster(DolPhoto poster) {
         this.poster = poster;
+    }
+
+    public int getCount_produits() {
+        return count_produits;
+    }
+
+    public void setCount_produits(int count_produits) {
+        this.count_produits = count_produits;
     }
 }

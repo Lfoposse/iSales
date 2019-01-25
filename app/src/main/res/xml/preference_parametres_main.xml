@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:title="@string/parametres">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/parametres_categories_azero"
+        android:summaryOff="@string/desactive"
+        android:summaryOn="@string/active"
+        android:textSize="12sp"
+        android:title="Masquer les Catégories à 0" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/parametres_produits_azero"
+        android:summaryOff="@string/desactive"
+        android:summaryOn="@string/active"
+        android:textSize="12sp"
+        android:title="Masquer les Produits à 0" />
+</PreferenceScreen>

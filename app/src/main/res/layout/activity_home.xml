@@ -22,7 +22,7 @@
                 android:id="@+id/logo"
                 android:layout_width="66dp"
                 android:layout_height="match_parent"
-                android:background="@drawable/logo_isales_small"
+                android:background="@drawable/logo_isales"
                 android:layout_gravity="center"
                 android:scaleType="fitCenter" />
 
@@ -33,7 +33,7 @@
 
 
     <FrameLayout
-        android:id="@+id/content_frame"
+        android:id="@+id/master_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="?attr/actionBarSize"

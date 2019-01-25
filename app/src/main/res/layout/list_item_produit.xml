@@ -19,7 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/product_item_img_height"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/logo_isales_small"
+            android:src="@drawable/isales_no_image"
+            android:layout_centerHorizontal="true"
             android:scaleType="fitXY" />
 
         <LinearLayout
@@ -37,42 +38,73 @@
                 android:gravity="center"
                 android:textColor="@android:color/black"
                 android:textSize="@dimen/produit_item_label_size"
-                tools:text="Libellé produit"/>
-
-            <TextView
-                android:id="@+id/produit_item_price_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="marquee"
-                android:singleLine="true"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/produit_item_price_size"
-                android:textStyle="bold"
-                tools:text="600 €" />
+                tools:text="Libellé produit"
+                android:textStyle="bold"/>
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
 
-                <ImageButton
-                    android:id="@+id/produit_item_details_ib"
-                    android:layout_toStartOf="@+id/produit_item_shopping_ib"
+                <TextView
+                    android:id="@+id/produit_item_price_ht_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:foregroundGravity="center"
-                    android:src="@drawable/ic_details_black"
-                    android:background="?attr/selectableItemBackgroundBorderless"/>
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:ellipsize="marquee"
+                    android:singleLine="true"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/produit_item_price_ht_size"
+                    android:textStyle="bold"
+                    tools:text="600 € HT" />
+                <TextView
+                    android:id="@+id/produit_item_price_ttc_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/produit_item_price_ht_tv"
+                    android:ellipsize="marquee"
+                    android:singleLine="true"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:textSize="@dimen/produit_item_price_ttc_size"
+                    tools:text="611 € TTC" />
+                <TextView
+                    android:id="@+id/produit_item_stock_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/produit_item_price_ttc_tv"
+                    android:ellipsize="marquee"
+                    android:singleLine="true"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:textColor="@color/price_ttc"
+                    android:textSize="@dimen/produit_item_stock_size"
+                    android:textStyle="italic"
+                    tools:text="250 unités en stock" />
+
+                <!--<ImageButton-->
+                    <!--android:id="@+id/produit_item_details_ib"-->
+                    <!--android:layout_below="@+id/produit_item_shopping_ib"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_alignParentEnd="true"-->
+                    <!--android:layout_alignParentBottom="true"-->
+                    <!--android:src="@drawable/ic_details_black_18dp"-->
+                    <!--android:background="?attr/selectableItemBackgroundBorderless"/>-->
 
                 <ImageButton
                     android:id="@+id/produit_item_shopping_ib"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:foregroundGravity="center"
                     android:layout_marginStart="6dp"
-                    android:src="@drawable/ic_shopping_black"
+                    android:src="@drawable/ic_shopping_black_24dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:layout_alignParentEnd="true"/>
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"/>
             </RelativeLayout>
         </LinearLayout>
 

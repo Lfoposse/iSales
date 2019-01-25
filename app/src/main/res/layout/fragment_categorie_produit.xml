@@ -1,0 +1,70 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:mContext="com.rainbow_cl.i_sales.pages.home.fragment.CategorieProduitFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_black_corner"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:layout_marginBottom="6dp">
+                <EditText
+                    android:id="@+id/et_search_catpdt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/imgbtn_search_client"
+                    android:hint="@string/rechercher_par_libelle"
+                    android:textColorHint="@android:color/darker_gray"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/ed_search_textsize"
+                    android:background="@android:color/transparent"/>
+
+                <ImageButton
+                    android:id="@+id/imgbtn_search_client"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_search"
+                    android:background="@android:color/transparent"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerview_catpdt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical" />
+            <ImageView
+                android:id="@+id/iv_progress_catpdt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/img_loading_default"
+                android:elevation="@dimen/card_album_elevation"/>
+            <TextView
+                android:id="@+id/tv_error_catpdt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/connection_error_find_products"
+                android:gravity="center_horizontal"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

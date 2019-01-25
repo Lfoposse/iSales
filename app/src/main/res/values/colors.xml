@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#53AD50</color>
+    <color name="colorPrimary">#57C725</color>
     <color name="colorPrimaryTransparent">#6653AD50</color>
-    <color name="colorPrimaryLight">#75be72</color>
-    <color name="colorPrimaryDark">#3a7938</color>
+    <color name="colorPrimaryLight">#4FDB11</color>
+    <color name="colorPrimaryLight_aa">#444FDB11</color>
+    <color name="colorPrimaryDark">#5DB735</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorBlue">#1E88E5</color>
+    <color name="colorGreen">#2E7D32</color>
+    <color name="colorWarning">#FFA500</color>
+    <color name="colorGray">#616161</color>
 
     <color name="black_overlay">#66000000</color>
     <color name="black_cc">#cc000000</color>
@@ -12,12 +17,21 @@
     <color name="transparent">#00FFFFFF</color>
 
     <color name="white">#FFFFFF</color>
+    <color name="white_dc">#dcFFFFFF</color>
     <color name="red_amount">#FF3333</color>
+    <color name="red_background">#C62828</color>
     <color name="tabs_text_normal">#E6E6E6</color>
     <color name="tabs_text_selected">#FFFFFF</color>
 
     <color name="contact_name">#333333</color>
     <color name="contact_number">#8c8c8c</color>
+    <color name="price_ttc">#8C8C8C</color>
+    <color name="gray">#8C8C8C</color>
+    <color name="click_selector">#ccE0E0E0</color>
 
     <color name="backgroundSection">#E5E5E5</color>
+
+    <color name="snackbar_success">#43A047</color>
+    <color name="snackbar_update">#1E88E5</color>
+    <color name="snackbar_error">#F4511E</color>
 </resources>

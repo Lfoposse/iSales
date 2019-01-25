@@ -1,62 +1,80 @@
 package com.rainbow_cl.i_sales.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.rainbow_cl.i_sales.R;
-import com.rainbow_cl.i_sales.interfaces.ProduitsAdapterListener;
-import com.rainbow_cl.i_sales.model.ProduitParcelable;
+import com.rainbow_cl.i_sales.database.entry.PanierEntry;
+import com.rainbow_cl.i_sales.interfaces.PanierProduitAdapterListener;
 import com.rainbow_cl.i_sales.remote.ApiUtils;
-import com.rainbow_cl.i_sales.remote.model.DolPhoto;
-import com.rainbow_cl.i_sales.remote.rest.FindDolPhotoREST;
+import com.rainbow_cl.i_sales.utility.ISalesUtility;
+import com.rainbow_cl.i_sales.utility.InputFilterMinMax;
+import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
-
-import retrofit2.Call;
-import retrofit2.Response;
 
 /**
  * Created by netserve on 10/09/2018.
  */
 
 public class PanierProduitAdapter extends RecyclerView.Adapter<PanierProduitAdapter.PanierProduitsViewHolder> {
-    private static final String TAG = ProduitsAdapter.class.getSimpleName();
+    private static final String TAG = PanierProduitAdapter.class.getSimpleName();
 
     private Context mContext;
-    private ArrayList<ProduitParcelable> produitsList;
-    private ArrayList<ProduitParcelable> produitsListFiltered;
+    private ArrayList<PanierEntry> panierList;
+    private ArrayList<PanierEntry> panierListFiltered;
+    private PanierProduitAdapterListener mListener;
 
     //    ViewHolder de l'adapter
     public class PanierProduitsViewHolder extends RecyclerView.ViewHolder {
-        public TextView label, price;
+        public TextView label, priceTTC, tva, total;
         public ImageView poster;
-        public ElegantNumberButton numberButton;
+        public EditText numberButton;
+        public ImageButton removeProduit;
 
         public PanierProduitsViewHolder(View view) {
             super(view);
             label = view.findViewById(R.id.tv_panier_produit_label);
-            price = view.findViewById(R.id.tv_panier_produit_price);
+            priceTTC = view.findViewById(R.id.tv_panier_produit_price_ttc);
+            tva = view.findViewById(R.id.tv_panier_produit_tva);
+            total = view.findViewById(R.id.tv_panier_produit_total);
             poster = view.findViewById(R.id.iv_panier_produit_poster);
-            numberButton = view.findViewById(R.id.numbtn_panier_produit);
+            numberButton = view.findViewById(R.id.et_panier_quantite);
+            removeProduit = view.findViewById(R.id.ib_panier_produit_delete);
 
+            /*
             numberButton.setOnValueChangeListener(new ElegantNumberButton.OnValueChangeListener() {
                 @Override
                 public void onValueChange(ElegantNumberButton view, int oldValue, int newValue) {
 //                    Log.e(TAG, String.format("oldValue: %d   newValue: %d", oldValue, newValue));
+                    total.setText(String.format("%s %s",
+                            ISalesUtility.amountFormat2(""+Double.valueOf(panierListFiltered.get(getAdapterPosition()).getPrice_ttc())*newValue),
+                            mContext.getString(R.string.symbole_euro)));
+
+//                    mise a jour de la quantité du produit dans la liste
+                    panierListFiltered.get(getAdapterPosition())
+                            .setQuantity(newValue);
+
+                    mListener.onChangeQuantityItemPanier(getAdapterPosition(), newValue);
+                }
+            }); */
+            removeProduit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.onRemoveItemPanier(panierListFiltered.get(getAdapterPosition()), getAdapterPosition());
                 }
             });
 
@@ -66,10 +84,10 @@ public class PanierProduitAdapter extends RecyclerView.Adapter<PanierProduitAdap
     //    Filtre la liste des produits
     public void performFiltering(String searchString) {
         if (searchString.isEmpty()) {
-            produitsListFiltered = produitsList;
+            panierListFiltered = panierList;
         } else {
-            ArrayList<ProduitParcelable> filteredList = new ArrayList<>();
-            for (ProduitParcelable row : produitsList) {
+            ArrayList<PanierEntry> filteredList = new ArrayList<>();
+            for (PanierEntry row : panierList) {
 
                 // name match condition. this might differ depending on your requirement
                 // here we are looking for name or phone number match
@@ -79,17 +97,18 @@ public class PanierProduitAdapter extends RecyclerView.Adapter<PanierProduitAdap
                 }
             }
 
-            produitsListFiltered = filteredList;
+            panierListFiltered = filteredList;
         }
 
         notifyDataSetChanged();
     }
 
 
-    public PanierProduitAdapter(Context context, ArrayList<ProduitParcelable> produitParcelables) {
+    public PanierProduitAdapter(Context context, ArrayList<PanierEntry> panierEntries, PanierProduitAdapterListener listener) {
         this.mContext = context;
-        this.produitsList = produitParcelables;
-        this.produitsListFiltered = produitParcelables;
+        this.panierList = panierEntries;
+        this.panierListFiltered = panierEntries;
+        this.mListener = listener;
     }
 
     @Override
@@ -101,87 +120,101 @@ public class PanierProduitAdapter extends RecyclerView.Adapter<PanierProduitAdap
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final PanierProduitAdapter.PanierProduitsViewHolder holder, int position) {
-        final ProduitParcelable produitParcelable = produitsListFiltered.get(position);
-        holder.label.setText(produitParcelable.getLabel());
-        holder.price.setText(String.format("%s %s", produitParcelable.getPrice(), mContext.getString(R.string.symbole_euro)));
+    public void onBindViewHolder(@NonNull final PanierProduitAdapter.PanierProduitsViewHolder holder, final int position) {
+        final PanierEntry panierEntry = panierListFiltered.get(position);
+        holder.label.setText(panierEntry.getLabel());
+        holder.priceTTC.setText(String.format("%s %s TTC  •  %s %s HT", ISalesUtility.amountFormat2(panierEntry.getPrice_ttc()), mContext.getString(R.string.symbole_euro), ISalesUtility.amountFormat2(panierEntry.getPrice()), mContext.getString(R.string.symbole_euro)));
+        holder.tva.setText(String.format("TVA : %s %s", ISalesUtility.amountFormat2(panierEntry.getTva_tx()), "%"));
+//        holder.numberButton.setNumber(String.valueOf(panierEntry.getQuantity()), true);
+        holder.numberButton.setText(String.valueOf(panierEntry.getQuantity()));
+        holder.total.setText(String.format("%s %s",
+                ISalesUtility.amountFormat2("" + Double.valueOf(panierEntry.getPrice_ttc()) * panierEntry.getQuantity()),
+                mContext.getString(R.string.symbole_euro)));
 
-//        recuperation de la photo poster du produit
-//        ProduitsAdapter.FindPosterTask findPosterTask = new ProduitsAdapter.FindPosterTask(produitParcelable, holder);
-//        findPosterTask.execute();
+        holder.numberButton.setFilters(new InputFilter[]{new InputFilterMinMax("1", "15")});
+        holder.numberButton.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Log.e(TAG, "beforeTextChanged: charSequence=" + charSequence);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+//                Log.e(TAG, "afterTextChanged: editable=" + editable.toString());
+
+                if (editable.toString().equals("")) {
+//                    Log.e(TAG, "afterTextChanged: editable empty");
+                    return;
+                }
+
+                int newValue = Integer.parseInt(editable.toString());
+//                teste s'il s'agit d'un quantité differente
+                if (panierListFiltered.get(position).getQuantity() == newValue) {
+//                    Log.e(TAG, "afterTextChanged: same quantity");
+                    holder.numberButton.setSelection(holder.numberButton.getText().length());
+                    return;
+                }
+
+//                Log.e(TAG, "afterTextChanged: newValue=" + newValue);
+
+//                    mise a jour de la quantité du produit dans la liste
+                panierListFiltered.get(position)
+                        .setQuantity(newValue);
+
+                holder.total.setText(String.format("%s %s",
+                        ISalesUtility.amountFormat2("" + Double.valueOf(panierListFiltered.get(position).getPrice_ttc()) * newValue),
+                        mContext.getString(R.string.symbole_euro)));
+
+                mListener.onChangeQuantityItemPanier(position, newValue);
+
+                holder.numberButton.setSelection(holder.numberButton.getText().length());
+            }
+        });
+
+        if (panierEntry.getFile_content() != null) {
+            Log.e(TAG, "onBindViewHolder: getPoster_content"+panierEntry.getFile_content());
+//            si le fichier existe dans la memoire locale
+            File imgFile = new File(panierEntry.getFile_content());
+            if (imgFile.exists()) {
+                Picasso.with(mContext)
+                        .load(imgFile)
+                        .into(holder.poster);
+                return;
+
+            } else {
+                Picasso.with(mContext)
+                        .load(R.drawable.isales_no_image)
+                        .into(holder.poster);
+//                holder.poster.setBackgroundResource(R.drawable.isales_no_image);
+            }
+        } else {
+//            holder.poster.setBackgroundResource(R.drawable.isales_no_image);
+            Picasso.with(mContext)
+                    .load(R.drawable.isales_no_image)
+                    .into(holder.poster);
+        }
+
+//        holder.poster.setBackgroundResource(R.drawable.isales_no_image);
+        String original_file = panierEntry.getRef() + "/" + panierEntry.getPoster_content();
+        String module_part = "produit";
+        Log.e(TAG, "onBindViewHolder: downloadLinkImg=" + ApiUtils.getDownloadImg(mContext, module_part, original_file));
+        Picasso.with(mContext)
+                .load(ApiUtils.getDownloadImg(mContext, module_part, original_file))
+                .placeholder(R.drawable.isales_no_image)
+                .error(R.drawable.isales_no_image)
+                .into(holder.poster);
     }
 
     @Override
     public int getItemCount() {
-        if (produitsListFiltered != null) {
-            return produitsListFiltered.size();
+        if (panierListFiltered != null) {
+            return panierListFiltered.size();
         }
         return 0;
-    }
-
-    private class FindPosterTask extends AsyncTask<Void, Void, FindDolPhotoREST> {
-        private ProduitParcelable produitParcelable;
-        private ProduitsAdapter.ProduitsViewHolder holder;
-
-        public FindPosterTask(ProduitParcelable produitParcelable, ProduitsAdapter.ProduitsViewHolder holder) {
-            this.produitParcelable = produitParcelable;
-            this.holder = holder;
-        }
-
-        @Override
-        protected FindDolPhotoREST doInBackground(Void... voids) {
-            String original_file = produitParcelable.getRef() + "/" + produitParcelable.getPoster().getFilename();
-            String module_part = "produit";
-
-//        Requete de connexion de l'internaute sur le serveur
-            Call<DolPhoto> call = ApiUtils.getISalesService().findProductsPoster(module_part, original_file);
-            try {
-                Response<DolPhoto> response = call.execute();
-                if (response.isSuccessful()) {
-                    DolPhoto dolPhoto = response.body();
-//                    Log.e(TAG, "doInBackground: dolPhoto | Filename=" + dolPhoto.getFilename() + " content=" + dolPhoto.getContent());
-                    return new FindDolPhotoREST(dolPhoto);
-                } else {
-                    String error = null;
-                    FindDolPhotoREST findDolPhotoREST = new FindDolPhotoREST();
-                    findDolPhotoREST.setDolPhoto(null);
-                    findDolPhotoREST.setErrorCode(response.code());
-                    try {
-                        error = response.errorBody().string();
-//                    JSONObject jsonObjectError = new JSONObject(error);
-//                    String errorCode = jsonObjectError.getString("errorCode");
-//                    String errorDetails = jsonObjectError.getString("errorDetails");
-                        Log.e(TAG, "doInBackground: onResponse err: " + error + " code=" + response.code());
-                        findDolPhotoREST.setErrorBody(error);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    return findDolPhotoREST;
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(FindDolPhotoREST findDolPhotoREST) {
-//        super.onPostExecute(findDolPhotoREST);
-            if (findDolPhotoREST != null) {
-                if (findDolPhotoREST.getDolPhoto() != null) {
-//                    Log.e(TAG, "onPostExecute: dolPhoto | Filename=" + findDolPhotoREST.getDolPhoto().getFilename() + " content=" + findDolPhotoREST.getDolPhoto().getContent());
-
-//                    conversion de la photo du Base64 en bitmap
-                    byte[] decodedString = Base64.decode(findDolPhotoREST.getDolPhoto().getContent(), Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-//                    chargement de la photo dans la vue
-                    holder.poster.setImageBitmap(decodedByte);
-                }
-            }
-        }
     }
 }

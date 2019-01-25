@@ -1,14 +1,13 @@
 package com.rainbow_cl.i_sales.task;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.rainbow_cl.i_sales.interfaces.FindProductsListener;
 import com.rainbow_cl.i_sales.remote.ApiUtils;
-import com.rainbow_cl.i_sales.remote.model.DolPhoto;
 import com.rainbow_cl.i_sales.remote.rest.FindProductsREST;
 import com.rainbow_cl.i_sales.remote.model.Product;
-import com.rainbow_cl.i_sales.utility.ISalesUtility;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,20 +29,37 @@ public class FindProductsTask extends AsyncTask<Void, Void, FindProductsREST> {
     private long page;
     private long category;
     private int mode = 1;
+    private Context context;
 
-    public FindProductsTask(FindProductsListener taskComplete, String sortfield, String sortorder, long limit, long page, long category) {
+    /**
+     *
+     * @param context
+     * @param taskComplete
+     * @param sortfield
+     * @param sortorder
+     * @param limit
+     * @param page envoyer une valeur négative pour renvoyer la liste sans pagination
+     * @param category
+     */
+    public FindProductsTask(Context context, FindProductsListener taskComplete, String sortfield, String sortorder, long limit, long page, long category) {
         this.task = taskComplete;
         this.sortfield = sortfield;
         this.sortorder = sortorder;
         this.limit = limit;
         this.page = page;
         this.category = category;
+        this.context = context;
     }
 
     @Override
     protected FindProductsREST doInBackground(Void... voids) {
 //        Requete de connexion de l'internaute sur le serveur
-        Call<ArrayList<Product>> call = ApiUtils.getISalesService().findProducts(sortfield, this.sortorder, this.limit, this.page, this.category, this.mode);
+        Call<ArrayList<Product>> call = null;
+        if (page < 0) {
+            call = ApiUtils.getISalesService(context).findProductsByCategorie(sortfield, this.sortorder, this.limit, this.category, this.mode);
+        } else {
+            call = ApiUtils.getISalesService(context).findProducts(sortfield, this.sortorder, this.limit, this.page, this.mode);
+        }
         try {
             Response<ArrayList<Product>> response = call.execute();
             if (response.isSuccessful()) {
@@ -51,7 +67,7 @@ public class FindProductsTask extends AsyncTask<Void, Void, FindProductsREST> {
                 ArrayList<Product> products = new ArrayList<>();
                 Log.e(TAG, "doInBackground: products=" + productArrayList.size());
 
-                return new FindProductsREST(productArrayList);
+                return new FindProductsREST(productArrayList, category);
             } else {
                 String error = null;
                 FindProductsREST findProductsREST = new FindProductsREST();

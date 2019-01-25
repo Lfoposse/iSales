@@ -5,7 +5,7 @@ package com.rainbow_cl.i_sales.remote.model;
  */
 
 public class Product {
-    private Long id;
+    private String id;
     private String label;
     private String description;
     private String type;
@@ -15,7 +15,7 @@ public class Product {
     private String price_min_ttc;
     private String price_base_type;
     private String tva_tx;
-    private String stock_reel;
+    private Integer stock_reel;
     private String stock_theorique;
     private String seuil_stock_alerte;
     private Boolean duration_value;
@@ -39,11 +39,11 @@ public class Product {
     public Product() {
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -119,11 +119,11 @@ public class Product {
         this.tva_tx = tva_tx;
     }
 
-    public String getStock_reel() {
+    public Integer getStock_reel() {
         return stock_reel;
     }
 
-    public void setStock_reel(String stock_reel) {
+    public void setStock_reel(Integer stock_reel) {
         this.stock_reel = stock_reel;
     }
 

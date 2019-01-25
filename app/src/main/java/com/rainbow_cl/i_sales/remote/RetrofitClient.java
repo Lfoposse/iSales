@@ -1,6 +1,10 @@
 package com.rainbow_cl.i_sales.remote;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.rainbow_cl.i_sales.database.AppDatabase;
+import com.rainbow_cl.i_sales.database.entry.TokenEntry;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -22,8 +26,9 @@ public class RetrofitClient {
     public static final String TAG = RetrofitClient.class.getSimpleName();
     private static Retrofit retrofit = null;
 
-    public static Retrofit getClient(String url) {
-        if (retrofit == null) {
+    public static Retrofit getClient(final Context context, String url) {
+        Log.e(TAG, "getClient: input baseURL="+url );
+//        if (retrofit == null) {
 
             OkHttpClient httpClient = new OkHttpClient.Builder()
                     .addInterceptor(new Interceptor() {
@@ -35,13 +40,16 @@ public class RetrofitClient {
 //                            Log.e(TAG, "intercept:Before "+originalHttpUrl.toString());
 
 //                            if it is login query, don't add dolapikey
-                            if (originalHttpUrl.toString().contains("login")) {
+                            if (originalHttpUrl.toString().contains("/login")) {
                                 return chain.proceed(original);
                             }
+                            AppDatabase mDb = AppDatabase.getInstance(context.getApplicationContext());
+                            TokenEntry tokenEntry = mDb.tokenDao().getAllToken().get(0);
+                            Log.e(TAG, "intercept: token="+tokenEntry.getToken());
 
 //                            Adding DOLIBARR API KEY to all queries
                             HttpUrl url = originalHttpUrl.newBuilder()
-                                    .addQueryParameter(ApiUtils.DOLAPIKEY, ApiUtils.API_KEY)
+                                    .addQueryParameter(ApiUtils.DOLAPIKEY, tokenEntry.getToken())
                                     .build();
                             Log.e(TAG, "intercept:After url= "+url.toString());
 
@@ -62,7 +70,7 @@ public class RetrofitClient {
                     .addConverterFactory(GsonConverterFactory.create())
                     .baseUrl(url)
                     .build();
-        }
+//        }
         return retrofit;
     }
 }

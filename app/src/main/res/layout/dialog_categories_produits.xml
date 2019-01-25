@@ -20,7 +20,7 @@
                 android:id="@+id/ib_dialog_catpdt_close"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_close_white"
+                android:src="@drawable/ic_close_white_24dp"
                 android:background="?attr/selectableItemBackgroundBorderless"/>
 
             <TextView
@@ -33,11 +33,13 @@
 
     </android.support.design.widget.AppBarLayout>
     <FrameLayout
+        android:id="@+id/content_dialog_catpdt"
         android:layout_below="@+id/appbarbar_catpdt"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="6dp">
 
+        <!--
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -93,7 +95,7 @@
                 android:text="@string/connection_error_find_products"
                 android:gravity="center_horizontal"
                 android:visibility="gone"/>
-        </LinearLayout>
+        </LinearLayout> -->
 
     </FrameLayout>
 </RelativeLayout>

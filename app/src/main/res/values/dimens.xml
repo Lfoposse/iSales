@@ -21,12 +21,16 @@
 
     <!--dimension du cardview-->
     <dimen name="card_margin">5dp</dimen>
-    <dimen name="card_album_elevation">2dp</dimen>
-    <dimen name="product_item_img_height">132dp</dimen>
-    <dimen name="panier_product_item_img_width">86dp</dimen>
+    <dimen name="card_album_elevation">4dp</dimen>
+    <dimen name="product_item_img_height">200dp</dimen>
+    <dimen name="panier_product_item_img_width">106dp</dimen>
+    <dimen name="panier_product_item_width">106dp</dimen>
 
     <dimen name="produit_item_label_size">15sp</dimen>
-    <dimen name="produit_item_price_size">17sp</dimen>
+    <dimen name="produit_item_price_ht_size">17sp</dimen>
+    <dimen name="produit_panier_item_price_ht_size">13sp</dimen>
+    <dimen name="produit_item_price_ttc_size">14sp</dimen>
+    <dimen name="produit_item_stock_size">11sp</dimen>
     <dimen name="ed_search_textsize">15sp</dimen>
     <dimen name="loading_height">76dp</dimen>
     <dimen name="loading_width">66dp</dimen>
@@ -36,5 +40,19 @@
     <dimen name="form_paddingH_spinner">8dp</dimen>
     <dimen name="form_paddingV">8dp</dimen>
     <dimen name="form_section_size">18sp</dimen>
-    <dimen name="form_input_size">15dp</dimen>
+    <dimen name="form_input_size">15sp</dimen>
+    <dimen name="form_spinner_hint_size">12sp</dimen>
+    <dimen name="client_avatar_height">196dp</dimen>
+    <dimen name="produit_avatar_height">230dp</dimen>
+    <dimen name="client_avatar_margin">46dp</dimen>
+
+    <dimen name="profil_details_item_row_padding">30dp</dimen>
+    <dimen name="profil_details_item_row_margin_top_bottom">10dp</dimen>
+    <dimen name="profil_mini_zone_item_padding_bottom">5dp</dimen>
+    <dimen name="bon_cmd_users_infos_box_padding">10dp</dimen>
+    <dimen name="signatureview_height">136dp</dimen>
+    <dimen name="profile_menu_size">15sp</dimen>
+    <dimen name="apropos_title_size">18sp</dimen>
+    <dimen name="apropos_description_size">15sp</dimen>
+    <dimen name="width_partenaire_item">260dp</dimen>
 </resources>

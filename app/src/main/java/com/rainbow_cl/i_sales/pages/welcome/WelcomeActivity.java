@@ -2,20 +2,26 @@ package com.rainbow_cl.i_sales.pages.welcome;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 
 import com.rainbow_cl.i_sales.R;
 import com.rainbow_cl.i_sales.pages.login.LoginActivity;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 public class WelcomeActivity extends AppCompatActivity {
+    private static final String TAG = WelcomeActivity.class.getSimpleName();
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -32,7 +38,7 @@ public class WelcomeActivity extends AppCompatActivity {
      * Some older devices needs a small delay between UI widget updates
      * and a change of the status and navigation bar.
      */
-    private static final int UI_ANIMATION_DELAY = 300;
+    private static final int UI_ANIMATION_DELAY = 100;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private final Runnable mHidePart2Runnable = new Runnable() {
@@ -88,6 +94,8 @@ public class WelcomeActivity extends AppCompatActivity {
 
         mContentView = findViewById(R.id.fullscreen_content);
 
+//        checkExternalMedia();
+//        writeToSDFile();
     }
 
 //    @Override
@@ -139,4 +147,59 @@ public class WelcomeActivity extends AppCompatActivity {
         mHideHandler.removeCallbacks(mGotoLoginRunnable);
         mHideHandler.postDelayed(mGotoLoginRunnable, delayMillis);
     }
+
+    private void checkExternalMedia(){
+        boolean mExternalStorageAvailable = false;
+        boolean mExternalStorageWriteable = false;
+        String state = Environment.getExternalStorageState();
+
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            // Can read and write the media
+            mExternalStorageAvailable = mExternalStorageWriteable = true;
+        } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            // Can only read the media
+            mExternalStorageAvailable = true;
+            mExternalStorageWriteable = false;
+        } else {
+            // Can't read or write
+            mExternalStorageAvailable = mExternalStorageWriteable = false;
+        }
+    }
+
+    /** Method to write ascii text characters to file on SD card. Note that you must add a
+     WRITE_EXTERNAL_STORAGE permission to the manifest file or this method will throw
+     a FileNotFound Exception because you won't have write permission. */
+
+    private File writeToSDFile(){
+
+        // Find the root of the external storage.
+        // See http://developer.android.com/guide/topics/data/data-  storage.html#filesExternal
+
+        File root = android.os.Environment.getExternalStorageDirectory();
+
+        // See http://stackoverflow.com/questions/3551821/android-write-to-sd-card-folder
+
+        File dir = new File (root.getAbsolutePath() + "/iSales");
+        dir.mkdirs();
+        File file = new File(dir, "logcat.txt");
+        return file;
+
+//        try {
+//            FileOutputStream f = new FileOutputStream(file);
+//            PrintWriter pw = new PrintWriter(f);
+//            pw.println("Hi , How are you");
+//            pw.println("Hello");
+//            pw.flush();
+//            pw.close();
+//            f.close();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//            Log.i(TAG, "******* File not found. Did you" +
+//                    " add a WRITE_EXTERNAL_STORAGE permission to the   manifest?");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        tv.append("\n\nFile written to "+file);
+    }
+
 }

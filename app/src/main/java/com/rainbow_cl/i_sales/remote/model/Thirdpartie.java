@@ -33,6 +33,7 @@ public class Thirdpartie {
     private String code_compta;
     private String ref;
     private String logo;
+    private String logo_mini;
     private String id;
     private String statut;
     private String country;
@@ -331,5 +332,13 @@ public class Thirdpartie {
 
     public void setFirstname(String firstname) {
         this.firstname = firstname;
+    }
+
+    public String getLogo_mini() {
+        return logo_mini;
+    }
+
+    public void setLogo_mini(String logo_mini) {
+        this.logo_mini = logo_mini;
     }
 }

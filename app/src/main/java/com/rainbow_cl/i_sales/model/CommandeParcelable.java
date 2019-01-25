@@ -16,14 +16,26 @@ public class CommandeParcelable implements Parcelable {
     private String ref;
     private String total;
     private long id;
+    private long commande_id;
+    private long socid;
     private long date;
     private long date_commande;
     private long date_livraison;
+    private int statut;
+    private int is_synchro;
 
     private ClientParcelable client;
     private ArrayList<ProduitParcelable> produits;
 
     public CommandeParcelable() {
+    }
+
+    public long getSocid() {
+        return socid;
+    }
+
+    public void setSocid(long socid) {
+        this.socid = socid;
     }
 
     public String getRef() {
@@ -90,8 +102,28 @@ public class CommandeParcelable implements Parcelable {
         this.produits = produits;
     }
 
-    public static Creator<CommandeParcelable> getCREATOR() {
-        return CREATOR;
+    public long getCommande_id() {
+        return commande_id;
+    }
+
+    public void setCommande_id(long commande_id) {
+        this.commande_id = commande_id;
+    }
+
+    public int getIs_synchro() {
+        return is_synchro;
+    }
+
+    public void setIs_synchro(int is_synchro) {
+        this.is_synchro = is_synchro;
+    }
+
+    public int getStatut() {
+        return statut;
+    }
+
+    public void setStatut(int statut) {
+        this.statut = statut;
     }
 
     @Override
@@ -100,30 +132,40 @@ public class CommandeParcelable implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(ref);
-        parcel.writeString(total);
-        parcel.writeLong(id);
-        parcel.writeLong(date);
-        parcel.writeLong(date_commande);
-        parcel.writeLong(date_livraison);
-        parcel.writeParcelable(client, i);
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.ref);
+        dest.writeString(this.total);
+        dest.writeLong(this.id);
+        dest.writeLong(this.commande_id);
+        dest.writeLong(this.socid);
+        dest.writeLong(this.date);
+        dest.writeLong(this.date_commande);
+        dest.writeLong(this.date_livraison);
+        dest.writeInt(this.statut);
+        dest.writeInt(this.is_synchro);
+        dest.writeParcelable(this.client, flags);
+        dest.writeTypedList(this.produits);
     }
 
     protected CommandeParcelable(Parcel in) {
-        ref = in.readString();
-        total = in.readString();
-        id = in.readLong();
-        date = in.readLong();
-        date_commande = in.readLong();
-        date_livraison = in.readLong();
-        client = in.readParcelable(ClientParcelable.class.getClassLoader());
+        this.ref = in.readString();
+        this.total = in.readString();
+        this.id = in.readLong();
+        this.commande_id = in.readLong();
+        this.socid = in.readLong();
+        this.date = in.readLong();
+        this.date_commande = in.readLong();
+        this.date_livraison = in.readLong();
+        this.statut = in.readInt();
+        this.is_synchro = in.readInt();
+        this.client = in.readParcelable(ClientParcelable.class.getClassLoader());
+        this.produits = in.createTypedArrayList(ProduitParcelable.CREATOR);
     }
 
     public static final Creator<CommandeParcelable> CREATOR = new Creator<CommandeParcelable>() {
         @Override
-        public CommandeParcelable createFromParcel(Parcel in) {
-            return new CommandeParcelable(in);
+        public CommandeParcelable createFromParcel(Parcel source) {
+            return new CommandeParcelable(source);
         }
 
         @Override

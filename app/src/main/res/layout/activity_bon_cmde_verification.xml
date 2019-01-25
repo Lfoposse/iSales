@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:mContext="com.rainbow_cl.i_sales.pages.boncmdeverification.BonCmdeVerificationActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="86dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/header"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimaryTransparent"
+                    android:orientation="horizontal" >
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/view_boncmde_verif_compagnie"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:layout_weight="1"
+                        card_view:cardElevation="@dimen/card_album_elevation"
+                        card_view:cardUseCompatPadding="true">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/com_title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/colorPrimary"
+                                android:gravity="center"
+                                android:padding="5dp"
+                                android:text="Compagnie"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_boncmde_verif_compagnie_nom"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:singleLine="false"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:gravity="center_vertical"
+                                android:padding="3dp"
+                                android:text="@string/nom_" />
+
+                            <TextView
+                                android:id="@+id/tv_boncmde_verif_compagnie_ville"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:singleLine="false"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:gravity="center_vertical"
+                                android:padding="3dp"
+                                android:text="@string/ville_" />
+
+                            <TextView
+                                android:id="@+id/tv_boncmde_verif_compagnie_pays"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:singleLine="false"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:gravity="center_vertical"
+                                android:padding="3dp"
+                                android:text="@string/pays_" />
+
+                            <TextView
+                                android:id="@+id/tv_boncmde_verif_compagnie_telephone"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:singleLine="false"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:gravity="center_vertical"
+                                android:padding="3dp"
+                                android:text="@string/telephone_" />
+                            <TextView
+                                android:id="@+id/tv_boncmde_verif_compagnie_email"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:singleLine="false"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:gravity="center_vertical"
+                                android:padding="3dp"
+                                android:text="@string/email_" />
+                        </LinearLayout>
+                    </android.support.v7.widget.CardView>
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/view_boncmde_verif_client"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:layout_weight="1.3"
+                        card_view:cardElevation="@dimen/card_album_elevation"
+                        card_view:cardUseCompatPadding="true">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/client_title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/colorPrimary"
+                                android:gravity="center"
+                                android:padding="5dp"
+                                android:text="Client"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_boncmde_verif_client_nom"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:singleLine="false"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical"
+                                android:padding="3dp"
+                                android:text="@string/nom_" />
+
+                            <TextView
+                                android:id="@+id/tv_boncmde_verif_client_ville"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:singleLine="false"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical"
+                                android:padding="3dp"
+                                android:text="@string/ville_" />
+
+                            <TextView
+                                android:id="@+id/tv_boncmde_verif_client_pays"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:singleLine="false"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical"
+                                android:padding="3dp"
+                                android:text="@string/pays_" />
+
+                            <TextView
+                                android:id="@+id/tv_boncmde_verif_client_telephone"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:singleLine="false"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical"
+                                android:padding="3dp"
+                                android:text="@string/telephone_" />
+
+                            <TextView
+                                android:id="@+id/tv_boncmde_verif_client_email"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:singleLine="false"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:gravity="center_vertical"
+                                android:padding="3dp"
+                                android:text="@string/email_" />
+                        </LinearLayout>
+                    </android.support.v7.widget.CardView>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/recyclerview_boncmde_verif_produits_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/black"
+                android:orientation="horizontal"
+                android:padding="6dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="Produit"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="@string/quantite"
+                        android:textColor="@color/white"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical|end"
+                        android:text="@string/prix"
+                        android:textColor="@color/white"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerview_boncmde_verif_produits"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1.5"
+                android:background="@color/white"
+                tools:listitem="@layout/list_item_boncmde_produit">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <ImageView
+                android:id="@+id/iv_boncmde_verif_progress_produits"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/img_loading_default"
+                android:elevation="@dimen/card_album_elevation" />
+
+            <TextView
+                android:id="@+id/tv_boncmde_verif_error_produits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/connection_error_find_products"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true">
+
+        <RelativeLayout
+            android:id="@+id/view_boncmde_verif_total"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/black_cc"
+            android:padding="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:text="@string/total"
+                android:textColor="@color/white"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/tv_boncmde_verif_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="185 €"
+                android:textColor="@color/colorPrimary"
+                android:textSize="19sp" />
+        </RelativeLayout>
+        <LinearLayout
+            android:id="@+id/view_boncmde_verif_actions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_boncmde_verif_actions_valider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_primary_corner_btn"
+                android:text="@string/valider"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_boncmde_verif_actions_annuler"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="1dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_outline_primary"
+                android:text="@string/annuler"
+                android:textColor="@color/colorPrimary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+    <!-- <RelativeLayout
+        android:id="@+id/view_boncmde_verif_total"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/view_panier_infos"
+        android:layout_alignParentBottom="true"
+        android:background="@color/black_cc"
+        android:padding="6dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:text="@string/total"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tv_boncmde_verif_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:text="185 €"
+            android:textColor="@color/colorPrimary"
+            android:textSize="19sp" />
+    </RelativeLayout> -->
+</RelativeLayout>

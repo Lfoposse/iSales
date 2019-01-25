@@ -1,0 +1,192 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.rainbow_cl.i_sales.pages.home.fragment.AProposFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/iv_user_profile_pic"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:background="@drawable/logo_isales" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/divider_horizontal"
+                android:orientation="vertical"
+                android:showDividers="middle">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/click_selector"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:paddingBottom="8dp"
+                    android:paddingEnd="12dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Présentation"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/apropos_title_size"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_apropos_presentation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/presentation_isales"
+                        android:textSize="@dimen/apropos_description_size" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/click_selector"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:paddingBottom="8dp"
+                    android:paddingEnd="12dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nos Partenaires"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/apropos_title_size"
+                        android:textStyle="bold" />
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:divider="@drawable/divider_vertical"
+                            android:orientation="horizontal"
+                            android:showDividers="middle">
+
+                            <LinearLayout
+                                android:layout_width="@dimen/width_partenaire_item"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textStyle="bold"
+                                    android:text="Commercial en Chef"
+                                    android:textSize="@dimen/apropos_description_size" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="« Une application complète et fonctionnelle, qui a séduit nos commerciaux »"
+                                    android:textSize="@dimen/apropos_description_size" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="@dimen/width_partenaire_item"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textStyle="bold"
+                                    android:text="Responsable S.A.V"
+                                    android:textSize="@dimen/apropos_description_size" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="« Une prise de commande simplifié et apprécié des clients, qui sont enthousiasmés par l’application »"
+                                    android:textSize="@dimen/apropos_description_size" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="@dimen/width_partenaire_item"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textStyle="bold"
+                                    android:text="Chef Comptable"
+                                    android:textSize="@dimen/apropos_description_size" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="« Un réel gain dans notre trésorerie. iSales est un outil simple, efficace et mobile, qui n’engendre aucun coûts supplémentaire »"
+                                    android:textSize="@dimen/apropos_description_size" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </HorizontalScrollView>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/click_selector"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:paddingBottom="8dp"
+                    android:paddingEnd="12dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nous Contacter"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/apropos_title_size"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_apropos_contacter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="- Big Data Consulting 17 boulevard de La Muette 95140 Garges-lès-Gonesse"
+                        android:textSize="@dimen/apropos_description_size" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="- contact@bigdataconsulting.fr"
+                        android:textSize="@dimen/apropos_description_size" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="- 0177624689"
+                        android:textSize="@dimen/apropos_description_size" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

@@ -16,19 +16,29 @@
         android:id="@+id/iv_poster_catpdt"
         android:layout_width="@dimen/logo"
         android:layout_height="@dimen/logo"
-        android:background="@drawable/logo_isales_small"
+        android:src="@drawable/isales_no_image"
         android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/row_padding" />
 
-    <TextView
-        android:id="@+id/tv_label_catpdt"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_toEndOf="@+id/iv_poster_catpdt"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/iv_poster_catpdt"
-        android:layout_centerVertical="true"
-        android:fontFamily="sans-serif-medium"
-        android:textColor="@color/contact_name"
-        android:textSize="@dimen/contact_name"
-        tools:text="Categorie item"/>
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv_label_catpdt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/contact_name"
+            android:textSize="@dimen/contact_name"
+            tools:text="Categorie item"/>
+        <TextView
+            android:id="@+id/tv_countproduits_catpdt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            tools:text="6 produits"/>
+    </LinearLayout>
 
 </RelativeLayout>

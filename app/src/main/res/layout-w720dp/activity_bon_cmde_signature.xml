@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:sign="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ScrollView
+        android:id="@+id/view_boncmde_signature_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="32dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <RelativeLayout
+                android:id="@+id/view_boncmde_datelivraison"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="4dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Date de Livraison"
+                    android:textColor="@color/black"
+                    android:textSize="17sp"
+                    android:layout_centerVertical="true" />
+                <TextView
+                    android:id="@+id/tv_boncmde_datelivraison"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toStartOf="@+id/iv_boncmde_datelivraison"
+                    android:layout_centerVertical="true"
+                    android:textSize="17sp"
+                    android:layout_marginEnd="4dp"
+                    android:text="09/01/2019" />
+                <ImageView
+                    android:id="@+id/iv_boncmde_datelivraison"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_date_black_24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+            <Switch
+                android:id="@+id/switch_boncmde_signature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textOn="Oui"
+                android:textOff="Non"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="2dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:textSize="17sp"
+                android:checked="true"
+                android:includeFontPadding="true"
+                android:text="Synchroniser avec le serveur" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp">
+
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    card_view:cardElevation="@dimen/card_album_elevation"
+                    card_view:cardUseCompatPadding="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="4dp"
+                            android:orientation="horizontal">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/client_"
+                                android:textAlignment="center"
+                                android:textColor="@color/black"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_boncmde_signature_client_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                tools:text="Romuald YOUMSI"
+                                android:textSize="15sp"
+                                android:layout_marginStart="4dp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_outline_primary"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="3dp"
+                                android:background="@color/colorPrimary"
+                                android:text="Signature Client"
+                                android:textAlignment="center"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <com.kyanogen.signatureview.SignatureView
+                                android:id="@+id/signatureview_boncmde_signature_client"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/signatureview_height"
+                                sign:backgroundColor="#ffffff"
+                                sign:enableSignature="true"
+                                sign:penColor="#000000"
+                                sign:penSize="3dp" />
+
+                            <Button
+                                android:id="@+id/btn_boncmde_signature_client_annuler"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/black"
+                                android:text="@string/annuler"
+                                android:textColor="@color/white"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@android:color/white"
+                    card_view:cardElevation="@dimen/card_album_elevation"
+                    card_view:cardUseCompatPadding="true">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="4dp"
+                            android:orientation="horizontal">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/commercial_"
+                                android:textAlignment="center"
+                                android:textColor="@color/black"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_boncmde_signature_commercial_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                tools:text="R@inbow-CL"
+                                android:textSize="15sp"
+                                android:layout_marginStart="4dp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_outline_primary"
+                            android:layout_weight="0.6"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="3dp"
+                                android:background="@color/colorPrimary"
+                                android:text="Signature Commercial"
+                                android:textAlignment="center"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <com.kyanogen.signatureview.SignatureView
+                                android:id="@+id/signatureview_boncmde_signature_commercial"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/signatureview_height"
+                                sign:backgroundColor="#ffffff"
+                                sign:enableSignature="true"
+                                sign:penColor="#000000"
+                                sign:penSize="3dp" />
+
+                            <Button
+                                android:id="@+id/btn_boncmde_signature_commercial_annuler"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/black"
+                                android:text="@string/annuler"
+                                android:textColor="@color/white"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+    <Button
+        android:id="@+id/btn_boncmde_signature_enregistrer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        android:text="@string/enregistrer"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textStyle="bold" />
+</RelativeLayout>

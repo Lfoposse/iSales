@@ -1,12 +1,15 @@
 package com.rainbow_cl.i_sales.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.rainbow_cl.i_sales.remote.model.DolPhoto;
 
 /**
  * Created by netserve on 29/08/2018.
  */
 
-public class ProduitParcelable {
+public class ProduitParcelable implements Parcelable {
     private Long id;
     private String label;
     private String description;
@@ -16,7 +19,7 @@ public class ProduitParcelable {
     private String price_min_ttc;
     private String price_base_type;
     private String tva_tx;
-    private String stock_reel;
+    private Integer stock_reel;
     private String stock_theorique;
     private String seuil_stock_alerte;
     private Boolean duration_value;
@@ -36,17 +39,62 @@ public class ProduitParcelable {
     private String height;
     private String height_units;
     private String ref;
+    private String qty;
+    private String subprice;
+    private String total_ht;
+    private String total_tva;
+    private String total_ttc;
+    private long categorie_id;
 
+    private String local_poster_path;
     private DolPhoto poster;
-    private int quantity;
 
     public ProduitParcelable() {
     }
 
-    public ProduitParcelable(String label, String price, int quantity) {
+    public String getTotal_ht() {
+        return total_ht;
+    }
+
+    public void setTotal_ht(String total_ht) {
+        this.total_ht = total_ht;
+    }
+
+    public String getTotal_tva() {
+        return total_tva;
+    }
+
+    public void setTotal_tva(String total_tva) {
+        this.total_tva = total_tva;
+    }
+
+    public String getTotal_ttc() {
+        return total_ttc;
+    }
+
+    public void setTotal_ttc(String total_ttc) {
+        this.total_ttc = total_ttc;
+    }
+
+    public ProduitParcelable(String label, String price) {
         this.label = label;
         this.price = price;
-        this.quantity = quantity;
+    }
+
+    public String getSubprice() {
+        return subprice;
+    }
+
+    public void setSubprice(String subprice) {
+        this.subprice = subprice;
+    }
+
+    public String getQty() {
+        return qty;
+    }
+
+    public void setQty(String qty) {
+        this.qty = qty;
     }
 
     public Long getId() {
@@ -121,11 +169,11 @@ public class ProduitParcelable {
         this.tva_tx = tva_tx;
     }
 
-    public String getStock_reel() {
+    public Integer getStock_reel() {
         return stock_reel;
     }
 
-    public void setStock_reel(String stock_reel) {
+    public void setStock_reel(Integer stock_reel) {
         this.stock_reel = stock_reel;
     }
 
@@ -281,6 +329,14 @@ public class ProduitParcelable {
         this.ref = ref;
     }
 
+    public String getLocal_poster_path() {
+        return local_poster_path;
+    }
+
+    public void setLocal_poster_path(String local_poster_path) {
+        this.local_poster_path = local_poster_path;
+    }
+
     public DolPhoto getPoster() {
         return poster;
     }
@@ -289,11 +345,109 @@ public class ProduitParcelable {
         this.poster = poster;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public long getCategorie_id() {
+        return categorie_id;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setCategorie_id(long categorie_id) {
+        this.categorie_id = categorie_id;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(this.id);
+        dest.writeString(this.label);
+        dest.writeString(this.description);
+        dest.writeString(this.price);
+        dest.writeString(this.price_ttc);
+        dest.writeString(this.price_min);
+        dest.writeString(this.price_min_ttc);
+        dest.writeString(this.price_base_type);
+        dest.writeString(this.tva_tx);
+        dest.writeValue(this.stock_reel);
+        dest.writeString(this.stock_theorique);
+        dest.writeString(this.seuil_stock_alerte);
+        dest.writeValue(this.duration_value);
+        dest.writeString(this.duration_unit);
+        dest.writeString(this.weight);
+        dest.writeString(this.weight_units);
+        dest.writeString(this.length);
+        dest.writeString(this.length_units);
+        dest.writeString(this.surface);
+        dest.writeString(this.surface_units);
+        dest.writeString(this.volume);
+        dest.writeString(this.volume_units);
+        dest.writeString(this.date_creation);
+        dest.writeString(this.date_modification);
+        dest.writeString(this.width);
+        dest.writeString(this.width_units);
+        dest.writeString(this.height);
+        dest.writeString(this.height_units);
+        dest.writeString(this.ref);
+        dest.writeString(this.qty);
+        dest.writeString(this.subprice);
+        dest.writeString(this.total_ht);
+        dest.writeString(this.total_tva);
+        dest.writeString(this.total_ttc);
+        dest.writeLong(this.categorie_id);
+        dest.writeString(this.local_poster_path);
+        dest.writeParcelable(this.poster, flags);
+    }
+
+    protected ProduitParcelable(Parcel in) {
+        this.id = (Long) in.readValue(Long.class.getClassLoader());
+        this.label = in.readString();
+        this.description = in.readString();
+        this.price = in.readString();
+        this.price_ttc = in.readString();
+        this.price_min = in.readString();
+        this.price_min_ttc = in.readString();
+        this.price_base_type = in.readString();
+        this.tva_tx = in.readString();
+        this.stock_reel = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.stock_theorique = in.readString();
+        this.seuil_stock_alerte = in.readString();
+        this.duration_value = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.duration_unit = in.readString();
+        this.weight = in.readString();
+        this.weight_units = in.readString();
+        this.length = in.readString();
+        this.length_units = in.readString();
+        this.surface = in.readString();
+        this.surface_units = in.readString();
+        this.volume = in.readString();
+        this.volume_units = in.readString();
+        this.date_creation = in.readString();
+        this.date_modification = in.readString();
+        this.width = in.readString();
+        this.width_units = in.readString();
+        this.height = in.readString();
+        this.height_units = in.readString();
+        this.ref = in.readString();
+        this.qty = in.readString();
+        this.subprice = in.readString();
+        this.total_ht = in.readString();
+        this.total_tva = in.readString();
+        this.total_ttc = in.readString();
+        this.categorie_id = in.readLong();
+        this.local_poster_path = in.readString();
+        this.poster = in.readParcelable(DolPhoto.class.getClassLoader());
+    }
+
+    public static final Creator<ProduitParcelable> CREATOR = new Creator<ProduitParcelable>() {
+        @Override
+        public ProduitParcelable createFromParcel(Parcel source) {
+            return new ProduitParcelable(source);
+        }
+
+        @Override
+        public ProduitParcelable[] newArray(int size) {
+            return new ProduitParcelable[size];
+        }
+    };
 }

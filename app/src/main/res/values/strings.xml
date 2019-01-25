@@ -14,13 +14,21 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="se_connecter">SE CONNECTER</string>
     <string name="s_enregistrer">S\'ENREGISTRER</string>
-    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_login">Connexion</string>
 
     <!-- Strings related to login -->
     <string name="prompt_username">Nom d\'utilisateur</string>
     <string name="prompt_password">Mot de passe</string>
     <string name="action_sign_in_short">Sign in</string>
+    <string name="url_invalide">Adresse url invalide.</string>
+    <string name="veuillez_remplir_url_serveur">Veuillez remplir l\'adresse du serveur.</string>
     <string name="veuillez_remplir_username">Veuillez remplir le nom d\'utilisateur.</string>
+    <string name="veuillez_remplir_ce_champs">Veuillez remplir ce champs.</string>
+    <string name="veuillez_choisir_logo">Veuillez choisir le logo.</string>
+    <string name="adresse_mail_invalide">Adresse mail invalide.</string>
+    <string name="veuillez_remplir_libelle">Veuillez remplir le libellé.</string>
+    <string name="voulez_vous_supprimer_client">Voulez-vous vraiment supprimer ce client ?</string>
+    <string name="veuillez_remplir_description">Veuillez remplir la description.</string>
     <string name="veuillez_remplir_password">Veuillez remplir le mot de passe.</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
@@ -31,7 +39,9 @@
     <string name="erreur_connexion">Erreur réseau. Veuillez vérifier votre connexion internet.</string>
     <string name="parametres_connexion_incorrect">Erreur d\'authentification. Paramètres de connexion incorrects.</string>
     <string name="service_indisponible">Service indisponible. Veuillez réessayer plustard.</string>
+    <string name="aucune_commande_trouvee">Aucune commande trouvée.</string>
     <string name="aucun_produit_trouve">Aucun produit trouvé.</string>
+    <string name="aucune_commande_trouve">Aucune commande trouvé.</string>
     <string name="aucune_categorie_trouve">Aucune catégorie trouvée.</string>
     <string name="permission_refusee">Permission refusée.</string>
     <string name="echec_authentification">Echec d\'authentification.</string>
@@ -51,14 +61,137 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="ajout_client">Ajout Client</string>
+    <string name="ajouter_client">Ajouter Client</string>
+    <string name="ajouter_categorie">Ajouter Categorie</string>
+    <string name="ajouter_categorie_client">Ajouter Categorie Client</string>
+    <string name="ajouter_categorie_produit">Ajouter Categorie Produit</string>
     <string name="nom">Nom</string>
+    <string name="nom_entreprise">Nom de l\'entreprise</string>
+    <string name="nom_entreprise_r">Nom de l\'entreprise *</string>
+    <string name="libelle">Libellé</string>
+    <string name="description">Description</string>
+    <string name="description_facultatif">Description (facultatif)</string>
     <string name="adresse">Adresse</string>
+    <string name="adresse_r">Adresse *</string>
     <string name="email">Email</string>
+    <string name="email_r">Email  *</string>
     <string name="ville">Ville</string>
+    <string name="ville_r">Ville  *</string>
     <string name="pays">Pays</string>
+    <string name="pays_r">Pays  *</string>
     <string name="prenom">Prénom</string>
+    <string name="nom_">Nom :</string>
+    <string name="ville_">Ville :</string>
+    <string name="pays_">Pays :</string>
+    <string name="telephone_">Téléphone :</string>
+    <string name="email_">Email :</string>
     <string name="informations_generales">Informations Générales</string>
     <string name="enregistrer">Enregistrer</string>
     <string name="toutes_les_categories_client">Toutes les categories client</string>
+    <string name="categorie_creee_succes">Categorie crée avec succès.</string>
+    <string name="commande_enregistre_succes">Bon de commande enregistré avec succès.</string>
+    <string name="informations_client_modifie">Informations du client modifiées avec succès.</string>
+    <string name="client_creee_succes">Client crée avec succès.</string>
+    <string name="enregistrement_encours">Enregistrement en cours...</string>
+    <string name="enregistrement_commande_encours">Enregistrement de la commande en cours...</string>
+    <string name="validation_commande_encours">Validation de la commande en cours...</string>
+    <string name="envoi_signature_client">Envoi de la signature du client...</string>
+    <string name="envoi_signature_commercial">Envoi de la signature du commercial...</string>
+    <string name="suppression_client_encours">Suppression du client en cours...</string>
+    <string name="numero_telephone_exple">Numéro de téléphone (+33655439536)</string>
+    <string name="numero_telephone_exple_r">Numéro de téléphone (+33655439536)  *</string>
+    <string name="departement">Département</string>
+    <string name="departement_r">Département  *</string>
+    <string name="region">Région</string>
+    <string name="region_r">Région  *</string>
+    <string name="rafraichir_liste">Rafraichir la liste</string>
+    <string name="modifier">Modifier</string>
+    <string name="commander">Commander</string>
+    <string name="details_client">Détails Client</string>
+    <string name="selectionner_un_client_pour_la_commande">Sélectionner un client pour la commande</string>
+    <string name="telephone">Téléphone</string>
+    <string name="total">Total</string>
+    <string name="annuler">Annuler</string>
+    <string name="valider">Valider</string>
+    <string name="client">Client</string>
+    <string name="client_">Client :</string>
+    <string name="compagnie">Compagnie</string>
+    <string name="commercial_">Commercial :</string>
+    <string name="verification">Verification</string>
+    <string name="signature">Signature</string>
+    <string name="quantite">Quantité</string>
+    <string name="prix">Prix</string>
+    <string name="details_commande">Détails Commande</string>
+    <string name="details_produit">Détails Produit</string>
+    <string name="synchronisation">Synchronisation</string>
+    <string name="liste_des_produits">Liste des produits</string>
+    <string name="informations_sur_le_client">Informations sur le client</string>
+    <string name="informations_sur_la_commande">Informations sur la commande</string>
+    <string name="signature_client">Signature Client</string>
+    <string name="signature_commercial">Signature Commercial</string>
+    <string name="photo_de_profil">Photo de Profil</string>
+    <string name="aucune_photo_selectionnee">Aucune photo sélectionnée</string>
+
+
+    <string name="synchro_comptes_cient_encours">Synchronisation des comptes clients en cours...</string>
+    <string name="synchro_produits_encours">Synchronisation des produits en cours...</string>
+    <string name="synchro_commandes_recuperer_encours">Récupération des commandes en cours...</string>
+    <string name="synchro_commandes_envoi_encours">Envoi des commandes en cours...</string>
+    <string name="envoi_commandes_terminee">Envoi des commandes terminé.</string>
+    <string name="comptes_clients_synchronises">Comptes clients synchronisés avec succès.</string>
+    <string name="commandes_synchronises">Commandes synchronisées avec succès.</string>
+    <string name="liste_produits_synchronises">Liste des produits synchronisée avec succès.</string>
+    <string name="lancer_synchronisation">Lancer la Synchronisation</string>
+
+
+    <!--Liste des types de categorie-->
+    <string-array name="liste_types_categorie">
+        <item>Produit</item>
+        <item>Client</item>
+    </string-array>
+
+    <!--Preference strings-->
+    <string name="commande_effectuer">commande_effectuer</string>
+    <string name="commande_encours">commande_encours</string>
+    <string name="commande_livrer">commande_livrer</string>
+    <string name="commande_nonpayer">commande_nonpayer</string>
+    <string name="parametres_categories_azero">parametres_categories_azero</string>
+    <string name="parametres_produits_azero">parametres_produits_azero</string>
+
+    <string name="commande_effectuer_title">Éffectuées</string>
+    <string name="commande_encours_title">En Cours</string>
+    <string name="commande_livrer_title">Livrées</string>
+    <string name="commande_nonpayer_title">Non Payées</string>
+    <string name="filtre">Filtre</string>
+    <string name="desactive">Désactivé</string>
+    <string name="active">Activé</string>
+    <string name="non">Non</string>
+    <string name="oui">Oui</string>
+    <string name="commande_mode_title">Mode</string>
+    <string name="commande_mode">commande_mode</string>
+
+
+    <!-- Label for commande mode option in preference -->
+    <string name="pref_cmde_mode_label_online">Online</string>
+    <string name="pref_cmde_mode_label_offline">Offline</string>
+
+    <!-- Value in SharedPreferences for sort order most popular option -->
+    <string name="pref_cmde_mode_online" translatable="false">online</string>
+    <string name="pref_cmde_mode_offline" translatable="false">offline</string>
+    <string name="aucune_categorie_produit">Aucune catégorie Produit trouvée.</string>
+    <string name="synchro_produits">Synchro Produits</string>
+    <string name="synchro_clients">Synchro Clients</string>
+    <string name="synchro_commandes">Synchro Commandes</string>
+    <string name="quantite_">Quantité :</string>
+    <string name="veuillez_saisir_prix_vente">Veuillez saisir le Prix de vente.</string>
+    <string name="veuillez_saisir_quantite">Veuillez saisir la Quantité.</string>
+    <string name="numero_tva">Numéro TVA</string>
+    <string name="numero_siret">Numéro Siret</string>
+    <string name="presentation_isales">iSales est une application de prise de commande sur tablette iPad développé par Big Data Consulting. L’application permet à vos commerciaux de terrain de prendre des commandes directement sur tablette et tout cela à partir de chez le client. Elle a été spécialement conçue pour les professionnels. C’est un logiciel unique en son genre</string>
+    <string name="title_activity_parametres">Settings</string>
+    <string name="parametres">Paramètres</string>
+    <string name="echec_envoi_logo_client">Echec d\'envoi du logo client.</string>
+
+    <!-- Strings related to Settings -->
+
 </resources>

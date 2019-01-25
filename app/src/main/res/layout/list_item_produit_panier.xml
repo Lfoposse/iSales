@@ -2,6 +2,7 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -18,15 +19,15 @@
         <ImageView
             android:id="@+id/iv_panier_produit_poster"
             android:layout_width="@dimen/panier_product_item_img_width"
-            android:layout_height="@dimen/panier_product_item_img_width"
+            android:layout_height="@dimen/panier_product_item_width"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/logo_isales_small"
+            android:background="@drawable/isales_no_image"
             android:scaleType="fitXY" />
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/panier_product_item_img_width"
+            android:layout_height="@dimen/panier_product_item_width"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
             android:paddingBottom="3dp"
@@ -41,38 +42,81 @@
                 android:textSize="@dimen/produit_item_label_size"
                 tools:text="Libellé produit" />
 
+            <LinearLayout
+                android:layout_below="@+id/tv_panier_produit_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_alignParentStart="true">
+                <TextView
+                    android:id="@+id/tv_panier_produit_price_ttc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/produit_panier_item_price_ht_size"
+                    tools:text="40,5 € TTC  •  40 € HT" />
+
+                <TextView
+                    android:id="@+id/tv_panier_produit_tva"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textSize="@dimen/produit_panier_item_price_ht_size"
+                    tools:text="TVA : 19,25 %" />
+            </LinearLayout>
+
             <TextView
-                android:id="@+id/tv_panier_produit_price"
+                android:id="@+id/tv_panier_produit_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:gravity="start"
-                android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/produit_item_price_size"
+                android:textColor="@color/red_amount"
+                android:textSize="@dimen/produit_item_price_ht_size"
                 tools:text="40 €" />
 
-            <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
+            <!-- <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
                 android:id="@+id/numbtn_panier_produit"
                 android:layout_width="96dp"
                 android:layout_height="32dp"
                 android:background="@drawable/bg_outline_primary"
                 card_view:backGroundColor="@color/transparent"
                 card_view:textColor="@color/black"
+                fab:initialNumber="1"
                 android:scrollbarStyle="insideInset"
                 android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true"/> -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/quantite_"/>
+                <EditText
+                    android:id="@+id/et_panier_quantite"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </LinearLayout>
 
             <ImageButton
                 android:id="@+id/ib_panier_produit_delete"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:foregroundGravity="center"
                 android:padding="4dp"
-                android:src="@drawable/ic_delete" />
+                android:src="@drawable/ic_delete_black_700_24dp" />
         </RelativeLayout>
 
     </RelativeLayout>

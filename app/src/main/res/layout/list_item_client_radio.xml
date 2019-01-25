@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/view_item_clientradio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:paddingBottom="@dimen/row_padding"
+        android:paddingTop="@dimen/row_padding"
+        android:paddingStart="@dimen/activity_margin"
+        android:paddingEnd="@dimen/activity_margin">
+
+        <ImageView
+            android:id="@+id/iv_clientradio_thumbnail"
+            android:layout_width="@dimen/logo"
+            android:layout_height="@dimen/logo"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/row_padding"
+            android:src="@drawable/default_avatar_client" />
+
+        <TextView
+            android:id="@+id/tv_clientradio_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/iv_clientradio_thumbnail"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/contact_name"
+            android:textSize="@dimen/contact_name"
+            tools:text="Romuald YOUMSI" />
+
+        <TextView
+            android:id="@+id/tv_clientradio_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_clientradio_name"
+            android:layout_toEndOf="@id/iv_clientradio_thumbnail"
+            android:textColor="@color/contact_number"
+            android:textSize="@dimen/contact_number"
+            tools:text="Bonamoussadi, Douala, Cameroun" />
+        <RadioButton
+            android:id="@+id/rbtn_clientradio_radio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+
+</RelativeLayout>

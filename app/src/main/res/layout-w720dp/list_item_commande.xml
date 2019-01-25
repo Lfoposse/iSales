@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="146dp"
+    android:background="@android:color/white"
+    card_view:cardElevation="@dimen/card_album_elevation"
+    card_view:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:id="@+id/card_view_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:paddingEnd="3dp"
+        android:background="?attr/selectableItemBackgroundBorderless">
+
+        <LinearLayout
+            android:id="@+id/view_commande_date"
+            android:layout_width="92dp"
+            android:layout_height="match_parent"
+            android:paddingTop="4dp"
+            android:orientation="vertical"
+            android:gravity="top|center_horizontal">
+            <TextView
+                android:id="@+id/tv_commande_day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dimanche"
+                android:textSize="14sp"
+                android:padding="0dp"
+                android:includeFontPadding="false"
+                android:layout_margin="0dp"
+                tools:textColor="@color/white"/>
+            <TextView
+                android:id="@+id/tv_commande_dd_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="15"
+                android:textSize="30sp"
+                android:includeFontPadding="false"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary" />
+            <TextView
+                android:id="@+id/tv_commande_month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Août 2018"
+                android:textSize="14sp"
+                android:includeFontPadding="false"
+                tools:textColor="@color/white"/>
+        </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/view_content_commande"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:gravity="start"
+                android:layout_centerVertical="true">
+                <TextView
+                    android:id="@+id/tv_commande_ref"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CO1809-0002"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    tools:textColor="@color/white"/>
+                <TextView
+                    android:id="@+id/tv_commande_client"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Romuald YOUMSI"
+                    android:textSize="14sp"
+                    android:textColor="@color/contact_number"
+                    tools:textColor="@color/white"/>
+                <TextView
+                    android:id="@+id/tv_commande_produits_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="6 Produits"
+                    android:textSize="14sp"
+                    android:textColor="@color/contact_number"
+                    tools:textColor="@color/white"/>
+            </LinearLayout>
+            <Button
+                android:id="@+id/btn_commande_produits_relancer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="3dp"
+                android:layout_alignParentBottom="true"
+                android:text="Relancer"
+                android:textColor="@color/penRoyalBlue"
+                android:background="?attr/selectableItemBackgroundBorderless" />
+            <TextView
+                android:id="@+id/tv_commande_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="150 €"
+                android:textSize="21sp"
+                android:textStyle="bold"
+                android:textColor="@color/red_amount"
+                android:layout_centerVertical="true"/>
+            <TextView
+                android:id="@+id/tv_commande_heure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:text="19:23"
+                android:textSize="12sp" />
+            <ImageView
+                android:id="@+id/iv_commande_synchro"
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:layout_marginBottom="3dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/ic_done_black_24dp"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

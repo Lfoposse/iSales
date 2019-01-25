@@ -1,5 +1,6 @@
 package com.rainbow_cl.i_sales.task;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -25,11 +26,14 @@ public class FindProductsPosterTask extends AsyncTask<Void, Void, FindDolPhotoRE
     private String refProducts;
     private int productsPosition;
 
-    public FindProductsPosterTask(FindProductsPosterListener taskComplete, String photoName, String refProducts, int productsPosition) {
+    private Context context;
+
+    public FindProductsPosterTask(Context context, FindProductsPosterListener taskComplete, String photoName, String refProducts, int productsPosition) {
         this.task = taskComplete;
         this.photoName = photoName;
         this.refProducts = refProducts;
         this.productsPosition = productsPosition;
+        this.context = context;
     }
 
     @Override
@@ -38,7 +42,7 @@ public class FindProductsPosterTask extends AsyncTask<Void, Void, FindDolPhotoRE
         String module_part = "product";
 
 //        Requete de connexion de l'internaute sur le serveur
-        Call<DolPhoto> call = ApiUtils.getISalesService().findProductsPoster(module_part, original_file);
+        Call<DolPhoto> call = ApiUtils.getISalesService(context).findProductsPoster(module_part, original_file);
         try {
             Response<DolPhoto> response = call.execute();
             if (response.isSuccessful()) {

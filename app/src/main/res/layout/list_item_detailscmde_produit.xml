@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:background="@drawable/click_selector"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3">
+        <ImageView
+            android:id="@+id/iv_detailscmde_produit"
+            android:layout_width="66dp"
+            android:layout_height="66dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
+            android:background="@drawable/isales_no_image"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <TextView
+            android:id="@+id/tv_detailscmde_produit_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Hamburger"
+            android:textSize="@dimen/produit_item_label_size"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/tv_detailscmde_produit_qtyprice"
+            android:layout_below="@+id/tv_detailscmde_produit_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="40 € x 6"/>
+        <TextView
+            android:id="@+id/tv_detailscmde_produit_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="5dp"
+            tools:text="240 €"
+            android:textSize="@dimen/produit_item_label_size"
+            android:textColor="@color/colorPrimary"/>
+    </RelativeLayout>
+</LinearLayout>

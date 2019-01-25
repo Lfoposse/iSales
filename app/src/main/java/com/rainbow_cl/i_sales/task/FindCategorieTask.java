@@ -1,5 +1,6 @@
 package com.rainbow_cl.i_sales.task;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -30,19 +31,22 @@ public class FindCategorieTask extends AsyncTask<Void, Void, FindCategoriesREST>
     private long page;
     private String type;
 
-    public FindCategorieTask(FindCategorieListener taskComplete, String sortfield, String sortorder, long limit, long page, String type) {
+    private Context context;
+
+    public FindCategorieTask(Context context, FindCategorieListener taskComplete, String sortfield, String sortorder, long limit, long page, String type) {
         this.task = taskComplete;
         this.sortfield = sortfield;
         this.sortorder = sortorder;
         this.limit = limit;
         this.page = page;
         this.type = type;
+        this.context = context;
     }
 
     @Override
     protected FindCategoriesREST doInBackground(Void... voids) {
 //        Requete de connexion de l'internaute sur le serveur
-        Call<ArrayList<Categorie>> call = ApiUtils.getISalesService().findCategories(sortfield, this.sortorder, this.limit, this.page, this.type);
+        Call<ArrayList<Categorie>> call = ApiUtils.getISalesService(context).findCategories(sortfield, this.sortorder, this.limit, this.page, this.type);
         try {
             Response<ArrayList<Categorie>> response = call.execute();
             if (response.isSuccessful()) {

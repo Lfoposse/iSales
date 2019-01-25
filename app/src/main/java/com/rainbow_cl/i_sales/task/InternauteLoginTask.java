@@ -1,5 +1,6 @@
 package com.rainbow_cl.i_sales.task;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -24,15 +25,18 @@ public class InternauteLoginTask extends AsyncTask<Void, Void, LoginREST> {
     private OnInternauteLoginComplete taskComplete;
     private Internaute internaute;
 
-    public InternauteLoginTask(OnInternauteLoginComplete task, Internaute internaute) {
+    private Context context;
+
+    public InternauteLoginTask(Context context, OnInternauteLoginComplete task, Internaute internaute) {
         this.taskComplete = task;
         this.internaute = internaute;
+        this.context = context;
     }
 
     @Override
     protected LoginREST doInBackground(Void... voids) {
 //        Requete de connexion de l'internaute sur le serveur
-        Call<InternauteSuccess> call = ApiUtils.getISalesService().login(this.internaute);
+        Call<InternauteSuccess> call = ApiUtils.getISalesService(context).login(this.internaute);
         try {
             Response<InternauteSuccess> response = call.execute();
             if (response.isSuccessful()) {

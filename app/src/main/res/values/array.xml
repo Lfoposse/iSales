@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="pref_commande_mode_options">
+        <item>@string/pref_cmde_mode_label_online</item>
+        <item>@string/pref_cmde_mode_label_offline</item>
+    </string-array>
+
+    <string-array name="pref_commande_mode_values">
+        <item>@string/pref_cmde_mode_online</item>
+        <item>@string/pref_cmde_mode_offline</item>
+    </string-array>
+</resources>

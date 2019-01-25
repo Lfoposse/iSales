@@ -1,5 +1,6 @@
 package com.rainbow_cl.i_sales.interfaces;
 
+import com.rainbow_cl.i_sales.remote.model.Thirdpartie;
 import com.rainbow_cl.i_sales.remote.rest.FindThirdpartieREST;
 
 /**
@@ -8,4 +9,5 @@ import com.rainbow_cl.i_sales.remote.rest.FindThirdpartieREST;
 
 public interface FindThirdpartieListener {
     void onFindThirdpartieCompleted(FindThirdpartieREST findThirdpartieREST);
+    void onFindThirdpartieByIdCompleted(Thirdpartie thirdpartie);
 }

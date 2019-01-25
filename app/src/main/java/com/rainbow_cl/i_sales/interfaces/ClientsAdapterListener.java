@@ -7,5 +7,6 @@ import com.rainbow_cl.i_sales.model.ClientParcelable;
  */
 
 public interface ClientsAdapterListener {
-    void onClientsSelected(ClientParcelable clientParcelable);
+    void onClientsSelected(ClientParcelable clientParcelable, int position);
+    void onClientsUpdated(ClientParcelable clientParcelable, int position);
 }

@@ -1,42 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
-    android:paddingBottom="@dimen/row_padding"
-    android:paddingLeft="@dimen/activity_margin"
-    android:paddingRight="@dimen/activity_margin"
-    android:paddingTop="@dimen/row_padding">
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/iv_thumbnail_client"
-        android:layout_width="@dimen/logo"
-        android:layout_height="@dimen/logo"
-        android:background="@drawable/logo_isales_small"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="@dimen/row_padding" />
+    <RelativeLayout
+        android:id="@+id/view_item_client_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/red_background">
 
-    <TextView
-        android:id="@+id/tv_name_client"
-        android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/iv_item_client_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/form_paddingH"
+            android:src="@drawable/ic_delete_white_32dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/form_paddingH"
+            android:layout_toLeftOf="@id/iv_item_client_delete"
+            android:text="Supprimer"
+            android:textColor="@color/white"
+            android:textSize="13dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/view_item_client_foreground"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/iv_thumbnail_client"
-        android:fontFamily="sans-serif-medium"
-        android:textColor="@color/contact_name"
-        tools:text="Romuald YOUMSI"
-        android:textSize="@dimen/contact_name" />
+        android:background="@android:color/white"
+        android:paddingBottom="@dimen/row_padding"
+        android:paddingTop="@dimen/row_padding"
+        android:paddingStart="@dimen/activity_margin"
+        android:paddingEnd="@dimen/activity_margin">
 
-    <TextView
-        android:id="@+id/tv_phone_client"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_name_client"
-        android:layout_toEndOf="@id/iv_thumbnail_client"
-        tools:text="Bonamoussadi, Douala, Cameroun"
-        android:textColor="@color/contact_number"
-        android:textSize="@dimen/contact_number" />
+        <RelativeLayout
+            android:id="@+id/view_client_thumbnail"
+            android:layout_width="@dimen/logo"
+            android:layout_height="@dimen/logo"
+            android:layout_marginEnd="@dimen/row_padding">
+            <ImageView
+                android:id="@+id/iv_client_thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:src="@drawable/default_avatar_client" />
+            <View
+                android:id="@+id/view_client_statut"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/circle_green"/>
+        </RelativeLayout>
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/tv_client_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/view_client_thumbnail"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/contact_name"
+            android:textSize="@dimen/contact_name"
+            tools:text="Romuald YOUMSI" />
+
+        <TextView
+            android:id="@+id/tv_client_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_client_name"
+            android:layout_toEndOf="@+id/view_client_thumbnail"
+            android:textColor="@color/contact_number"
+            android:textSize="@dimen/contact_number"
+            tools:text="CU1901-0007 • Bonamoussadi, Douala, Cameroun" />
+    </RelativeLayout>
+
+</FrameLayout>

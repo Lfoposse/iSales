@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.rainbow_cl.i_sales.R;
@@ -24,6 +26,7 @@ import com.rainbow_cl.i_sales.remote.rest.FindDolPhotoREST;
 import com.rainbow_cl.i_sales.utility.ISalesUtility;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -34,18 +37,24 @@ import retrofit2.Response;
  */
 
 public class CommandeAdapter extends RecyclerView.Adapter<CommandeAdapter.CommandeViewHolder> {
-    private static final String TAG = ClientsAdapter.class.getSimpleName();
+    private static final String TAG = CommandeAdapter.class.getSimpleName();
 
     private Context mContext;
     private ArrayList<CommandeParcelable> commandeList;
     private ArrayList<CommandeParcelable> commandeListFiltered;
     private CommandeAdapterListener mListener;
 
+    SimpleDateFormat mDaynumFormat = new SimpleDateFormat("dd");
+    SimpleDateFormat mMonthFormat = new SimpleDateFormat("MMM yyyy");
+    SimpleDateFormat mDayFormat = new SimpleDateFormat("EEEE");
+    SimpleDateFormat mHeureFormat = new SimpleDateFormat("HH:mm");
 //    private ClientsAdapter.FindPosterTask findPosterTask;
 
     //    ViewHolder de l'adapter
     public class CommandeViewHolder extends RecyclerView.ViewHolder {
-        public TextView day, dayNum, month, ref, client, countProduit, total;
+        public TextView day, dayNum, month, hour, ref, client, countProduit, total;
+        public ImageView synchro;
+        public Button relancer;
 
         public CommandeViewHolder(View view) {
             super(view);
@@ -56,6 +65,9 @@ public class CommandeAdapter extends RecyclerView.Adapter<CommandeAdapter.Comman
             client = view.findViewById(R.id.tv_commande_client);
             countProduit = view.findViewById(R.id.tv_commande_produits_count);
             total = view.findViewById(R.id.tv_commande_total);
+            hour = view.findViewById(R.id.tv_commande_heure);
+            relancer = view.findViewById(R.id.btn_commande_produits_relancer);
+            synchro = view.findViewById(R.id.iv_commande_synchro);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -64,6 +76,14 @@ public class CommandeAdapter extends RecyclerView.Adapter<CommandeAdapter.Comman
                     mListener.onCommandeSelected(commandeListFiltered.get(getAdapterPosition()));
                 }
             });
+            relancer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // send selected contact in callback
+                    mListener.onCommandeReStarted(commandeListFiltered.get(getAdapterPosition()));
+                }
+            });
+
         }
     }
 
@@ -85,31 +105,31 @@ public class CommandeAdapter extends RecyclerView.Adapter<CommandeAdapter.Comman
 
     @Override
     public void onBindViewHolder(@NonNull CommandeAdapter.CommandeViewHolder holder, int position) {
-//        holder.ref.setText(commandeListFiltered.get(position).getRef());
+        /* Log.e(TAG, "onBindViewHolder: commandeListFiltered.get(position).getDate()=" + commandeListFiltered.get(position).getDate() +
+                " date_commande=" + commandeListFiltered.get(position).getDate_commande()+
+        " statut="+commandeListFiltered.get(position).getStatut()); */
+
+        holder.ref.setText(commandeListFiltered.get(position).getRef());
 //        holder.client.setText(commandeListFiltered.get(position).getClient().getName());
-//        holder.countProduit.setText(String.format("%d Produit(s)", commandeListFiltered.get(position).getProduits().size()));
+        holder.countProduit.setText(String.format("%d Produit(s) • %s", commandeListFiltered.get(position).getProduits().size(),
+                ISalesUtility.getStatutCmde(commandeListFiltered.get(position).getStatut()).toUpperCase()));
+        holder.countProduit.setTextColor(mContext.getResources().getColor(ISalesUtility.getStatutCmdeColor(commandeListFiltered.get(position).getStatut())));
 
-        /*
-        if (commandeListFiltered.get(position).getPoster().getContent() == null) {
-            Log.e(TAG, "onBindViewHolder: content=null");
-//                    chargement de la photo dans la vue
-//            holder.poster.setImageBitmap(mContext.getResources().getDrawable(R.drawable.logo_isales_small));
-            holder.thumbnail.setBackground(mContext.getResources().getDrawable(R.drawable.logo_isales_small));
+        holder.dayNum.setText(mDaynumFormat.format(commandeListFiltered.get(position).getDate_commande()));
+        holder.day.setText(mDayFormat.format(commandeListFiltered.get(position).getDate_commande()));
+        holder.hour.setText(mHeureFormat.format(commandeListFiltered.get(position).getDate_commande()));
+        holder.month.setText(mMonthFormat.format(commandeListFiltered.get(position).getDate_commande()));
+        holder.total.setText(String.format("%s %s",
+                ISalesUtility.amountFormat2(commandeListFiltered.get(position).getTotal()),
+                mContext.getString(R.string.symbole_euro)));
+        holder.client.setText(commandeListFiltered.get(position).getClient().getName());
 
-            if (findPosterTask == null) {
-//        recuperation de la photo de profil du client
-                findPosterTask = new ClientsAdapter.FindPosterTask(commandeListFiltered.get(position), holder);
-                findPosterTask.execute();
-                findPosterTask = null;
-            }
+        if (commandeListFiltered.get(position).getIs_synchro() == 1) {
+            holder.synchro.setBackgroundResource(R.drawable.ic_cloud_done_black_24dp);
         } else {
-            Log.e(TAG, "onBindViewHolder: content=not null");
-            byte[] decodedString = Base64.decode(commandeListFiltered.get(position).getPoster().getContent(), Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            holder.synchro.setBackgroundResource(R.drawable.ic_done_black_24dp);
+        }
 
-//                    chargement de la photo dans la vue
-            holder.thumbnail.setBackground(new BitmapDrawable(ISalesUtility.getRoundedCornerBitmap(decodedByte)));
-        } */
     }
 
     @Override
@@ -139,70 +159,31 @@ public class CommandeAdapter extends RecyclerView.Adapter<CommandeAdapter.Comman
         notifyDataSetChanged();
     }
 
-    private class FindPosterTask extends AsyncTask<Void, Void, FindDolPhotoREST> {
-        private ClientParcelable clientParcelable;
-        private ClientsAdapter.ClientsViewHolder holder;
+    //    Filtre la liste des clients
+    public void performFilteringPreference(int synchro, boolean effectuer, boolean encours, boolean livrer, boolean nonpayer) {
 
-        public FindPosterTask(ClientParcelable clientParcelable, ClientsAdapter.ClientsViewHolder holder) {
-            this.clientParcelable = clientParcelable;
-            this.holder = holder;
-        }
+        ArrayList<CommandeParcelable> filteredList = new ArrayList<>();
+        for (CommandeParcelable row : commandeList) {
 
-        @Override
-        protected FindDolPhotoREST doInBackground(Void... voids) {
-            String original_file = clientParcelable.getId() + "/logos/" + clientParcelable.getLogo();
-            String module_part = "societe";
-
-//        Requete de connexion de l'internaute sur le serveur
-            Call<DolPhoto> call = ApiUtils.getISalesService().findProductsPoster(module_part, original_file);
-            try {
-                Response<DolPhoto> response = call.execute();
-                if (response.isSuccessful()) {
-                    DolPhoto dolPhoto = response.body();
-//                    Log.e(TAG, "doInBackground: dolPhoto | Filename=" + dolPhoto.getFilename() + " content=" + dolPhoto.getContent());
-                    return new FindDolPhotoREST(dolPhoto);
-                } else {
-                    String error = null;
-                    FindDolPhotoREST findDolPhotoREST = new FindDolPhotoREST();
-                    findDolPhotoREST.setDolPhoto(null);
-                    findDolPhotoREST.setErrorCode(response.code());
-                    try {
-                        error = response.errorBody().string();
-//                    JSONObject jsonObjectError = new JSONObject(error);
-//                    String errorCode = jsonObjectError.getString("errorCode");
-//                    String errorDetails = jsonObjectError.getString("errorDetails");
-                        Log.e(TAG, "doInBackground: onResponse err: " + error + " code=" + response.code());
-                        findDolPhotoREST.setErrorBody(error);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    return findDolPhotoREST;
+            Log.e(TAG, "performFilteringPreference: statut="+row.getStatut()+" synchro="+row.getIs_synchro() );
+            // Si mode de la commande est egale a 1 (online)
+            if (synchro == 1 && row.getIs_synchro() == 1) {
+                if (effectuer && row.getStatut() == 1) {
+                    filteredList.add(row);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(FindDolPhotoREST findDolPhotoREST) {
-//        super.onPostExecute(findDolPhotoREST);
-            if (findDolPhotoREST != null) {
-                if (findDolPhotoREST.getDolPhoto() != null) {
-//                    Log.e(TAG, "onPostExecute: dolPhoto | Filename=" + findDolPhotoREST.getDolPhoto().getFilename() + " content=" + findDolPhotoREST.getDolPhoto().getContent());
-
-//                    conversion de la photo du Base64 en bitmap
-                    byte[] decodedString = Base64.decode(findDolPhotoREST.getDolPhoto().getContent(), Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-                    clientParcelable.setPoster(findDolPhotoREST.getDolPhoto());
-//                    chargement de la photo dans la vue
-                    holder.thumbnail.setBackground(new BitmapDrawable(ISalesUtility.getRoundedCornerBitmap(decodedByte)));
+                if (encours && row.getStatut() == 2) {
+                    filteredList.add(row);
                 }
+                if (livrer && row.getStatut() == 3) {
+                    filteredList.add(row);
+                }
+            } else if (synchro == 0 && row.getIs_synchro() == 0){
+                filteredList.add(row);
             }
         }
+
+        commandeListFiltered = filteredList;
+
+        notifyDataSetChanged();
     }
 }

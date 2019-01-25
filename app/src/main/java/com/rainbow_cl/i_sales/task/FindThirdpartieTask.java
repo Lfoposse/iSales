@@ -1,5 +1,6 @@
 package com.rainbow_cl.i_sales.task;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -28,18 +29,20 @@ public class FindThirdpartieTask extends AsyncTask<Void, Void, FindThirdpartieRE
     private long limit;
     private long page;
     private int mode;
+    private Context context;
 
-    public FindThirdpartieTask(FindThirdpartieListener taskComplete, long limit, long page, int mode) {
+    public FindThirdpartieTask(Context context, FindThirdpartieListener taskComplete, long limit, long page, int mode) {
         this.task = taskComplete;
         this.limit = limit;
         this.page = page;
         this.mode = mode;
+        this.context = context;
     }
 
     @Override
     protected FindThirdpartieREST doInBackground(Void... voids) {
 //        Requete de connexion de l'internaute sur le serveur
-        Call<ArrayList<Thirdpartie>> call = ApiUtils.getISalesService().findThirdpartie(this.limit, this.page, this.mode);
+        Call<ArrayList<Thirdpartie>> call = ApiUtils.getISalesService(context).findThirdpartie(this.limit, this.page, this.mode);
         try {
             Response<ArrayList<Thirdpartie>> response = call.execute();
             if (response.isSuccessful()) {

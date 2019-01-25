@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <PreferenceCategory android:title="Mode Commandes">
+        <SwitchPreference
+            android:key="@string/commande_mode"
+            android:summaryOff="@string/non"
+            android:summaryOn="@string/oui"
+            android:defaultValue="true"
+            android:textSize="10sp"
+            android:title="@string/pref_cmde_mode_label_online" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Statut Commandes">
+        <SwitchPreference
+            android:key="@string/commande_effectuer"
+            android:summaryOff="@string/desactive"
+            android:summaryOn="@string/active"
+            android:defaultValue="true"
+            android:textSize="10sp"
+            android:title="@string/commande_effectuer_title" />
+        <SwitchPreference
+            android:key="@string/commande_encours"
+            android:summaryOff="@string/desactive"
+            android:summaryOn="@string/active"
+            android:defaultValue="true"
+            android:textSize="10sp"
+            android:title="@string/commande_encours_title" />
+        <SwitchPreference
+            android:key="@string/commande_livrer"
+            android:summaryOff="@string/desactive"
+            android:summaryOn="@string/active"
+            android:defaultValue="true"
+            android:textSize="10sp"
+            android:title="@string/commande_livrer_title" />
+        <SwitchPreference
+            android:key="@string/commande_nonpayer"
+            android:summaryOff="@string/desactive"
+            android:summaryOn="@string/active"
+            android:defaultValue="true"
+            android:textSize="10sp"
+            android:title="@string/commande_nonpayer_title" />
+    </PreferenceCategory>
+</PreferenceScreen>
+
+    <!--
+        <?xml version="1.0" encoding="utf-8"?>
+    <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <SwitchPreference
+        android:key="@string/commande_effectuer"
+        android:title="@string/commande_effectuer_title" />
+    <SwitchPreference
+        android:key="@string/commande_encours"
+        android:title="@string/commande_encours_title" />
+    <SwitchPreference
+        android:key="@string/commande_livrer"
+        android:title="@string/commande_livrer_title" />
+    <SwitchPreference
+        android:key="@string/commande_nonpayer"
+        android:title="@string/commande_nonpayer_title" />
+    </PreferenceScreen> -->

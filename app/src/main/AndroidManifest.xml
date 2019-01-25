@@ -8,11 +8,16 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -20,7 +25,6 @@
             android:name=".pages.welcome.WelcomeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,16 +34,70 @@
         </activity>
         <activity
             android:name=".pages.login.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:screenOrientation="portrait" />
+            android:label="@string/title_activity_login" />
         <activity
             android:name=".pages.home.HomeActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Template.Base" />
         <activity
             android:name=".pages.addcustomer.AddCustomerActivity"
-            android:parentActivityName=".pages.home.HomeActivity"
-            android:label="@string/ajout_client">
+            android:label="@string/ajouter_client"
+            android:parentActivityName=".pages.home.HomeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".pages.home.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".pages.addcategorie.AddCategorieActivity"
+            android:label="@string/ajouter_categorie"
+            android:parentActivityName=".pages.home.HomeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".pages.home.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".pages.boncmdeverification.BonCmdeVerificationActivity"
+            android:label="@string/verification"
+            android:parentActivityName=".pages.home.HomeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".pages.home.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".pages.boncmdesignature.BonCmdeSignatureActivity"
+            android:label="@string/signature"
+            android:parentActivityName=".pages.boncmdeverification.BonCmdeVerificationActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".pages.boncmdeverification.BonCmdeVerificationActivity" />
+        </activity>
+        <activity
+            android:name=".pages.detailscmde.DetailsCmdeActivity"
+            android:label="@string/details_commande"
+            android:parentActivityName=".pages.home.HomeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".pages.home.HomeActivity" />
+        </activity>
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
+        <activity
+            android:name=".pages.detailsproduit.DetailsProduitActivity"
+            android:label="@string/details_produit"
+            android:parentActivityName=".pages.home.HomeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".pages.home.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".pages.synchronisation.SynchronisationActivity"
+            android:label="@string/synchronisation"
+            android:parentActivityName=".pages.home.HomeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".pages.home.HomeActivity" />
+        </activity>
+        <activity android:name=".pages.parametres.ParametresActivity"
+            android:label="@string/parametres"
+            android:parentActivityName=".pages.home.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".pages.home.HomeActivity" />

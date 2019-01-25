@@ -1,5 +1,6 @@
 package com.rainbow_cl.i_sales.adapter;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,21 +14,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.rainbow_cl.i_sales.R;
+import com.rainbow_cl.i_sales.database.AppDatabase;
+import com.rainbow_cl.i_sales.database.entry.CommandeEntry;
 import com.rainbow_cl.i_sales.interfaces.ClientsAdapterListener;
 import com.rainbow_cl.i_sales.model.ClientParcelable;
-import com.rainbow_cl.i_sales.model.ProduitParcelable;
 import com.rainbow_cl.i_sales.remote.ApiUtils;
+import com.rainbow_cl.i_sales.remote.ConnectionManager;
 import com.rainbow_cl.i_sales.remote.model.DolPhoto;
 import com.rainbow_cl.i_sales.remote.rest.FindDolPhotoREST;
+import com.rainbow_cl.i_sales.utility.CircleTransform;
 import com.rainbow_cl.i_sales.utility.ISalesUtility;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -43,22 +53,31 @@ public class ClientsAdapter extends RecyclerView.Adapter<ClientsAdapter.ClientsV
     private ClientsAdapterListener mListener;
 
     private FindPosterTask findPosterTask;
-//    ViewHolder de l'adapter
+
+    //    database instance
+    private AppDatabase mDb;
+
+    //    ViewHolder de l'adapter
     public class ClientsViewHolder extends RecyclerView.ViewHolder {
         public TextView name, address;
         public ImageView thumbnail;
+        public RelativeLayout viewBackground, viewForeground;
+        private View statut;
 
         public ClientsViewHolder(View view) {
             super(view);
-            name = view.findViewById(R.id.tv_name_client);
-            address = view.findViewById(R.id.tv_phone_client);
-            thumbnail = view.findViewById(R.id.iv_thumbnail_client);
+            name = view.findViewById(R.id.tv_client_name);
+            address = view.findViewById(R.id.tv_client_address);
+            thumbnail = view.findViewById(R.id.iv_client_thumbnail);
+            viewBackground = view.findViewById(R.id.view_item_client_background);
+            viewForeground = view.findViewById(R.id.view_item_client_foreground);
+            statut = view.findViewById(R.id.view_client_statut);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     // send selected contact in callback
-                    mListener.onClientsSelected(clientsListFiltered.get(getAdapterPosition()));
+                    mListener.onClientsSelected(clientsListFiltered.get(getAdapterPosition()), getAdapterPosition());
                 }
             });
         }
@@ -70,6 +89,7 @@ public class ClientsAdapter extends RecyclerView.Adapter<ClientsAdapter.ClientsV
         this.clientsList = clientParcelables;
         this.mListener = listener;
         this.clientsListFiltered = clientParcelables;
+        mDb = AppDatabase.getInstance(context.getApplicationContext());
     }
 
     @Override
@@ -81,30 +101,81 @@ public class ClientsAdapter extends RecyclerView.Adapter<ClientsAdapter.ClientsV
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ClientsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ClientsViewHolder holder, final int position) {
         holder.name.setText(clientsListFiltered.get(position).getName());
-        holder.address.setText(clientsListFiltered.get(position).getAddress());
+        holder.address.setText(String.format("%s • %s, %s", clientsListFiltered.get(position).getCode_client(), clientsListFiltered.get(position).getAddress(), clientsListFiltered.get(position).getTown()));
 
-        if (clientsListFiltered.get(position).getPoster().getContent() == null) {
-            Log.e(TAG, "onBindViewHolder: content=null");
-//                    chargement de la photo dans la vue
-//            holder.poster.setImageBitmap(mContext.getResources().getDrawable(R.drawable.logo_isales_small));
-            holder.thumbnail.setBackground(mContext.getResources().getDrawable(R.drawable.logo_isales_small));
+//                    chargement de la photo par defaut dans la vue
+        holder.thumbnail.setBackground(mContext.getResources().getDrawable(R.drawable.default_avatar_client));
 
-            if (findPosterTask == null) {
-//        recuperation de la photo de profil du client
-                findPosterTask = new FindPosterTask(clientsListFiltered.get(position), holder);
-                findPosterTask.execute();
-                findPosterTask = null;
+//                    Modification du path de la photo du produit
+        List<CommandeEntry> cmdeStatut = mDb.commandeDao().getCmdeByClientOnStaut(clientsListFiltered.get(position).getId(), 1);
+        Log.e(TAG, "onBindViewHolder: cmdeStatutCount="+cmdeStatut.size());
+        if (cmdeStatut.size() > 0) {
+            holder.statut.setBackground(mContext.getResources().getDrawable(R.drawable.circle_red));
+        } else {
+            holder.statut.setBackground(mContext.getResources().getDrawable(R.drawable.circle_green));
+        }
+
+//            si le fichier existe dans la memoire locale
+        if (clientsListFiltered.get(position).getPoster().getContent() != null) {
+//            Log.e(TAG, "onBindViewHolder: clientImg=" + clientsListFiltered.get(position).getPoster().getContent());
+
+            File imgFile = new File(clientsListFiltered.get(position).getPoster().getContent());
+            if (imgFile.exists()) {
+                Picasso.with(mContext)
+                        .load(imgFile)
+                        .transform(new CircleTransform())
+                        .into(holder.thumbnail);
+                return;
+
+            } else {
+//                    chargement de la photo par defaut dans la vue
+                Picasso.with(mContext)
+                        .load(R.drawable.default_avatar_client)
+                        .transform(new CircleTransform())
+                        .into(holder.thumbnail);
             }
         } else {
-            Log.e(TAG, "onBindViewHolder: content=not null");
-            byte[] decodedString = Base64.decode(clientsListFiltered.get(position).getPoster().getContent(), Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-//                    chargement de la photo dans la vue
-            holder.thumbnail.setBackground(new BitmapDrawable(ISalesUtility.getRoundedCornerBitmap(decodedByte)));
+//                    chargement de la photo par defaut dans la vue
+            Picasso.with(mContext)
+                    .load(R.drawable.default_avatar_client)
+                    .transform(new CircleTransform())
+                    .into(holder.thumbnail);
         }
+
+        String original_file = clientsListFiltered.get(position).getLogo();
+        String module_part = "societe";
+        Picasso.with(mContext)
+                .load(ApiUtils.getDownloadImg(mContext, module_part, original_file))
+                .transform(new CircleTransform())
+                .placeholder(R.drawable.default_avatar_client)
+                .error(R.drawable.default_avatar_client)
+                .into(holder.thumbnail, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+//                        Log.e(TAG, "onSuccess: Picasso loadin img");
+                        if (mContext != null) {
+                            Bitmap imageBitmap = ((BitmapDrawable) holder.thumbnail.getDrawable()).getBitmap();
+
+                            String filename = String.format("%s_%s", clientsListFiltered.get(position).getId(), clientsListFiltered.get(position).getName().replace(" ", "_"))
+                                    .replace(" ", "_");
+                            String pathFile = ISalesUtility.saveClientImage(mContext, imageBitmap, filename);
+
+                            if (pathFile != null)
+                                clientsListFiltered.get(position).getPoster().setContent(pathFile);
+
+//                    Modification du path de la photo du produit
+                            mDb.clientDao().updateLogo_content(pathFile, clientsListFiltered.get(position).getId());
+                        }
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
+
     }
 
     @Override
@@ -112,7 +183,7 @@ public class ClientsAdapter extends RecyclerView.Adapter<ClientsAdapter.ClientsV
         return clientsListFiltered.size();
     }
 
-//    Filtre la liste des clients
+    //    Filtre la liste des clients
     public void performFiltering(String searchString) {
         if (searchString.isEmpty()) {
             clientsListFiltered = clientsList;
@@ -134,22 +205,88 @@ public class ClientsAdapter extends RecyclerView.Adapter<ClientsAdapter.ClientsV
         notifyDataSetChanged();
     }
 
+    public void removeItem(final int position) {
+
+//        Si le téléphone n'est pas connecté
+        if (!ConnectionManager.isPhoneConnected(this.mContext)) {
+            notifyItemChanged(position);
+            Toast.makeText(this.mContext, this.mContext.getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
+            return;
+        } else {
+            final ProgressDialog progressDialog = new ProgressDialog(mContext);
+//        progressDialog.setTitle("Transfert d'Argent");
+            progressDialog.setMessage(ISalesUtility.strCapitalize(mContext.getString(R.string.suppression_client_encours)));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setProgressDrawable(mContext.getResources().getDrawable(R.drawable.circular_progress_view));
+            progressDialog.show();
+
+//        Requete de connexion de l'internaute sur le serveur
+            Call<Long> call = ApiUtils.getISalesService(mContext).deleteThirdpartie(clientsListFiltered.get(position).getId());
+            call.enqueue(new Callback<Long>() {
+                @Override
+                public void onResponse(Call<Long> call, Response<Long> response) {
+                    if (response.isSuccessful()) {
+                        Long responseBody = response.body();
+
+                        clientsListFiltered.remove(position);
+                        // notify the item removed by position
+                        // to perform recycler view delete animations
+                        // NOTE: don't call notifyDataSetChanged()
+                        notifyItemRemoved(position);
+                        progressDialog.dismiss();
+                        return;
+                    } else {
+                        String error = null;
+                        try {
+                            error = response.errorBody().string();
+                            Log.e(TAG, "doInBackground: onResponse err: " + error + " code=" + response.code());
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        notifyItemChanged(position);
+                        progressDialog.dismiss();
+
+                        Toast.makeText(mContext, mContext.getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Long> call, Throwable t) {
+                    notifyItemChanged(position);
+                    progressDialog.dismiss();
+
+                    Toast.makeText(mContext, mContext.getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+    }
+
+    //    recuperation de la photo de profil du client
     private class FindPosterTask extends AsyncTask<Void, Void, FindDolPhotoREST> {
         private ClientParcelable clientParcelable;
         private ClientsAdapter.ClientsViewHolder holder;
 
-        public FindPosterTask(ClientParcelable clientParcelable, ClientsAdapter.ClientsViewHolder holder) {
+        private Context context;
+
+        public FindPosterTask(Context context, ClientParcelable clientParcelable, ClientsAdapter.ClientsViewHolder holder) {
             this.clientParcelable = clientParcelable;
             this.holder = holder;
+            this.context = context;
         }
 
         @Override
         protected FindDolPhotoREST doInBackground(Void... voids) {
-            String original_file = clientParcelable.getId() + "/logos/" + clientParcelable.getLogo();
+//            String original_file = clientParcelable.getId() + "/logos/" + clientParcelable.getLogo();
+            String original_file = clientParcelable.getLogo();
             String module_part = "societe";
+//            Log.e(TAG, "doInBackground: client logo=" + clientParcelable.getLogo() + " id=" + clientParcelable.getId());
 
 //        Requete de connexion de l'internaute sur le serveur
-            Call<DolPhoto> call = ApiUtils.getISalesService().findProductsPoster(module_part, original_file);
+            Call<DolPhoto> call = ApiUtils.getISalesService(this.context).findProductsPoster(module_part, original_file);
             try {
                 Response<DolPhoto> response = call.execute();
                 if (response.isSuccessful()) {
@@ -166,7 +303,7 @@ public class ClientsAdapter extends RecyclerView.Adapter<ClientsAdapter.ClientsV
 //                    JSONObject jsonObjectError = new JSONObject(error);
 //                    String errorCode = jsonObjectError.getString("errorCode");
 //                    String errorDetails = jsonObjectError.getString("errorDetails");
-                        Log.e(TAG, "doInBackground: onResponse err: " + error + " code=" + response.code());
+//                        Log.e(TAG, "doInBackground: onResponse err: " + error + " code=" + response.code());
                         findDolPhotoREST.setErrorBody(error);
 
                     } catch (IOException e) {
@@ -185,19 +322,28 @@ public class ClientsAdapter extends RecyclerView.Adapter<ClientsAdapter.ClientsV
         @Override
         protected void onPostExecute(FindDolPhotoREST findDolPhotoREST) {
 //        super.onPostExecute(findDolPhotoREST);
-            if (findDolPhotoREST != null) {
-                if (findDolPhotoREST.getDolPhoto() != null) {
-//                    Log.e(TAG, "onPostExecute: dolPhoto | Filename=" + findDolPhotoREST.getDolPhoto().getFilename() + " content=" + findDolPhotoREST.getDolPhoto().getContent());
+            if (findDolPhotoREST != null && findDolPhotoREST.getDolPhoto() != null) {
 
 //                    conversion de la photo du Base64 en bitmap
-                    byte[] decodedString = Base64.decode(findDolPhotoREST.getDolPhoto().getContent(), Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                byte[] decodedString = Base64.decode(findDolPhotoREST.getDolPhoto().getContent(), Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//                Log.e(TAG, "onPostExecute: updateString id=" + clientParcelable.getId() +
+//                        " name=" + clientParcelable.getName() +
+//                        " poster=" + findDolPhotoREST.getDolPhoto().getContent());
 
-                    clientParcelable.setPoster(findDolPhotoREST.getDolPhoto());
+                String filename = String.format("%s_%s", clientParcelable.getId(), clientParcelable.getName().replace(" ", "_"))
+                        .replace(" ", "_");
+                String pathFile = ISalesUtility.saveClientImage(context, decodedByte, filename);
+
+                if (pathFile != null) clientParcelable.getPoster().setContent(pathFile);
+
+//                    Modification du path de la photo du produit
+                mDb.clientDao().updateLogo_content(pathFile, clientParcelable.getId());
+
 //                    chargement de la photo dans la vue
-                    holder.thumbnail.setBackground(new BitmapDrawable(ISalesUtility.getRoundedCornerBitmap(decodedByte)));
-                }
+                holder.thumbnail.setBackground(new BitmapDrawable(ISalesUtility.getRoundedCornerBitmap(decodedByte)));
             }
         }
     }
+
 }
