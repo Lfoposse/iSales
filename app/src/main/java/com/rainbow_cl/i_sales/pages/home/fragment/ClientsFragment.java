@@ -68,7 +68,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
     private EditText searchET;
     private FloatingActionMenu mMenuFAM;
     private FloatingActionButton mItemClientFAB, mItemRafraichirFAB;
-    private ImageButton mShowCategoriesDialog;
+    private ImageButton mShowCategoriesDialog, searchIB, searchCancelIB;
     private TextView mCategoryTV;
 
     private ArrayList<ClientParcelable> clientParcelableList;
@@ -109,8 +109,13 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
     }
 
     //    Recupere la lsite des clients dans la bd locale
-    private void loadClients() {
-        List<ClientEntry> clientEntries = mDb.clientDao().getClientsLimit(mLastClientId, mLimit);
+    private void loadClients(List<ClientEntry> clientEntryList) {
+        List<ClientEntry> clientEntries;
+        if (clientEntryList == null) {
+            clientEntries = mDb.clientDao().getClientsLimit(mLastClientId, mLimit);
+        } else {
+            clientEntries = clientEntryList;
+        }
 
         if (clientEntries.size() <= 0) {
 //            Toast.makeText(getContext(), getString(R.string.aucun_produit_trouve), Toast.LENGTH_LONG).show();
@@ -136,7 +141,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
             clientParcelable.setLastname(clientEntry.getLastname());
             clientParcelable.setAddress(clientEntry.getAddress());
             clientParcelable.setTown(clientEntry.getTown());
-            clientParcelable.setLogo(clientEntry.getName_alias());
+            clientParcelable.setLogo(clientEntry.getLogo());
             clientParcelable.setDate_creation(clientEntry.getDate_creation());
             clientParcelable.setDate_modification(clientEntry.getDate_modification());
             clientParcelable.setId(clientEntry.getId());
@@ -158,6 +163,10 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
         Log.e(TAG, "onFindThirdpartieCompleted: mLastClientId=" + mLastClientId);
 //        incrementation du nombre de page
         mLastClientId = clientEntries.get(clientEntries.size() - 1).getId();
+
+        if (clientParcelableList.size() > 0 && mLastClientId <= 0) {
+            clientParcelableList.clear();
+        }
 
         clientParcelableList.addAll(clientParcelables);
 
@@ -295,22 +304,25 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
             mPageClient = 0;
             Toast.makeText(getContext(), getString(R.string.comptes_clients_synchronises), Toast.LENGTH_LONG).show();
 
-            loadClients();
+            mLastClientId = 0;
+            loadClients(null);
 
             return;
         }
 
-        Log.e(TAG, "onFindThirdpartieCompleted: getThirdparties size=" + findThirdpartieREST.getThirdparties().size());
+//        Log.e(TAG, "onFindThirdpartieCompleted: getThirdparties size=" + findThirdpartieREST.getThirdparties().size());
         for (Thirdpartie thirdpartie : findThirdpartieREST.getThirdparties()) {
             ClientEntry clientEntry = new ClientEntry();
 
+            String logo = thirdpartie.getName_alias().equals("") ? thirdpartie.getLogo() : thirdpartie.getName_alias();
+            Log.e(TAG, "onFindThirdpartieCompleted: logo="+logo+" getName_alias="+thirdpartie.getName_alias()+" getLogo="+thirdpartie.getLogo());
             clientEntry.setName(thirdpartie.getName());
             clientEntry.setName_alias(thirdpartie.getName_alias());
             clientEntry.setFirstname(thirdpartie.getFirstname());
             clientEntry.setLastname(thirdpartie.getLastname());
             clientEntry.setAddress(thirdpartie.getAddress());
             clientEntry.setTown(thirdpartie.getTown());
-            clientEntry.setLogo(thirdpartie.getName_alias());
+            clientEntry.setLogo(logo);
             clientEntry.setDate_creation(thirdpartie.getDate_creation());
             clientEntry.setDate_modification(thirdpartie.getDate_modification());
             clientEntry.setId(Long.parseLong(thirdpartie.getId()));
@@ -323,17 +335,17 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
             clientEntry.setIs_synchro(1);
 
             if (mDb.clientDao().getClientById(clientEntry.getId()) == null) {
-                Log.e(TAG, "onFindThirdpartieCompleted: insert clientEntry");
+//                Log.e(TAG, "onFindThirdpartieCompleted: insert clientEntry");
 //            insertion du client dans la BD
                 mDb.clientDao().insertClient(clientEntry);
             } else {
-                Log.e(TAG, "onFindThirdpartieCompleted: update clientEntry");
+//                Log.e(TAG, "onFindThirdpartieCompleted: update clientEntry");
 //            mise a jour du client dans la BD
                 mDb.clientDao().updateClient(clientEntry);
             }
         }
 
-        Log.e(TAG, "onFindThirdpartieCompleted: mPageClient=" + mPageClient);
+//        Log.e(TAG, "onFindThirdpartieCompleted: mPageClient=" + mPageClient);
 //        incrementation du nombre de page
         mPageClient++;
 
@@ -381,6 +393,8 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
         mRecyclerView = rootView.findViewById(R.id.recycler_view);
         mProgressIV = rootView.findViewById(R.id.iv_progress);
         searchET = rootView.findViewById(R.id.et_search_client);
+        searchIB = rootView.findViewById(R.id.imgbtn_search_client);
+        searchCancelIB = rootView.findViewById(R.id.imgbtn_search_client_cancel);
 //        mAddClientFB = rootView.findViewById(R.id.floatingbtn_add_client);
 
         mMenuFAM = (FloatingActionMenu) rootView.findViewById(R.id.fab_menu_client);
@@ -406,21 +420,18 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                if (dy > 0 && mMenuFAM.getVisibility() == View.VISIBLE) {
-                    mMenuFAM.hideMenu(true);
+                if (dy > 0) {
 
                     int lastPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
 
                     int itemsCount = recyclerView.getAdapter().getItemCount();
 
-                    Log.e(TAG, "onScroll: lastPosition=" + lastPosition + " itemsCount=" + itemsCount);
+                    Log.e(TAG, "onScroll: lastPosition=" + lastPosition + " itemsCount=" + itemsCount + " mLastClientId=" + mLastClientId);
                     if (lastPosition > 0 && (lastPosition + 2) >= itemsCount) {
 //        affichage de l'image d'attente
                         showProgress(true);
-                        loadClients();
+                        loadClients(null);
                     }
-                } else if (dy < 0 && mMenuFAM.getVisibility() != View.VISIBLE) {
-                    mMenuFAM.showMenu(true);
                 }
             }
         });
@@ -441,6 +452,9 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String searchString = charSequence.toString();
+
+                List<ClientEntry> clientEntries = mDb.clientDao().getClientsLikeLimit(mLimit, searchString);
+                loadClients(clientEntries);
 //                Log.e(TAG, "onTextChanged: searchString="+searchString);
                 mAdapter.performFiltering(searchString);
 
@@ -449,6 +463,20 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
             @Override
             public void afterTextChanged(Editable editable) {
 
+//                Log.e(TAG, "afterTextChanged: string="+editable.toString() );
+                if (editable.toString().equals("")) {
+                    searchCancelIB.setVisibility(View.GONE);
+                    searchIB.setVisibility(View.VISIBLE);
+                } else {
+                    searchCancelIB.setVisibility(View.VISIBLE);
+                    searchIB.setVisibility(View.GONE);
+                }
+            }
+        });
+        searchCancelIB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchET.setText("");
             }
         });
 
@@ -491,7 +519,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 
 //        recuperation des clients sur le serveur
                 mLastClientId = 0;
-                loadClients();
+                loadClients(null);
                 mMenuFAM.close(true);
             }
         });
@@ -502,7 +530,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 //
 //        }
 //        recuperation des clients sur le serveur
-        loadClients();
+        loadClients(null);
 
         return rootView;
     }
@@ -522,7 +550,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
         Log.e(TAG, "onResume: ");
 
         if (clientParcelableList.size() <= 0) {
-            loadClients();
+            loadClients(null);
         } else {
             mAdapter.notifyDataSetChanged();
         }
@@ -552,6 +580,8 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 
 //                affichage du loader dialog
                 showProgressDialog(true, null, getString(R.string.synchro_comptes_cient_encours));
+
+                mDb.clientDao().deleteAllClient();
 
 //        Suppression des images des clients en local
                 ISalesUtility.deleteClientsImgFolder();

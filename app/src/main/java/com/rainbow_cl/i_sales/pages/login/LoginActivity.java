@@ -134,16 +134,14 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
         setContentView(R.layout.activity_login);
         setupActionBar();
 
-        showLog();
+//        Creation fichier de log pour les erreurs
+//        showLog();
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        Log.e(TAG, "onCreate:PhoneMetrics density=" + metrics.density + " densityDpi=" + metrics.densityDpi);
+//        Log.e(TAG, "onCreate:PhoneMetrics density=" + metrics.density + " densityDpi=" + metrics.densityDpi);
 
         mDb = AppDatabase.getInstance(getApplicationContext());
-
-//        Ajout les serveurs dans la BD
-        initServerUrl();
 
 // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(LoginActivity.this,
@@ -180,8 +178,13 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
 //        aller a la page d'accueil
                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                 startActivity(intent);
+
+                return;
             }
         }
+
+//        Ajout les serveurs dans la BD
+        initServerUrl();
 
         mServerIV = (ImageView) findViewById(R.id.iv_login_server);
         mServerET = (EditText) findViewById(R.id.et_login_server);
@@ -272,6 +275,8 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
 //        aller a la page d'accueil
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                     startActivity(intent);
+
+                    return;
                 }
 
                 return;
@@ -371,7 +376,7 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
     private void showServersSelect() {
         final int[] exportChoice = {-1};
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-        builder.setTitle("Serveurs précédemment utilisés");
+        builder.setTitle("Veuillez sélectioner une Société");
         builder.setSingleChoiceItems(getServersSequence(), -1, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
                 exportChoice[0] = item;
@@ -386,7 +391,7 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
                             mServerChoose = serverEntries.get(exportChoice[0]);
 
                             mServerET.setText(mServerChoose.getTitle());
-//                            mServerET.setSelection(mServerET.getText().toString().length());
+//                            mServerET.setSelection(mServerET.getText().toString().length());  696492069
                         }
                     }
                 });
@@ -422,9 +427,12 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
 //        desactivation de tous les serveurs en local
         List<ServerEntry> serverEntries = new ArrayList<>();
 //        serverEntries.add(new ServerEntry("Serveur de test Dolibarr Bananafw", "http://dolibarr.bananafw.com/api/index.php", false));
-        serverEntries.add(new ServerEntry("France Food Compagny", "http://food.apps-dev.fr:80/api/index.php", false));
-        serverEntries.add(new ServerEntry("Test France Food Compagny", "http://82.253.71.109/prod/test_francefood/api/index.php", false));
-        serverEntries.add(new ServerEntry("Test Unknow Compagny", "http://82.253.71.109/prod/soif_express/api/index.php", false));
+//        serverEntries.add(new ServerEntry("France Food Compagny", "http://food.apps-dev.fr:80/api/index.php", false));
+//        serverEntries.add(new ServerEntry("SOif Express", "http://82.253.71.109/prod/soif_express/api/index.php", false));
+        serverEntries.add(new ServerEntry("http://82.253.71.109/prod/francefood_v8/api/index.php", "France Food company FFC", "2 rue Charles De Gaulle ZI La Mariniere,", "91070", "Bondoufle", "91 - Essonne", "France", "EURO", "0758542161", "contact@francefoodcompany.fr", "", "", "France Food company FFC", false));
+        serverEntries.add(new ServerEntry("http://82.253.71.109/prod/soif_express/api/index.php", "SOIF EXPRESS", "7 AV GABRIEL PERI", "91600", "SAVIGNY SUR ORGE", "91 - Essonne", "France", "EURO", "0758088361", "", "www.test.com", "", "SOIF EXPRESS", false));
+
+        mDb.serverDao().deleteAllServers();
 
         for (ServerEntry serverItem : serverEntries ) {
             if (mDb.serverDao().getServerByHostname(serverItem.getHostname()) == null) {

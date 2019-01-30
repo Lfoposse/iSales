@@ -110,7 +110,7 @@ public class ClientsAdapter extends RecyclerView.Adapter<ClientsAdapter.ClientsV
 
 //                    Modification du path de la photo du produit
         List<CommandeEntry> cmdeStatut = mDb.commandeDao().getCmdeByClientOnStaut(clientsListFiltered.get(position).getId(), 1);
-        Log.e(TAG, "onBindViewHolder: cmdeStatutCount="+cmdeStatut.size());
+//        Log.e(TAG, "onBindViewHolder: cmdeStatutCount="+cmdeStatut.size()+" logo="+clientsListFiltered.get(position).getLogo());
         if (cmdeStatut.size() > 0) {
             holder.statut.setBackground(mContext.getResources().getDrawable(R.drawable.circle_red));
         } else {
@@ -230,11 +230,14 @@ public class ClientsAdapter extends RecyclerView.Adapter<ClientsAdapter.ClientsV
                     if (response.isSuccessful()) {
                         Long responseBody = response.body();
 
+                        mDb.clientDao().deleteClientById(clientsListFiltered.get(position).getId());
+
                         clientsListFiltered.remove(position);
                         // notify the item removed by position
                         // to perform recycler view delete animations
                         // NOTE: don't call notifyDataSetChanged()
                         notifyItemRemoved(position);
+
                         progressDialog.dismiss();
                         return;
                     } else {

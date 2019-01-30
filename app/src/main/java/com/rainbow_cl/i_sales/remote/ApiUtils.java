@@ -49,7 +49,10 @@ public final class ApiUtils {
 
         ServerEntry serverEntry = mDb.serverDao().getActiveServer(true);
 
-        Log.e(TAG, "getISalesService: serverEntry="+serverEntry.getHostname());
+        if (serverEntry == null) {
+            return RetrofitClient.getClient(context, "/").create(ISalesServicesRemote.class);
+        }
+//        Log.e(TAG, "getISalesService: serverEntry="+serverEntry.getHostname());
 //        return RetrofitClient.getClient(context, BASE_URL).create(ISalesServicesRemote.class);
         return RetrofitClient.getClient(context, serverEntry.getHostname()+"/").create(ISalesServicesRemote.class);
     }
@@ -59,7 +62,9 @@ public final class ApiUtils {
         AppDatabase mDb = AppDatabase.getInstance(context.getApplicationContext());
         TokenEntry tokenEntry = mDb.tokenDao().getAllToken().get(0);
 //        http://localhost:8888/Images.iSales/download.php?module_part=produit&original_file=cheese_cake/cheese_cake-Cheese_cake.jpg&DOLAPIKEY=9c524dc13288320153128086e6e69144fa743be3
-        return String.format("%s?module_part=%s&original_file=%s&DOLAPIKEY=%s", BASE_URL_IMG, module_part, original_file, tokenEntry.getToken());
+        String url = String.format("%s?module_part=%s&original_file=%s&DOLAPIKEY=%s", BASE_URL_IMG, module_part, original_file, tokenEntry.getToken());
+//        Log.e(TAG, "getDownloadImg: url="+url);
+        return url;
     }
 
 }

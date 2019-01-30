@@ -90,7 +90,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
     private RecyclerView mRecyclerViewProduits;
     private ImageView mProgressProduitsTV;
     private TextView mErrorTVProduits, mCategoryTV;
-    private ImageButton mShowCategoriesDialog;
+    private ImageButton mShowCategoriesDialog, mSearchIB, mSearchCancelIB;
     private ImageView mCategoryIV;
 
     private FloatingActionMenu mMenuFAM;
@@ -234,9 +234,8 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
         }
     }
 
-    private void loadProduits(long categorieId) {
+    private void loadProduits(long categorieId, String searchString) {
         List<ProduitEntry> produitEntries;
-        List<ProduitEntry> produits = mDb.produitDao().getProduits();
 //        Getting the sharedPreference value
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 //        String mode = sharedPreferences.getString(getContext().getString(R.string.commande_mode), "online");
@@ -245,15 +244,31 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 
         if (categorieId > 0) {
             if (produitazero){
-                produitEntries = mDb.produitDao().getProduitsLimitByCategorieAZero(mLastProduitId, categorieId, mLimit);
+                if (searchString == null) {
+                    produitEntries = mDb.produitDao().getProduitsLimitByCategorieAZero(mLastProduitId, categorieId, mLimit);
+                } else {
+                    produitEntries = mDb.produitDao().getProduitsLimitByCategorieStrAZero(mLastProduitId, categorieId, mLimit, searchString);
+                }
             } else {
-                produitEntries = mDb.produitDao().getProduitsLimitByCategorie(mLastProduitId, categorieId, mLimit);
+                if (searchString == null) {
+                            produitEntries = mDb.produitDao().getProduitsLimitByCategorie(mLastProduitId, categorieId, mLimit);
+                } else {
+                    produitEntries = mDb.produitDao().getProduitsLimitByCategorieStr(mLastProduitId, categorieId, mLimit, searchString);
+                }
             }
         } else {
             if (produitazero){
-                produitEntries = mDb.produitDao().getProduitsLimitAZero(mLastProduitId, mLimit);
+                if (searchString == null) {
+                    produitEntries = mDb.produitDao().getProduitsLimitAZero(mLastProduitId, mLimit);
+                } else {
+                        produitEntries = mDb.produitDao().getProduitsLimitByStrAZero(mLastProduitId, mLimit, searchString);
+                }
             } else {
-                produitEntries = mDb.produitDao().getProduitsLimit(mLastProduitId, mLimit);
+                if (searchString == null) {
+                    produitEntries = mDb.produitDao().getProduitsLimit(mLastProduitId, mLimit);
+                } else {
+                    produitEntries = mDb.produitDao().getProduitsLimitByStr(mLastProduitId, mLimit, searchString);
+                }
             }
         }
 
@@ -299,6 +314,9 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 //        incrementation du nombre de page
         mLastProduitId = produitEntries.get(produitEntries.size() - 1).getId();
 
+        if (produitsParcelableList.size() > 0 && mLastProduitId <= 0) {
+            produitsParcelableList.clear();
+        }
         this.produitsParcelableList.addAll(produitParcelables);
 
         this.mProduitsAdapter.notifyDataSetChanged();
@@ -454,7 +472,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
                 showProgressDialog(false, null, null);
 
                 Toast.makeText(getContext(), getString(R.string.liste_produits_synchronises), Toast.LENGTH_LONG).show();
-                loadProduits(-1);
+                loadProduits(-1, null);
 
                 return;
             }
@@ -469,7 +487,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
                 showProgressDialog(false, null, null);
 
                 Toast.makeText(getContext(), getString(R.string.liste_produits_synchronises), Toast.LENGTH_LONG).show();
-                loadProduits(-1);
+                loadProduits(-1, null);
 
                 return;
             }
@@ -484,6 +502,8 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 
 //        Si la recupération echoue, on renvoi un message d'erreur
         if (findCategoriesREST == null) {
+            //        Fermeture du loader
+            showProgressDialog(false, null, null);
             Toast.makeText(getContext(), getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
             return;
         }
@@ -545,6 +565,8 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
         mRecyclerViewProduits = (RecyclerView) rootView.findViewById(R.id.gridview_produits);
         mProgressProduitsTV = (ImageView) rootView.findViewById(R.id.iv_progress_produits);
         mSearchET = (EditText) rootView.findViewById(R.id.et_search_produits);
+        mSearchIB = (ImageButton) rootView.findViewById(R.id.imgbtn_search_produit);
+        mSearchCancelIB = (ImageButton) rootView.findViewById(R.id.imgbtn_search_produit_cancel);
         mErrorTVProduits = (TextView) rootView.findViewById(R.id.tv_error_produits);
         mShowCategoriesDialog = (ImageButton) rootView.findViewById(R.id.ib_categories_show);
         mCategoryIV = (ImageView) rootView.findViewById(R.id.iv_selected_categorie);
@@ -567,7 +589,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (dy > 0) {
-                    // Scrolling up  690393364
+                    // Scrolling up
 //                    Log.e(TAG, "onScrolled: Scrolling up");
                     int lastPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
 
@@ -579,11 +601,8 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
                         if (mCategorieParcelable != null)
                             idCategorie = Long.parseLong(mCategorieParcelable.getId());
 //                        executeFindProducts(idCategorie);
-                        loadProduits(idCategorie);
+                        loadProduits(idCategorie, null);
                     }
-                } else {
-                    // Scrolling down
-//                    Log.e(TAG, "onScrolled: Scrolling down");
                 }
             }
 
@@ -614,6 +633,8 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String searchString = charSequence.toString();
+
+                loadProduits(-1, searchString);
 //                Log.e(TAG, "onTextChanged: searchString="+searchString);
                 mProduitsAdapter.performFiltering(searchString);
 
@@ -622,6 +643,20 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             @Override
             public void afterTextChanged(Editable editable) {
 
+                Log.e(TAG, "afterTextChanged: string="+editable.toString() );
+                if (editable.toString().equals("")) {
+                    mSearchCancelIB.setVisibility(View.GONE);
+                    mSearchIB.setVisibility(View.VISIBLE);
+                } else {
+                    mSearchCancelIB.setVisibility(View.VISIBLE);
+                    mSearchIB.setVisibility(View.GONE);
+                }
+            }
+        });
+        mSearchCancelIB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSearchET.setText("");
             }
         });
         mShowCategoriesDialog.setOnClickListener(new View.OnClickListener() {
@@ -652,14 +687,14 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 
 //        recuperation des clients sur le serveur
 //                executeFindProducts(Long.parseLong(mCategorieParcelable.getId()));
-                loadProduits(Long.parseLong(mCategorieParcelable.getId()));
+                loadProduits(Long.parseLong(mCategorieParcelable.getId()), null);
                 mMenuFAM.close(true);
             }
         });
 
 //        Recupération de la liste des produits sur le serveur
 //        executeFindProducts(0);
-        loadProduits(0);
+        loadProduits(0, null);
 
         return rootView;
     }
@@ -694,6 +729,8 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 //                affichage du loader dialog
                 showProgressDialog(true, null, getString(R.string.synchro_produits_encours));
 
+                mDb.categorieDao().deleteAllCategorie();
+                mDb.produitDao().deleteAllProduit();
 //        Suppression des images des clients en local
                 ISalesUtility.deleteProduitsImgFolder();
 
@@ -713,7 +750,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
         super.onResume();
 
         if (produitsParcelableList.size() <= 0) {
-            loadProduits(mCategorieParcelable != null ? Long.parseLong(mCategorieParcelable.getId()) : -1);
+            loadProduits(mCategorieParcelable != null ? Long.parseLong(mCategorieParcelable.getId()) : -1, null);
         } else {
             mProduitsAdapter.notifyDataSetChanged();
         }
@@ -732,6 +769,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
     @Override
     public void onDetailsSelected(ProduitParcelable produitParcelable) {
 //        Toast.makeText(getContext(), "Detail "+ produitParcelable.getLabel(), Toast.LENGTH_SHORT).show();
+//        Log.e(TAG, "onDetailsSelected: "+produitParcelable.getDescription());
 
         Intent intent = new Intent(getContext(), DetailsProduitActivity.class);
         intent.putExtra("produit", produitParcelable);
@@ -747,6 +785,16 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
     @Override
     public void onCategorieDialogSelected(CategorieParcelable categorieParcelable) {
         if (categorieParcelable == null) {
+            return;
+        }
+        else if (categorieParcelable.getId().equals("-1")) {
+            mCategorieParcelable = null;
+//        modification du label de la categorie
+            mCategoryTV.setText(getContext().getResources().getString(R.string.toutes_les_categories));
+//            chargement de la photo par defaut dans la vue
+            mCategoryIV.setBackgroundResource(R.drawable.ic_view_list);
+
+            loadProduits(0, null);
             return;
         }
 //        Log.e(TAG, "onCategorieAdapterSelected: label="+categorieParcelable.getLabel()+" content="+categorieParcelable.getPoster().getContent());
@@ -770,7 +818,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 
         } else {
 //            chargement de la photo par defaut dans la vue
-            mCategoryIV.setBackgroundResource(R.drawable.logo_isales);
+            mCategoryIV.setBackgroundResource(R.drawable.isales_no_image);
         }
 
 //        Suppresion des produits dans la vue
@@ -780,7 +828,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
         }
 
 //        Mise a jour de la liste des produits
-        loadProduits(Long.parseLong(mCategorieParcelable.getId()));
+        loadProduits(Long.parseLong(mCategorieParcelable.getId()), null);
     }
 
     @Override

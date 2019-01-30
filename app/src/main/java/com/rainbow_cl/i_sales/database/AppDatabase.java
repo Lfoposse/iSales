@@ -32,7 +32,7 @@ import com.rainbow_cl.i_sales.database.entry.UserEntry;
  */
 
 @Database(entities = {ProduitEntry.class, ClientEntry.class, CategorieEntry.class, PanierEntry.class, TokenEntry.class, UserEntry.class, CommandeEntry.class, CommandeLineEntry.class, SignatureEntry.class, ServerEntry.class},
-        version = 2,
+        version = 3,
         exportSchema = false)
 //@TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
@@ -45,7 +45,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public static AppDatabase getInstance(Context context) {
         if (sInstance == null) {
             synchronized (LOCK) {
-                Log.e(LOG_TAG, "Creating new database instance");
+//                Log.e(LOG_TAG, "Creating new database instance");
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class, AppDatabase.DATABASE_NAME)
                         .allowMainThreadQueries() // autorise Room a effectuer les requetes dans le main UI thread
@@ -53,7 +53,7 @@ public abstract class AppDatabase extends RoomDatabase {
                         .build();
             }
         }
-        Log.e(LOG_TAG, "Getting the database instance");
+//        Log.e(LOG_TAG, "Getting the database instance");
         return sInstance;
     }
 

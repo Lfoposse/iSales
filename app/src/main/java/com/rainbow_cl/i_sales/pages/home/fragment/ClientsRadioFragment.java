@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -52,6 +53,7 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
     private RecyclerView mRecyclerView;
     private ImageView mProgressIV;
     private EditText searchET;
+    private ImageButton searchIB, searchCancelIB;
 
     private ArrayList<ClientParcelable> clientParcelableList;
     private ClientsRadioAdapter mAdapter;
@@ -125,10 +127,11 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
 //        incrementation du nombre de page
         mLastClientId = clientEntries.get(clientEntries.size()-1).getId();
 
-        if (clientParcelables.size() > 0) {
+        if (clientParcelables.size() > 0 && mLastClientId <= 0) {
             clientParcelableList.clear();
-            clientParcelableList.addAll(clientParcelables);
         }
+
+        clientParcelableList.addAll(clientParcelables);
 
         mAdapter.notifyDataSetChanged();
 
@@ -183,6 +186,8 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
         mRecyclerView = rootView.findViewById(R.id.recyclerview_clientradio);
         mProgressIV = rootView.findViewById(R.id.iv_progress_clientradio);
         searchET = rootView.findViewById(R.id.et_search_clientradio);
+        searchIB = rootView.findViewById(R.id.imgbtn_search_clientradio);
+        searchCancelIB = rootView.findViewById(R.id.imgbtn_search_clientradio_cancel);
 
         clientParcelableList = new ArrayList<>();
 
@@ -223,23 +228,44 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//        affichage de l'image d'attente
+                showProgress(true);
+
                 String searchString = charSequence.toString();
 
-                List<ClientEntry> entries = mDb.clientDao().getClientsLikeLimit(mLimit, searchString);
-                Log.e(TAG, "onTextChanged: searchString="+searchString+" entries="+entries.size());
-                loadClients(entries);
-//                mAdapter.performFiltering(searchString);
+                List<ClientEntry> clientEntries = mDb.clientDao().getClientsLikeLimit(mLimit, searchString);
+                loadClients(clientEntries);
+//                Log.e(TAG, "onTextChanged: searchString="+searchString);
+                mAdapter.performFiltering(searchString);
+//        affichage de l'image d'attente
+                showProgress(false);
 
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
 
+                Log.e(TAG, "afterTextChanged: string="+editable.toString() );
+                if (editable.toString().equals("")) {
+                    searchCancelIB.setVisibility(View.GONE);
+                    searchIB.setVisibility(View.VISIBLE);
+                } else {
+                    searchCancelIB.setVisibility(View.VISIBLE);
+                    searchIB.setVisibility(View.GONE);
+                }
+            }
+        });
+        searchCancelIB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchET.setText("");
             }
         });
 
 //        recuperation des clients sur le serveur
 //        executeFindClients();
+//        affichage de l'image d'attente
+        showProgress(true);
         loadClients(null);
 
         return rootView;

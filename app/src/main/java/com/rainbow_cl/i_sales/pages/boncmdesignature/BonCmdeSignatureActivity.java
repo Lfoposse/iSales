@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -55,6 +54,7 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
 
     private Calendar calLivraison = null;
     private int todayYear, todayMonth, todayDay;
+    private int livraisonYear, livraisonMonth, livraisonDay;
 
     private ClientParcelable mClientParcelableSelected;
     private CommandeParcelable mCmdeParcelable;
@@ -83,19 +83,26 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
 //        recuperation du panier dans la BD
         final List<PanierEntry> panierEntryList = mDb.panierDao().getAllPanier();
 
-        Date today = new Date();
+        Calendar today = Calendar.getInstance();
+        Calendar dateLivraison = Calendar.getInstance();
+
+        dateLivraison.set(livraisonYear, livraisonMonth, livraisonDay);
+        Log.e(TAG, "pushCommande: dateCrea=" + today.getTime() + " dateLivraison=" + dateLivraison.getTime() + " livraisonYear=" + livraisonYear + " livraisonMonth=" + livraisonMonth + " livraisonDay=" + livraisonDay);
         final SimpleDateFormat refOrderFormat = new SimpleDateFormat("yyMMdd-HHmmss");
-        final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        final String refOrder = String.format("CMD%s", refOrderFormat.format(today));
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        final String refOrder = String.format("CMD%s", refOrderFormat.format(today.getTime()));
 //        String dateOrder = String.valueOf(today.getTime());
+
+//        today.roll(Calendar.DAY_OF_MONTH, -1);
         String dateOrder = dateFormat.format(today.getTime());
-        String dateLivraisonOrder = dateFormat.format(calLivraison.getTimeInMillis());
+//        String dateLivraisonOrder = dateFormat.format(dateLivraison.getTime());
+        String dateLivraisonOrder = dateFormat.format(dateLivraison.getTime());
 
         final CommandeEntry cmdeEntry = new CommandeEntry();
 
         cmdeEntry.setSocid(mClientParcelableSelected.getId());
-        cmdeEntry.setDate_commande(today.getTime());
-        cmdeEntry.setDate_livraison(calLivraison.getTimeInMillis());
+        cmdeEntry.setDate_commande(today.getTimeInMillis());
+        cmdeEntry.setDate_livraison(dateLivraison.getTimeInMillis());
         cmdeEntry.setRef(refOrder);
         cmdeEntry.setTotal_ttc("" + mTotalPanier);
         cmdeEntry.setIs_synchro(0);
@@ -207,14 +214,16 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
         Order newOrder = new Order();
 
         Log.e(TAG, "pushCommande:Serveur refOrder=" + refOrder +
-                " date=" + dateOrder);
+                " date=" + dateFormat.format(today.getTime())+" dateLivraisonOrder="+dateFormat.format(dateLivraison.getTime())+
+        " dateOrder="+dateOrder+" dateLivraisonOrder="+dateLivraisonOrder);
 
 //        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");
 
         newOrder.setSocid(String.valueOf(mClientParcelableSelected.getId()));
-        newOrder.setDate_commande(dateOrder);
+        newOrder.setDate_commande("" + dateOrder);
+        newOrder.setDate("" + dateOrder);
 //        newOrder.setDate_livraison(""+(calLivraison != null ? calLivraison.getTimeInMillis() : ""));
-        newOrder.setDate_livraison(dateLivraisonOrder);
+        newOrder.setDate_livraison("" + dateLivraisonOrder);
         newOrder.setRef(refOrder);
         newOrder.setLines(new ArrayList<OrderLine>());
 
@@ -308,7 +317,7 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
 
 //                                                        retour a la page d'accueil
                                 finish();
-                                /*
+
 //                                =========== Envoi de la signature du client
                                 progressDialog.setMessage(ISalesUtility.strCapitalize(getString(R.string.envoi_signature_client)));
 //                                recuperation de la signature client en bitmap
@@ -441,7 +450,7 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
                                         return;
 
                                     }
-                                }); */
+                                });
                             } else {
                                 progressDialog.dismiss();
 
@@ -597,6 +606,9 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
                             public void onDateSet(com.tsongkha.spinnerdatepicker.DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
                                 calLivraison = Calendar.getInstance();
                                 calLivraison.set(year, monthOfYear, dayOfMonth);
+                                livraisonDay = dayOfMonth;
+                                livraisonMonth = monthOfYear;
+                                livraisonYear = year;
 
 //                                Log.e(TAG, " dateLivraison=" + calLivraison.getTimeInMillis());
 

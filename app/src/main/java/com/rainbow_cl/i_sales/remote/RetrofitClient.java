@@ -27,7 +27,7 @@ public class RetrofitClient {
     private static Retrofit retrofit = null;
 
     public static Retrofit getClient(final Context context, String url) {
-        Log.e(TAG, "getClient: input baseURL="+url );
+//        Log.e(TAG, "getClient: input baseURL="+url );
 //        if (retrofit == null) {
 
             OkHttpClient httpClient = new OkHttpClient.Builder()
@@ -45,13 +45,13 @@ public class RetrofitClient {
                             }
                             AppDatabase mDb = AppDatabase.getInstance(context.getApplicationContext());
                             TokenEntry tokenEntry = mDb.tokenDao().getAllToken().get(0);
-                            Log.e(TAG, "intercept: token="+tokenEntry.getToken());
+//                            Log.e(TAG, "intercept: token="+tokenEntry.getToken());
 
 //                            Adding DOLIBARR API KEY to all queries
                             HttpUrl url = originalHttpUrl.newBuilder()
                                     .addQueryParameter(ApiUtils.DOLAPIKEY, tokenEntry.getToken())
                                     .build();
-                            Log.e(TAG, "intercept:After url= "+url.toString());
+//                            Log.e(TAG, "intercept:After url= "+url.toString());
 
                             // Request customization: add request headers
                             Request.Builder requestBuilder = original.newBuilder()

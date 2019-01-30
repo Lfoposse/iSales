@@ -16,12 +16,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.rainbow_cl.i_sales.R;
-import com.rainbow_cl.i_sales.adapter.PanierProduitAdapter;
 import com.rainbow_cl.i_sales.adapter.RecapPanierAdapter;
+import com.rainbow_cl.i_sales.database.AppDatabase;
 import com.rainbow_cl.i_sales.database.entry.PanierEntry;
+import com.rainbow_cl.i_sales.database.entry.ServerEntry;
 import com.rainbow_cl.i_sales.model.ClientParcelable;
 import com.rainbow_cl.i_sales.pages.boncmdesignature.BonCmdeSignatureActivity;
-import com.rainbow_cl.i_sales.pages.home.fragment.PanierFragment;
 import com.rainbow_cl.i_sales.pages.home.viewmodel.PanierViewModel;
 import com.rainbow_cl.i_sales.utility.ISalesUtility;
 
@@ -37,9 +37,12 @@ public class BonCmdeVerificationActivity extends AppCompatActivity {
     private TextView mComgnieNomTV, mComgnieVilleTV, mComgniePaysTV, mComgniePhoneTV, mComgnieEmailTV;
 
     private ArrayList<PanierEntry> panierEntriesList;
-    private ClientParcelable mClientParcelableSelected, mComgnietParcelableSelected;
+    private ClientParcelable mClientParcelableSelected;
+    private ServerEntry mCompagnie;
     private double mTotalPanier = 0;
     private RecapPanierAdapter mAdapter;
+
+    private AppDatabase mDb;
 
     //    recuperation des produits du panier
     private void loadPanier() {
@@ -88,8 +91,11 @@ public class BonCmdeVerificationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bon_cmde_verification);
 
+        mDb = AppDatabase.getInstance(getApplicationContext());
+
+
         mClientParcelableSelected = getIntent().getExtras().getParcelable("client");
-        mComgnietParcelableSelected = getIntent().getExtras().getParcelable("client");
+        mCompagnie = mDb.serverDao().getActiveServer(true);
         mTotalPanier = getIntent().getExtras().getDouble("totalPanier");
 
         mPanierRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_boncmde_verif_produits);
@@ -127,11 +133,11 @@ public class BonCmdeVerificationActivity extends AppCompatActivity {
         mClientPhoneTV.setText(String.format("%s %s", getString(R.string.telephone_), mClientParcelableSelected.getPhone()));
         mClientEmailTV.setText(String.format("%s %s", getString(R.string.email_), mClientParcelableSelected.getEmail()));
 //        init compagnie properties values
-        mComgnieNomTV.setText(String.format("%s %s", getString(R.string.nom_), mComgnietParcelableSelected.getName()));
-        mComgnieVilleTV.setText(String.format("%s %s", getString(R.string.ville_), mComgnietParcelableSelected.getTown()));
-        mComgniePaysTV.setText(String.format("%s %s", getString(R.string.pays_), mComgnietParcelableSelected.getPays()));
-        mComgniePhoneTV.setText(String.format("%s %s", getString(R.string.telephone_), mComgnietParcelableSelected.getPhone()));
-        mComgnieEmailTV.setText(String.format("%s %s", getString(R.string.email_), mComgnietParcelableSelected.getEmail()));
+        mComgnieNomTV.setText(String.format("%s %s", getString(R.string.raison_sociale_), mCompagnie.getRaison_sociale()));
+        mComgnieVilleTV.setText(String.format("%s %s", getString(R.string.ville_), mCompagnie.getVille()));
+        mComgniePaysTV.setText(String.format("%s %s", getString(R.string.pays_), mCompagnie.getPays()));
+        mComgniePhoneTV.setText(String.format("%s %s", getString(R.string.telephone_), mCompagnie.getTelephone()));
+        mComgnieEmailTV.setText(String.format("%s %s", getString(R.string.email_), mCompagnie.getMail()));
 
 //        ecoute du clique pour la validation
         mValiderBTN.setOnClickListener(new View.OnClickListener() {

@@ -45,13 +45,15 @@ import com.squareup.picasso.Target;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class DetailsCmdeActivity extends AppCompatActivity implements FindThirdpartieListener,
         FindDocumentListener{
     private static final String TAG = DetailsCmdeActivity.class.getSimpleName();
 
-    private TextView mRefTV, mDateTV, mTotalCmdeTV, mClientNom, mClientEmail, mClientAdresse;
+    private TextView mRefTV, mDateTV, mDateLivraisonTV, mTotalCmdeTV, mClientNom, mClientEmail, mClientAdresse;
     private RecyclerView mRecyclerView;
     private ImageView mSignClientIV, mSignCommIV;
 
@@ -145,7 +147,18 @@ public class DetailsCmdeActivity extends AppCompatActivity implements FindThirdp
                 ISalesUtility.amountFormat2(mCmdeParcelable.getTotal()),
                 getResources().getString(R.string.symbole_euro)));
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyy");
+//        Calendar calendarLiv = Calendar.getInstance();
+//        calendarLiv.setTimeInMillis(mCmdeParcelable.getDate_livraison());
         mDateTV.setText(dateFormat.format(mCmdeParcelable.getDate()));
+//        mDateLivraisonTV.setText(dateFormat.format(calendarLiv.getTime()));
+        if (mCmdeParcelable.getDate_livraison() == 0) {
+            mDateLivraisonTV.setText("Non définie");
+        } else {
+            Calendar livCal = Calendar.getInstance();
+            livCal.setTimeInMillis(mCmdeParcelable.getDate_livraison());
+            livCal.add(Calendar.DATE, 1);
+            mDateLivraisonTV.setText(dateFormat.format(livCal.getTime()));
+        }
 
 //        Chargement des produit dans la liste
         produitParcelables.addAll(mCmdeParcelable.getProduits());
@@ -248,13 +261,15 @@ public class DetailsCmdeActivity extends AppCompatActivity implements FindThirdp
             mCmdeParcelable = getIntent().getExtras().getParcelable("commande");
             Log.e(TAG, "onCreate: " + mCmdeParcelable.getRef() +
                     " productsSize=" + mCmdeParcelable.getProduits().size() +
-                    " clientID=" + mCmdeParcelable.getSocid());
+                    " clientID=" + mCmdeParcelable.getSocid() +
+                    " dateLivraison=" + mCmdeParcelable.getDate_livraison());
         }
         mDb = AppDatabase.getInstance(getApplicationContext());
 
 //        Referencement des vues
         mRefTV = findViewById(R.id.tv_detailscmde_ref);
         mDateTV = findViewById(R.id.tv_detailscmde_date);
+        mDateLivraisonTV = findViewById(R.id.tv_detailscmde_datelivraison);
         mTotalCmdeTV = findViewById(R.id.tv_detailscmde_total);
         mClientNom = findViewById(R.id.tv_detailscmde_client_nom);
         mClientEmail = findViewById(R.id.tv_detailscmde_client_email);

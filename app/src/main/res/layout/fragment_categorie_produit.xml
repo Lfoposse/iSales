@@ -36,15 +36,55 @@
                     android:background="@android:color/transparent"/>
 
                 <ImageButton
-                    android:id="@+id/imgbtn_search_client"
+                    android:id="@+id/imgbtn_search_catpdt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_search"
                     android:background="@android:color/transparent"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"/>
+
+                <ImageButton
+                    android:id="@+id/imgbtn_search_catpdt_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_close_white_24dp"
+                    android:visibility="gone" />
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/view_catpdt_all"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingEnd="6dp"
+                android:paddingStart="6dp">
+
+                <ImageView
+                    android:id="@+id/iv_selected_categorie"
+                    android:layout_width="@dimen/logo"
+                    android:layout_height="@dimen/logo"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/ic_view_list"
+                    android:elevation="@dimen/login_page_logo_elevation"
+                    android:foregroundGravity="center" />
+
+                <TextView
+                    android:id="@+id/tv_selected_categorie"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="4dp"
+                    android:layout_toEndOf="@+id/iv_selected_categorie"
+                    android:gravity="start"
+                    android:text="@string/toutes_les_categories"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/ed_search_textsize"
+                    tools:text="Toutes les categories" />
+            </RelativeLayout>
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerview_catpdt"
                 android:layout_width="match_parent"

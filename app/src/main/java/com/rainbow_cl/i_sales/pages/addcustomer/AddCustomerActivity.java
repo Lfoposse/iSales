@@ -137,6 +137,7 @@ public class AddCustomerActivity extends AppCompatActivity {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
             focusView.requestFocus();
+            return;
         }
 //        si le user n'a pas sélectionné le logo
         if (mLogoBitmap == null) {
@@ -185,15 +186,16 @@ public class AddCustomerActivity extends AppCompatActivity {
         logoClient.setFileencoding("base64");
         logoClient.setModulepart("societe");
 
+        /*
         Call<String> callUploadLogoClient = ApiUtils.getISalesService(AddCustomerActivity.this).uploadDocument(logoClient);
         callUploadLogoClient.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> responseLogoClient) {
                 if (responseLogoClient.isSuccessful()) {
                     String responseLogoClientBody = responseLogoClient.body();
-                    Log.e(TAG, "onResponse: responseLogoClient=" + responseLogoClientBody);
+                    Log.e(TAG, "onResponse: responseLogoClient=" + responseLogoClientBody);*/
 
-                    Date today = new Date();
+//                    Date today = new Date();
                     final SimpleDateFormat refOrderFormat = new SimpleDateFormat("yyMMdd-HHmmss");
                     final String codeCLient = String.format("CU%s", refOrderFormat.format(today));
 
@@ -209,7 +211,8 @@ public class AddCustomerActivity extends AppCompatActivity {
                     queryBody.setName(String.format("%s", nom));
                     queryBody.setCode_client(codeCLient);
                     queryBody.setClient("1");
-                    queryBody.setName_alias(responseLogoClientBody);
+//                    queryBody.setName_alias(responseLogoClientBody);
+                    queryBody.setName_alias("");
 
                     Call<Long> callSaveClient = ApiUtils.getISalesService(AddCustomerActivity.this).saveThirdpartie(queryBody);
                     callSaveClient.enqueue(new Callback<Long>() {
@@ -252,7 +255,7 @@ public class AddCustomerActivity extends AppCompatActivity {
                         }
                     });
 
-                } else {
+                /*} else {
 
                     try {
                         String errBody = responseLogoClient.body();
@@ -346,7 +349,7 @@ public class AddCustomerActivity extends AppCompatActivity {
                 return;
 
             }
-        });
+        });*/
 
     }
 

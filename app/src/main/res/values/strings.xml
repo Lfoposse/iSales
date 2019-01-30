@@ -54,7 +54,7 @@
     <string name="toolbar_title">Contacts</string>
     <string name="action_search">Search</string>
     <string name="search_hint">Type name…</string>
-    <string name="rechercher_par_libelle_prix">Rechercher par libellé, prix</string>
+    <string name="rechercher_par_libelle_code">Rechercher par libellé, code</string>
     <string name="rechercher_par_libelle">Rechercher par libellé</string>
     <string name="rechercher_par_nom_adresse">Rechercher par nom, adresse</string>
     <string name="selectionner_un_client">Sélectionner un client</string>
@@ -81,6 +81,7 @@
     <string name="pays_r">Pays  *</string>
     <string name="prenom">Prénom</string>
     <string name="nom_">Nom :</string>
+    <string name="raison_sociale_">Raison Sociale :</string>
     <string name="ville_">Ville :</string>
     <string name="pays_">Pays :</string>
     <string name="telephone_">Téléphone :</string>
@@ -191,6 +192,7 @@
     <string name="title_activity_parametres">Settings</string>
     <string name="parametres">Paramètres</string>
     <string name="echec_envoi_logo_client">Echec d\'envoi du logo client.</string>
+    <string name="toutes_les_categories">Toutes les categories</string>
 
     <!-- Strings related to Settings -->
 

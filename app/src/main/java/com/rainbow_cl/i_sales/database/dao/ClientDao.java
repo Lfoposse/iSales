@@ -56,4 +56,7 @@ public interface ClientDao {
 
     @Query("DELETE FROM client")
     void deleteAllClient();
+
+    @Query("DELETE FROM client WHERE id = :id")
+    void deleteClientById(long id);
 }

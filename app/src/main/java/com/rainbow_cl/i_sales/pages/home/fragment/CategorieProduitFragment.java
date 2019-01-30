@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,11 +52,12 @@ public class CategorieProduitFragment extends Fragment implements FindCategorieL
     public static String TAG = CategorieProduitFragment.class.getSimpleName();
 
     //    views
-    private ImageButton ibClose;
     private RecyclerView mrecyclerView;
     private ImageView mProgressIV;
     private TextView mErrorTV;
     private EditText mSearchET;
+    private ImageButton mSearchIB, mSearchCancelIB;
+    private View mToutescategorie;
 
     //    Adapter des produits
     private CategorieProduitAdapter mCategorieAdapter;
@@ -77,35 +79,37 @@ public class CategorieProduitFragment extends Fragment implements FindCategorieL
     /* Checks if external storage is available for read and write */
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if ( Environment.MEDIA_MOUNTED.equals( state ) ) {
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
             return true;
         }
         return false;
     }
+
     /* Checks if external storage is available to at least read 695574095 */
     public boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
-        if ( Environment.MEDIA_MOUNTED.equals( state ) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals( state ) ) {
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
             return true;
         }
         return false;
     }
+
     public void showLog() {
 
-        if ( isExternalStorageWritable() ) {
+        if (isExternalStorageWritable()) {
 
-            File appDirectory = new File( Environment.getExternalStorageDirectory() + "/iSalesLog" );
-            File logDirectory = new File( appDirectory + "/log" );
-            File logFile = new File( logDirectory, "categorieproduit_logcat" + System.currentTimeMillis() + ".txt" );
+            File appDirectory = new File(Environment.getExternalStorageDirectory() + "/iSalesLog");
+            File logDirectory = new File(appDirectory + "/log");
+            File logFile = new File(logDirectory, "categorieproduit_logcat" + System.currentTimeMillis() + ".txt");
 
             // create app folder
-            if ( !appDirectory.exists() ) {
+            if (!appDirectory.exists()) {
                 appDirectory.mkdir();
             }
 
             // create log folder
-            if ( !logDirectory.exists() ) {
+            if (!logDirectory.exists()) {
                 logDirectory.mkdir();
             }
 
@@ -113,16 +117,16 @@ public class CategorieProduitFragment extends Fragment implements FindCategorieL
             try {
                 Process process = Runtime.getRuntime().exec("logcat -c");
                 process = Runtime.getRuntime().exec("logcat -f " + logFile);
-            } catch ( IOException e ) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
-        } else if ( isExternalStorageReadable() ) {
+        } else if (isExternalStorageReadable()) {
             // only readable
-            Log.e(TAG, "onCreate: isExternalStorageReadable" );
+            Log.e(TAG, "onCreate: isExternalStorageReadable");
         } else {
             // not accessible
-            Log.e(TAG, "onCreate: non isExternalStorageReadable" );
+            Log.e(TAG, "onCreate: non isExternalStorageReadable");
         }
     }
 
@@ -137,7 +141,7 @@ public class CategorieProduitFragment extends Fragment implements FindCategorieL
         }
         if (mFindCategorieTask == null) {
 
-            Log.e(TAG, "executeFindCategorieProducts: type="+mType+" page="+mPage);
+            Log.e(TAG, "executeFindCategorieProducts: type=" + mType + " page=" + mPage);
             mFindCategorieTask = new FindCategorieTask(getContext(), CategorieProduitFragment.this, "label", "asc", 100, mPage, mType);
             mFindCategorieTask.execute();
         }
@@ -149,7 +153,7 @@ public class CategorieProduitFragment extends Fragment implements FindCategorieL
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 //        String mode = sharedPreferences.getString(getContext().getString(R.string.commande_mode), "online");
         Boolean catazero = sharedPreferences.getBoolean(getContext().getString(R.string.parametres_categories_azero), false);
-        Log.e(TAG, "loadCategories: catazero="+catazero);
+        Log.e(TAG, "loadCategories: catazero=" + catazero);
 
         List<CategorieEntry> categorieEntries;
         List<CategorieEntry> categories = mDb.categorieDao().getCategories();
@@ -158,7 +162,7 @@ public class CategorieProduitFragment extends Fragment implements FindCategorieL
         } else {
             categorieEntries = mDb.categorieDao().getAllCategories();
         }
-        Log.e(TAG, "loadCategories: categorieEntries="+categories.size());
+        Log.e(TAG, "loadCategories: categorieEntries=" + categories.size());
 
         if (categorieEntries.size() <= 0) {
             Toast.makeText(getContext(), getString(R.string.aucune_categorie_trouve), Toast.LENGTH_LONG).show();
@@ -171,7 +175,7 @@ public class CategorieProduitFragment extends Fragment implements FindCategorieL
         ArrayList<CategorieParcelable> categorieParcelables = new ArrayList<>();
         for (CategorieEntry categorieEntry : categorieEntries) {
             CategorieParcelable categorieParcelable = new CategorieParcelable();
-            categorieParcelable.setId(""+categorieEntry.getId());
+            categorieParcelable.setId("" + categorieEntry.getId());
             categorieParcelable.setLabel(categorieEntry.getLabel());
             categorieParcelable.setPoster(new DolPhoto());
             categorieParcelable.setCount_produits(categorieEntry.getCount_produits());
@@ -250,7 +254,7 @@ public class CategorieProduitFragment extends Fragment implements FindCategorieL
         this.categorieParcelableList.addAll(categorieParcelables);
 
         this.mCategorieAdapter.notifyDataSetChanged();
-        Log.e(TAG, "onFindCategorieCompleted: categorieSize="+findCategoriesREST.getCategories().size());
+        Log.e(TAG, "onFindCategorieCompleted: categorieSize=" + findCategoriesREST.getCategories().size());
 
     }
 
@@ -290,11 +294,13 @@ public class CategorieProduitFragment extends Fragment implements FindCategorieL
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_categorie_produit, container, false);
 
-        ibClose = (ImageButton) view.findViewById(R.id.ib_dialog_catpdt_close);
+        mToutescategorie = (RelativeLayout) view.findViewById(R.id.view_catpdt_all);
         mrecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_catpdt);
         mProgressIV = (ImageView) view.findViewById(R.id.iv_progress_catpdt);
         mErrorTV = (TextView) view.findViewById(R.id.tv_error_catpdt);
         mSearchET = (EditText) view.findViewById(R.id.et_search_catpdt);
+        mSearchIB = (ImageButton) view.findViewById(R.id.imgbtn_search_catpdt);
+        mSearchCancelIB = (ImageButton) view.findViewById(R.id.imgbtn_search_catpdt_cancel);
 
 //        initialisation de la liste des categories
         categorieParcelableList = new ArrayList<>();
@@ -325,6 +331,29 @@ public class CategorieProduitFragment extends Fragment implements FindCategorieL
             @Override
             public void afterTextChanged(Editable editable) {
 
+//                Log.e(TAG, "afterTextChanged: string="+editable.toString() );
+                if (editable.toString().equals("")) {
+                    mSearchCancelIB.setVisibility(View.GONE);
+                    mSearchIB.setVisibility(View.VISIBLE);
+                } else {
+                    mSearchCancelIB.setVisibility(View.VISIBLE);
+                    mSearchIB.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        mSearchCancelIB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSearchET.setText("");
+            }
+        });
+        mToutescategorie.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CategorieParcelable categorieParcelable = new CategorieParcelable();
+                categorieParcelable.setId("-1");
+                dialogCategorieListener.onCategorieDialogSelected(categorieParcelable);
             }
         });
 

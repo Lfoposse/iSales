@@ -67,7 +67,7 @@ public final class ISalesUtility {
         String[] descriptionTab = description.split(ENCODE_IMG);
 //        Log.e(TAG, "getImgProduit: descriptionTab before length="+descriptionTab.length);
         // S'il n'ya pas d'encode de img, on renvoi null
-        if (descriptionTab.length > 2) {
+        if (descriptionTab.length < 2) {
             return null;
         }
 //        Log.e(TAG, "getImgProduit: descriptionTab after length="+descriptionTab.length);
@@ -78,7 +78,7 @@ public final class ISalesUtility {
         }*/
         // console.log(this.TAG, "descriptionTab:getImgProduit ", descriptionTab);
         // console.log(this.TAG, "descriptionTab:imgTab ", imgTab);
-        return descriptionTab.length > 1 ? descriptionTab[1] : "";
+        return descriptionTab[1];
     }
 
     // Renvoi le nom de l'image du produit a partir de la description
@@ -87,12 +87,12 @@ public final class ISalesUtility {
             return null;
         }
 
-//        Log.e(TAG, "getImgProduit: description="+description);
+//        Log.e(TAG, "getDescProduit: description="+description);
         // extraction de la chaine apres code encodage de la photo
         String[] descriptionTab = description.split(ENCODE_DESC);
-//        Log.e(TAG, "getImgProduit: descriptionTab before length="+descriptionTab.length);
+//        Log.e(TAG, "getDescProduit: descriptionTab before length="+descriptionTab.length);
         // S'il n'ya pas d'encode de img, on renvoi null
-        if (descriptionTab.length > 2) {
+        if (descriptionTab.length < 2) {
             return null;
         }
 //        Log.e(TAG, "getImgProduit: descriptionTab after length="+descriptionTab.length);
@@ -103,7 +103,7 @@ public final class ISalesUtility {
         }*/
         // console.log(this.TAG, "descriptionTab:getImgProduit ", descriptionTab);
         // console.log(this.TAG, "descriptionTab:imgTab ", imgTab);
-        return descriptionTab.length > 1 ? descriptionTab[1] : "";
+        return descriptionTab[1];
     }
 
     // Renvoi le nom les images carousel du produit a partir de la description

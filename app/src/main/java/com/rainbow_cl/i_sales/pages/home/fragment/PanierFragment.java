@@ -276,7 +276,7 @@ public class PanierFragment extends Fragment implements PanierProduitAdapterList
             @Override
             public void onClick(View v) {
 
-                if (mTotalPanier == 0) {
+                if (panierEntriesList.size() <= 0) {
                     Toast.makeText(getContext(), "Votre panier est vide. Veuillez choisir des produits", Toast.LENGTH_LONG).show();
                     return;
                 }

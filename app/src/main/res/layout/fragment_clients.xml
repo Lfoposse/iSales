@@ -77,7 +77,17 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_search" />
+            android:src="@drawable/ic_search"/>
+
+        <ImageButton
+            android:id="@+id/imgbtn_search_client_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_close_white_24dp"
+            android:visibility="gone" />
     </RelativeLayout>
 
     <LinearLayout

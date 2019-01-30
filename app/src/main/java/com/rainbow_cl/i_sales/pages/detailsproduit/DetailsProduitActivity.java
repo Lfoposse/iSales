@@ -158,8 +158,12 @@ public class DetailsProduitActivity extends AppCompatActivity {
                 snackbar.show();
                 return;
             } else {
+                String priceString = mPriceET.getText().toString();
+
+                double price = Double.parseDouble(priceString.replace(',', '.'));
 //                Sinon, on modifi la quantite a commander
                 panierEntryTest.setQuantity(quantite);
+                panierEntryTest.setPrice_ttc("" + price);
                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
                     @Override
                     public void run() {
@@ -248,6 +252,7 @@ public class DetailsProduitActivity extends AppCompatActivity {
             mProduitParcelable = getIntent().getExtras().getParcelable("produit");
             Log.e(TAG, "onCreate: " + mProduitParcelable.getRef() +
                     " produitID=" + mProduitParcelable.getId() +
+                    " description=" + mProduitParcelable.getDescription() +
                     " produitID=" + mProduitParcelable.getPoster().getContent());
         }
 

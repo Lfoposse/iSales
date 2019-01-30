@@ -265,6 +265,9 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
 //        incrementation du nombre de page
 //        mLastCmdeId = cmdeEntryList.get(cmdeEntryList.size()-1).getCommande_id();
 
+        if (commandeParcelableList.size() > 0) {
+            commandeParcelableList.clear();
+        }
         this.commandeParcelableList.addAll(commandeParcelablesList);
 
         perfomFilterCommande();
@@ -455,25 +458,6 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 //        mRecyclerView.addItemDecoration(new MyDividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL, 36));
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) {
-
-                    int lastPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
-
-                    int itemsCount = recyclerView.getAdapter().getItemCount();
-
-//                    Log.e(TAG, "onScroll: lastPosition=" + lastPosition + " itemsCount=" + itemsCount);
-                    if (lastPosition > 0 && (lastPosition + 2) >= itemsCount) {
-//                        executeFindOrder();
-//                        loadCommandes();
-                    }
-                } else if (dy < 0) {
-                }
-            }
-        });
 
 
 //        Définition des dates courantes
@@ -729,12 +713,12 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
             cmdeEntry.setRef(orderItem.getRef());
             cmdeEntry.setStatut(orderItem.getStatut());
 
-            Log.e(TAG, "onFindOrdersTaskComplete: timestamp=" + orderItem.getDate() +
+            /* Log.e(TAG, "onFindOrdersTaskComplete: timestamp=" + orderItem.getDate() +
                     " ref=" + orderItem.getRef() +
                     " dateCmde=" + orderItem.getDate_commande() +
                     " total=" + orderItem.getTotal_ttc() +
                     " orderStatut=" + orderItem.getStatut() +
-                    " cmdeEntryStatut=" + cmdeEntry.getStatut());
+                    " cmdeEntryStatut=" + cmdeEntry.getStatut()); */
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("'CMD'yyMMdd'-'HHmmss");
 //            if (orderItem.getDate() != null && orderItem.getDate() != "") {
@@ -758,8 +742,9 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
             }
 //            } else cmdeParcelable.setDate_commande(-1);
             if (orderItem.getDate_livraison() != null && orderItem.getDate_livraison() != "") {
-                cmdeEntry.setDate_livraison(Long.parseLong(orderItem.getDate_livraison()));
-            } else cmdeEntry.setDate_livraison(Long.parseLong("-1"));
+                long timestamp = Long.parseLong(orderItem.getDate_livraison()) * 1000L;
+                cmdeEntry.setDate_livraison(timestamp);
+            } else cmdeEntry.setDate_livraison((long) 0);
 
             cmdeEntry.setTotal_ttc(orderItem.getTotal_ttc());
             cmdeEntry.setIs_synchro(1);
@@ -767,19 +752,68 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
             Log.e(TAG, "onFindOrdersTaskComplete: commande date=" + cmdeEntry.getDate() + " Date_commande=" + cmdeEntry.getDate_commande() + " Date_livraison=" + cmdeEntry.getDate_livraison());
             CommandeEntry testCmde = mDb.commandeDao().getCmdesById(cmdeEntry.getId());
             if (testCmde == null) {
-                Log.e(TAG, "onFindOrdersTaskComplete: insert CommandeEntry");
+//                Log.e(TAG, "onFindOrdersTaskComplete: insert CommandeEntry");
 //            insertion du client dans la BD
                 long cmdeEntryId = mDb.commandeDao().insertCmde(cmdeEntry);
 //                Log.e(TAG, "onFindOrdersTaskComplete: " + cmdeEntryId);
 
-                executeFindOrderLines(cmdeEntry.getId(), cmdeEntryId);
+//                executeFindOrderLines(cmdeEntry.getId(), cmdeEntryId);
+
+//            chargement des produits de la commande
+                for (OrderLine orderLine : orderItem.getLines()) {
+                    CommandeLineEntry cmdeLineEntry = new CommandeLineEntry();
+
+                    cmdeLineEntry.setId(Long.parseLong(orderLine.getId()));
+                    cmdeLineEntry.setRef(orderLine.getRef());
+                    cmdeLineEntry.setLabel(orderLine.getLibelle() != null ? orderLine.getLibelle() : orderLine.getLabel());
+                    cmdeLineEntry.setDescription(orderLine.getDescription());
+                    cmdeLineEntry.setQuantity(Integer.parseInt(orderLine.getQty()));
+                    cmdeLineEntry.setPrice(orderLine.getPrice());
+                    cmdeLineEntry.setPrice_ttc(orderLine.getPrice());
+                    cmdeLineEntry.setSubprice(orderLine.getSubprice());
+                    cmdeLineEntry.setTotal_ht(orderLine.getTotal_ht());
+                    cmdeLineEntry.setTotal_tva(orderLine.getTotal_tva());
+                    cmdeLineEntry.setTotal_ttc(orderLine.getTotal_ttc());
+                    cmdeLineEntry.setCommande_ref(cmdeEntryId);
+
+//                    Log.e(TAG, "onFindOrdersTaskComplete: product name=" + cmdeLineEntry.getLabel());
+//            insertion de la commandeLine dans la BD
+                    mDb.commandeLineDao().insertCmdeLine(cmdeLineEntry);
+                }
 
             } else {
-                Log.e(TAG, "onFindOrdersTaskComplete: CommandeEntry already exist " + cmdeEntry.getRef());
+//                Log.e(TAG, "onFindOrdersTaskComplete: CommandeEntry already exist " + cmdeEntry.getRef());
 //            insertion du client dans la BD
                 mDb.commandeDao().updateCmde(cmdeEntry);
 
-                executeFindOrderLines(cmdeEntry.getId(), testCmde.getId());
+//                executeFindOrderLines(cmdeEntry.getId(), testCmde.getId());
+
+//            chargement des produits de la commande
+                for (OrderLine orderLine : orderItem.getLines()) {
+                    CommandeLineEntry cmdeLineEntry = new CommandeLineEntry();
+
+                    cmdeLineEntry.setId(Long.parseLong(orderLine.getId()));
+                    cmdeLineEntry.setRef(orderLine.getRef());
+                    cmdeLineEntry.setLabel(orderLine.getLibelle() != null ? orderLine.getLibelle() : orderLine.getLabel());
+                    cmdeLineEntry.setDescription(orderLine.getDescription());
+                    cmdeLineEntry.setQuantity(Integer.parseInt(orderLine.getQty()));
+                    cmdeLineEntry.setPrice(orderLine.getPrice());
+                    cmdeLineEntry.setPrice_ttc(orderLine.getPrice());
+                    cmdeLineEntry.setSubprice(orderLine.getSubprice());
+                    cmdeLineEntry.setTotal_ht(orderLine.getTotal_ht());
+                    cmdeLineEntry.setTotal_tva(orderLine.getTotal_tva());
+                    cmdeLineEntry.setTotal_ttc(orderLine.getTotal_ttc());
+                    cmdeLineEntry.setCommande_ref(cmdeEntry.getId());
+
+//                    Log.e(TAG, "onFindOrdersTaskComplete: product name=" + cmdeLineEntry.getLabel());
+//            insertion de la commandeLine dans la BD
+                    CommandeLineEntry testCmdeLine = mDb.commandeLineDao().getCmdeLineById(cmdeLineEntry.getId());
+                    if (testCmdeLine == null) {
+                        mDb.commandeLineDao().insertCmdeLine(cmdeLineEntry);
+                    } else {
+                        mDb.commandeLineDao().updateCmdeLine(cmdeLineEntry);
+                    }
+                }
             }
 
 
