@@ -59,7 +59,7 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
     private static int mPosition;
 
     //    view elements
-    private EditText mNomEntreprise, mAdresse, mEmail, mPhone, mPays, mRegion, mDepartement, mVille;
+    private EditText mNomEntreprise, mAdresse, mEmail, mPhone, mPays, mRegion, mDepartement, mVille, mNote;
     private TextView mCodeClient, mDatecreation, mDatemodification;
     private ImageView mPoster, mPosterBlurry, mCallIV, mMapIV, mMailIV;
     private View mModifierView, mAnnulerView;
@@ -101,6 +101,7 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
         mAdresse = (EditText) rootView.findViewById(R.id.et_clientprofile_adresse);
         mEmail = (EditText) rootView.findViewById(R.id.et_clientprofile_email);
         mPhone = (EditText) rootView.findViewById(R.id.et_clientprofile_telephone);
+        mNote = (EditText) rootView.findViewById(R.id.et_clientprofile_note);
         mPays = (EditText) rootView.findViewById(R.id.et_clientprofile_pays);
         mRegion = (EditText) rootView.findViewById(R.id.et_clientprofile_region);
         mDepartement = (EditText) rootView.findViewById(R.id.et_clientprofile_departement);
@@ -338,6 +339,7 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
         mAdresse.setText(mClientParcelable.getAddress());
         mEmail.setText(mClientParcelable.getEmail());
         mPhone.setText(mClientParcelable.getPhone());
+        mNote.setText(mClientParcelable.getNote());
         mPays.setText(mClientParcelable.getPays());
         mRegion.setText(mClientParcelable.getRegion());
         mDepartement.setText(mClientParcelable.getDepartement());
@@ -519,6 +521,7 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
         String adresse = mAdresse.getText().toString();
         String email = mEmail.getText().toString();
         String telephone = mPhone.getText().toString();
+        String note = mNote.getText().toString();
         String ville = mVille.getText().toString();
         String departement = mDepartement.getText().toString();
         String region = mRegion.getText().toString();
@@ -586,12 +589,12 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
             // form field with an error.
             focusView.requestFocus();
         } else {
-            updateClient(nomEntreprise, adresse, email, telephone, pays, region, departement, ville);
+            updateClient(nomEntreprise, adresse, email, telephone, note, pays, region, departement, ville);
         }
     }
 
     //    enregistre un client dans le serveur
-    private void updateClient(final String nomEntreprise, final String adresse, final String email, final String telephone, final String pays, final String region, final String departement, final String ville) {
+    private void updateClient(final String nomEntreprise, final String adresse, final String email, final String telephone, final String note, final String pays, final String region, final String departement, final String ville) {
 //        Si le téléphone n'est pas connecté
         if (!ConnectionManager.isPhoneConnected(getContext())) {
             Toast.makeText(getContext(), getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
@@ -613,6 +616,7 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
         queryBody.setDepartement(departement);
         queryBody.setPays(pays);
         queryBody.setPhone(telephone);
+        queryBody.setNote(note);
         queryBody.setEmail(email);
         queryBody.setName(String.format("%s", nomEntreprise));
 
@@ -631,6 +635,7 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
                     mClientParcelable.setDepartement(responseBody.getDepartement());
                     mClientParcelable.setPays(responseBody.getPays());
                     mClientParcelable.setPhone(responseBody.getPhone());
+                    mClientParcelable.setNote(responseBody.getNote());
                     mClientParcelable.setEmail(responseBody.getEmail());
                     mClientParcelable.setName(responseBody.getName());
 

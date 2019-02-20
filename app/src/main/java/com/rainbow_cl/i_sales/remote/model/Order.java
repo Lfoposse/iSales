@@ -10,6 +10,11 @@ public class Order {
     public String socid;
     public String id;
     public String date;
+    public String mode_reglement;
+    public String mode_reglement_id;
+    public String mode_reglement_code;
+    public String note_public;
+    public String note_private;
     public String date_commande;
     public String date_livraison;
     public String user_author_id;
@@ -117,5 +122,45 @@ public class Order {
 
     public void setStatut(String statut) {
         this.statut = statut;
+    }
+
+    public String getMode_reglement() {
+        return mode_reglement;
+    }
+
+    public void setMode_reglement(String mode_reglement) {
+        this.mode_reglement = mode_reglement;
+    }
+
+    public String getMode_reglement_id() {
+        return mode_reglement_id;
+    }
+
+    public void setMode_reglement_id(String mode_reglement_id) {
+        this.mode_reglement_id = mode_reglement_id;
+    }
+
+    public String getMode_reglement_code() {
+        return mode_reglement_code;
+    }
+
+    public void setMode_reglement_code(String mode_reglement_code) {
+        this.mode_reglement_code = mode_reglement_code;
+    }
+
+    public String getNote_public() {
+        return note_public;
+    }
+
+    public void setNote_public(String note_public) {
+        this.note_public = note_public;
+    }
+
+    public String getNote_private() {
+        return note_private;
+    }
+
+    public void setNote_private(String note_private) {
+        this.note_private = note_private;
     }
 }

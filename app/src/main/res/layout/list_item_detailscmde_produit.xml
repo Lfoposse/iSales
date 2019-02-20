@@ -18,8 +18,8 @@
             android:layout_height="66dp"
             android:layout_marginTop="3dp"
             android:layout_marginBottom="3dp"
-            android:background="@drawable/isales_no_image"
-            android:layout_centerInParent="true"/>
+            android:src="@drawable/isales_no_image"
+            android:layout_centerInParent="true" />
     </RelativeLayout>
 
     <RelativeLayout

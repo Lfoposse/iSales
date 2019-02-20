@@ -7,7 +7,9 @@ import com.rainbow_cl.i_sales.remote.model.Internaute;
 import com.rainbow_cl.i_sales.remote.model.InternauteSuccess;
 import com.rainbow_cl.i_sales.remote.model.Order;
 import com.rainbow_cl.i_sales.remote.model.OrderLine;
+import com.rainbow_cl.i_sales.remote.model.PaymentTypes;
 import com.rainbow_cl.i_sales.remote.model.Product;
+import com.rainbow_cl.i_sales.remote.model.ProductVirtual;
 import com.rainbow_cl.i_sales.remote.model.Thirdpartie;
 import com.rainbow_cl.i_sales.remote.model.User;
 
@@ -105,6 +107,10 @@ public interface ISalesServicesRemote {
                                       @Query(ApiUtils.limit) long limit,
                                       @Query(ApiUtils.page) long page);
 
+    //  Recupération des moyens de paiement
+    @GET("setup/dictionary/payment_types")
+    Call<ArrayList<PaymentTypes>> findPaymentTypes(@Query(ApiUtils.active) Integer active);
+
     //  Recupération de la liste des ligne d'une commandes
     @GET("orders/{orderId}/lines")
     Call<ArrayList<OrderLine>> findOrderLines(@Path("orderId") Long orderId);
@@ -120,5 +126,11 @@ public interface ISalesServicesRemote {
     //  Recupération d'un user a partir de son login
     @GET("users")
     Call<ArrayList<User>> findUserByLogin(@Query(ApiUtils.sqlfilters) String sqlfilters);
+
+    // ======== RYImg endpoinds  ==========
+
+    //  Recupération d'un user a partir de son login
+    @GET("product_virtual.php")
+    Call<ArrayList<ProductVirtual>> ryFindProductVirtual(@Query(ApiUtils.id) Long productId);
 
 }

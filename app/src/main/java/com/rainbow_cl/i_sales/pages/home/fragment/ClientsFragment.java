@@ -43,7 +43,6 @@ import com.rainbow_cl.i_sales.interfaces.FindThirdpartieListener;
 import com.rainbow_cl.i_sales.interfaces.MyCropImageListener;
 import com.rainbow_cl.i_sales.model.CategorieParcelable;
 import com.rainbow_cl.i_sales.model.ClientParcelable;
-import com.rainbow_cl.i_sales.pages.addcategorie.AddCategorieActivity;
 import com.rainbow_cl.i_sales.pages.addcustomer.AddCustomerActivity;
 import com.rainbow_cl.i_sales.pages.home.dialog.ClientProfileDialog;
 import com.rainbow_cl.i_sales.pages.home.dialog.FullScreenCatPdtDialog;
@@ -174,6 +173,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 
 //        affichage de l'image d'attente
         showProgress(false);
+        showProgressDialog(false, null, null);
     }
 
     //    arrete le processus de recupération des infos sur le serveur
@@ -214,7 +214,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
             mProgressDialog.setProgressDrawable(getResources().getDrawable(R.drawable.circular_progress_view));
             mProgressDialog.show();
         } else {
-            mProgressDialog.dismiss();
+            if (mProgressDialog != null) mProgressDialog.dismiss();
         }
     }
 
@@ -313,35 +313,39 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 //        Log.e(TAG, "onFindThirdpartieCompleted: getThirdparties size=" + findThirdpartieREST.getThirdparties().size());
         for (Thirdpartie thirdpartie : findThirdpartieREST.getThirdparties()) {
             ClientEntry clientEntry = new ClientEntry();
+            if (thirdpartie.getId() != null) {
+                String logo = thirdpartie.getName_alias() == null ? thirdpartie.getLogo() : thirdpartie.getName_alias();
+                Log.e(TAG, "onFindThirdpartieCompleted: logo=" + logo + " getName_alias=" + thirdpartie.getName_alias() + " getLogo=" + thirdpartie.getLogo());
+                clientEntry.setName(thirdpartie.getName());
+                clientEntry.setName_alias(thirdpartie.getName_alias());
+                clientEntry.setFirstname(thirdpartie.getFirstname());
+                clientEntry.setLastname(thirdpartie.getLastname());
+                clientEntry.setAddress(thirdpartie.getAddress());
+                clientEntry.setTown(thirdpartie.getTown());
+                clientEntry.setLogo(logo);
+                clientEntry.setDate_creation(thirdpartie.getDate_creation());
+                clientEntry.setDate_modification(thirdpartie.getDate_modification());
+                clientEntry.setId(Long.parseLong(thirdpartie.getId()));
+                clientEntry.setEmail(thirdpartie.getEmail());
+                clientEntry.setPhone(thirdpartie.getPhone());
+                clientEntry.setPays(thirdpartie.getPays());
+                clientEntry.setRegion(thirdpartie.getRegion());
+                clientEntry.setDepartement(thirdpartie.getDepartement());
+                clientEntry.setCode_client(thirdpartie.getCode_client());
+                clientEntry.setIs_synchro(1);
+                clientEntry.setNote(thirdpartie.getNote());
+                clientEntry.setNote_private(thirdpartie.getNote_private());
+                clientEntry.setNote_public(thirdpartie.getNote_public());
 
-            String logo = thirdpartie.getName_alias().equals("") ? thirdpartie.getLogo() : thirdpartie.getName_alias();
-            Log.e(TAG, "onFindThirdpartieCompleted: logo="+logo+" getName_alias="+thirdpartie.getName_alias()+" getLogo="+thirdpartie.getLogo());
-            clientEntry.setName(thirdpartie.getName());
-            clientEntry.setName_alias(thirdpartie.getName_alias());
-            clientEntry.setFirstname(thirdpartie.getFirstname());
-            clientEntry.setLastname(thirdpartie.getLastname());
-            clientEntry.setAddress(thirdpartie.getAddress());
-            clientEntry.setTown(thirdpartie.getTown());
-            clientEntry.setLogo(logo);
-            clientEntry.setDate_creation(thirdpartie.getDate_creation());
-            clientEntry.setDate_modification(thirdpartie.getDate_modification());
-            clientEntry.setId(Long.parseLong(thirdpartie.getId()));
-            clientEntry.setEmail(thirdpartie.getEmail());
-            clientEntry.setPhone(thirdpartie.getPhone());
-            clientEntry.setPays(thirdpartie.getPays());
-            clientEntry.setRegion(thirdpartie.getRegion());
-            clientEntry.setDepartement(thirdpartie.getDepartement());
-            clientEntry.setCode_client(thirdpartie.getCode_client());
-            clientEntry.setIs_synchro(1);
-
-            if (mDb.clientDao().getClientById(clientEntry.getId()) == null) {
+                if (mDb.clientDao().getClientById(clientEntry.getId()) == null) {
 //                Log.e(TAG, "onFindThirdpartieCompleted: insert clientEntry");
 //            insertion du client dans la BD
-                mDb.clientDao().insertClient(clientEntry);
-            } else {
+                    mDb.clientDao().insertClient(clientEntry);
+                } else {
 //                Log.e(TAG, "onFindThirdpartieCompleted: update clientEntry");
 //            mise a jour du client dans la BD
-                mDb.clientDao().updateClient(clientEntry);
+                    mDb.clientDao().updateClient(clientEntry);
+                }
             }
         }
 

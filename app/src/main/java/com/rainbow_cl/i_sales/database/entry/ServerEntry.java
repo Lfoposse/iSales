@@ -13,6 +13,7 @@ public class ServerEntry {
     @PrimaryKey(autoGenerate = false)
     private Long id;
     private String hostname;
+    private String hostname_img;
     private String raison_sociale;
     private String adresse;
     private String code_postal;
@@ -32,15 +33,17 @@ public class ServerEntry {
     }
 
     @Ignore
-    public ServerEntry(String title, String hostname, Boolean is_active) {
+    public ServerEntry(String title, String hostname, String hostname_img, Boolean is_active) {
         this.title = title;
         this.hostname = hostname;
+        this.hostname_img = hostname_img;
         this.is_active = is_active;
     }
 
     @Ignore
-    public ServerEntry(String hostname, String raison_sociale, String adresse, String code_postal, String ville, String departement, String pays, String devise, String telephone, String mail, String website, String note, String title, Boolean is_active) {
+    public ServerEntry(String hostname, String hostname_img, String raison_sociale, String adresse, String code_postal, String ville, String departement, String pays, String devise, String telephone, String mail, String website, String note, String title, Boolean is_active) {
         this.hostname = hostname;
+        this.hostname_img = hostname_img;
         this.raison_sociale = raison_sociale;
         this.adresse = adresse;
         this.code_postal = code_postal;
@@ -174,5 +177,13 @@ public class ServerEntry {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getHostname_img() {
+        return hostname_img;
+    }
+
+    public void setHostname_img(String hostname_img) {
+        this.hostname_img = hostname_img;
     }
 }

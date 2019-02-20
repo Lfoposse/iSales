@@ -11,6 +11,7 @@ import com.rainbow_cl.i_sales.database.dao.ClientDao;
 import com.rainbow_cl.i_sales.database.dao.CommandeDao;
 import com.rainbow_cl.i_sales.database.dao.CommandeLineDao;
 import com.rainbow_cl.i_sales.database.dao.PanierDao;
+import com.rainbow_cl.i_sales.database.dao.PaymentTypesDao;
 import com.rainbow_cl.i_sales.database.dao.ProduitDao;
 import com.rainbow_cl.i_sales.database.dao.ServerDao;
 import com.rainbow_cl.i_sales.database.dao.SignatureDao;
@@ -21,18 +22,20 @@ import com.rainbow_cl.i_sales.database.entry.ClientEntry;
 import com.rainbow_cl.i_sales.database.entry.CommandeEntry;
 import com.rainbow_cl.i_sales.database.entry.CommandeLineEntry;
 import com.rainbow_cl.i_sales.database.entry.PanierEntry;
+import com.rainbow_cl.i_sales.database.entry.PaymentTypesEntry;
 import com.rainbow_cl.i_sales.database.entry.ProduitEntry;
 import com.rainbow_cl.i_sales.database.entry.ServerEntry;
 import com.rainbow_cl.i_sales.database.entry.SignatureEntry;
 import com.rainbow_cl.i_sales.database.entry.TokenEntry;
 import com.rainbow_cl.i_sales.database.entry.UserEntry;
+import com.rainbow_cl.i_sales.remote.model.PaymentTypes;
 
 /**
  * Created by netserve on 21/09/2018.
  */
 
-@Database(entities = {ProduitEntry.class, ClientEntry.class, CategorieEntry.class, PanierEntry.class, TokenEntry.class, UserEntry.class, CommandeEntry.class, CommandeLineEntry.class, SignatureEntry.class, ServerEntry.class},
-        version = 3,
+@Database(entities = {ProduitEntry.class, ClientEntry.class, CategorieEntry.class, PanierEntry.class, TokenEntry.class, UserEntry.class, CommandeEntry.class, CommandeLineEntry.class, SignatureEntry.class, ServerEntry.class, PaymentTypesEntry.class},
+        version = 8,
         exportSchema = false)
 //@TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
@@ -86,5 +89,8 @@ public abstract class AppDatabase extends RoomDatabase {
 
     //    signature DAO
     public abstract ServerDao serverDao();
+
+    //    PaymentTypes DAO
+    public abstract PaymentTypesDao paymentTypesDao();
 
 }

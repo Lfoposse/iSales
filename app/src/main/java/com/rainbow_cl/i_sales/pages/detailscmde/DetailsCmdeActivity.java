@@ -53,7 +53,7 @@ public class DetailsCmdeActivity extends AppCompatActivity implements FindThirdp
         FindDocumentListener{
     private static final String TAG = DetailsCmdeActivity.class.getSimpleName();
 
-    private TextView mRefTV, mDateTV, mDateLivraisonTV, mTotalCmdeTV, mClientNom, mClientEmail, mClientAdresse;
+    private TextView mRefTV, mDateTV, mDateLivraisonTV, mModeRegTV, mTotalCmdeTV, mClientNom, mClientEmail, mClientAdresse;
     private RecyclerView mRecyclerView;
     private ImageView mSignClientIV, mSignCommIV;
 
@@ -159,6 +159,8 @@ public class DetailsCmdeActivity extends AppCompatActivity implements FindThirdp
             livCal.add(Calendar.DATE, 1);
             mDateLivraisonTV.setText(dateFormat.format(livCal.getTime()));
         }
+
+        mModeRegTV.setText(mCmdeParcelable.getMode_reglement());
 
 //        Chargement des produit dans la liste
         produitParcelables.addAll(mCmdeParcelable.getProduits());
@@ -270,6 +272,7 @@ public class DetailsCmdeActivity extends AppCompatActivity implements FindThirdp
         mRefTV = findViewById(R.id.tv_detailscmde_ref);
         mDateTV = findViewById(R.id.tv_detailscmde_date);
         mDateLivraisonTV = findViewById(R.id.tv_detailscmde_datelivraison);
+        mModeRegTV = findViewById(R.id.tv_detailscmde_modereglement);
         mTotalCmdeTV = findViewById(R.id.tv_detailscmde_total);
         mClientNom = findViewById(R.id.tv_detailscmde_client_nom);
         mClientEmail = findViewById(R.id.tv_detailscmde_client_email);

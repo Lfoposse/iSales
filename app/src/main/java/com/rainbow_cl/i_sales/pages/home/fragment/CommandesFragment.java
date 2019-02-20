@@ -182,6 +182,11 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
             cmdeParcelable.setCommande_id(cmdeEntry.getCommande_id());
             cmdeParcelable.setIs_synchro(cmdeEntry.getIs_synchro());
             cmdeParcelable.setStatut(Integer.parseInt(cmdeEntry.getStatut() != null ? cmdeEntry.getStatut() : "1"));
+            cmdeParcelable.setMode_reglement(cmdeEntry.getMode_reglement());
+            cmdeParcelable.setMode_reglement_code(cmdeEntry.getMode_reglement_code());
+            cmdeParcelable.setMode_reglement_id(cmdeEntry.getMode_reglement_id());
+            cmdeParcelable.setNote_private(cmdeEntry.getNote_private());
+            cmdeParcelable.setNote_public(cmdeEntry.getNote_public());
 
 //            cmdeParcelable.setId(cmdeEntry.getId());
             cmdeParcelable.setRef(cmdeEntry.getRef());
@@ -712,6 +717,11 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
             cmdeEntry.setId(Long.parseLong(orderItem.getId()));
             cmdeEntry.setRef(orderItem.getRef());
             cmdeEntry.setStatut(orderItem.getStatut());
+            cmdeEntry.setMode_reglement_id(orderItem.getMode_reglement_id());
+            cmdeEntry.setMode_reglement(orderItem.getMode_reglement());
+            cmdeEntry.setMode_reglement_code(orderItem.getMode_reglement_code());
+            cmdeEntry.setNote_private(orderItem.getNote_private());
+            cmdeEntry.setNote_public(orderItem.getNote_public());
 
             /* Log.e(TAG, "onFindOrdersTaskComplete: timestamp=" + orderItem.getDate() +
                     " ref=" + orderItem.getRef() +

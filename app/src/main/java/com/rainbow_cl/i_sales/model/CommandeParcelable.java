@@ -15,6 +15,11 @@ import java.util.List;
 public class CommandeParcelable implements Parcelable {
     private String ref;
     private String total;
+    private String mode_reglement;
+    private String mode_reglement_id;
+    private String mode_reglement_code;
+    private String note_public;
+    private String note_private;
     private long id;
     private long commande_id;
     private long socid;
@@ -126,6 +131,46 @@ public class CommandeParcelable implements Parcelable {
         this.statut = statut;
     }
 
+    public String getMode_reglement() {
+        return mode_reglement;
+    }
+
+    public void setMode_reglement(String mode_reglement) {
+        this.mode_reglement = mode_reglement;
+    }
+
+    public String getMode_reglement_id() {
+        return mode_reglement_id;
+    }
+
+    public void setMode_reglement_id(String mode_reglement_id) {
+        this.mode_reglement_id = mode_reglement_id;
+    }
+
+    public String getMode_reglement_code() {
+        return mode_reglement_code;
+    }
+
+    public void setMode_reglement_code(String mode_reglement_code) {
+        this.mode_reglement_code = mode_reglement_code;
+    }
+
+    public String getNote_public() {
+        return note_public;
+    }
+
+    public void setNote_public(String note_public) {
+        this.note_public = note_public;
+    }
+
+    public String getNote_private() {
+        return note_private;
+    }
+
+    public void setNote_private(String note_private) {
+        this.note_private = note_private;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -135,6 +180,11 @@ public class CommandeParcelable implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.ref);
         dest.writeString(this.total);
+        dest.writeString(this.mode_reglement);
+        dest.writeString(this.mode_reglement_id);
+        dest.writeString(this.mode_reglement_code);
+        dest.writeString(this.note_public);
+        dest.writeString(this.note_private);
         dest.writeLong(this.id);
         dest.writeLong(this.commande_id);
         dest.writeLong(this.socid);
@@ -150,6 +200,11 @@ public class CommandeParcelable implements Parcelable {
     protected CommandeParcelable(Parcel in) {
         this.ref = in.readString();
         this.total = in.readString();
+        this.mode_reglement = in.readString();
+        this.mode_reglement_id = in.readString();
+        this.mode_reglement_code = in.readString();
+        this.note_public = in.readString();
+        this.note_private = in.readString();
         this.id = in.readLong();
         this.commande_id = in.readLong();
         this.socid = in.readLong();

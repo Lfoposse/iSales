@@ -35,6 +35,9 @@ public class Product {
     private String height;
     private String height_units;
     private String ref;
+    private String note;
+    private String note_private;
+    private String note_public;
 
     public Product() {
     }
@@ -277,5 +280,29 @@ public class Product {
 
     public void setRef(String ref) {
         this.ref = ref;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getNote_private() {
+        return note_private;
+    }
+
+    public void setNote_private(String note_private) {
+        this.note_private = note_private;
+    }
+
+    public String getNote_public() {
+        return note_public;
+    }
+
+    public void setNote_public(String note_public) {
+        this.note_public = note_public;
     }
 }

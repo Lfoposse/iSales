@@ -22,7 +22,7 @@
             android:layout_height="@dimen/panier_product_item_width"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/isales_no_image"
+            android:src="@drawable/isales_no_image"
             android:scaleType="fitXY" />
 
         <RelativeLayout

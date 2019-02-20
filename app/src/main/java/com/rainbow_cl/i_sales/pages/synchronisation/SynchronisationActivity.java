@@ -343,6 +343,9 @@ public class SynchronisationActivity extends AppCompatActivity
             clientEntry.setDepartement(thirdpartie.getDepartement());
             clientEntry.setCode_client(thirdpartie.getCode_client());
             clientEntry.setIs_synchro(1);
+            clientEntry.setNote(thirdpartie.getNote());
+            clientEntry.setNote_private(thirdpartie.getNote_private());
+            clientEntry.setNote_public(thirdpartie.getNote_public());
 
             if (mDb.clientDao().getClientById(clientEntry.getId()) == null) {
                 Log.e(TAG, "onFindThirdpartieCompleted: insert clientEntry");
@@ -402,6 +405,9 @@ public class SynchronisationActivity extends AppCompatActivity
                 produitEntry.setRef(productItem.getRef());
                 produitEntry.setStock_reel(productItem.getStock_reel());
                 produitEntry.setDescription(productItem.getDescription());
+                produitEntry.setNote(productItem.getNote());
+                produitEntry.setNote_public(productItem.getNote_public());
+                produitEntry.setNote_private(productItem.getNote_private());
 
                 Log.e(TAG, "onFindProductsCompleted: product name=" + produitEntry.getLabel());
                 if (mDb.produitDao().getProduitById(produitEntry.getId()) == null) {
@@ -546,6 +552,11 @@ public class SynchronisationActivity extends AppCompatActivity
             cmdeEntry.setId(Long.parseLong(orderItem.getId()));
             cmdeEntry.setRef(orderItem.getRef());
             cmdeEntry.setStatut(orderItem.getStatut());
+            cmdeEntry.setMode_reglement_id(orderItem.getMode_reglement_id());
+            cmdeEntry.setMode_reglement(orderItem.getMode_reglement());
+            cmdeEntry.setMode_reglement_code(orderItem.getMode_reglement_code());
+            cmdeEntry.setNote_private(orderItem.getNote_private());
+            cmdeEntry.setNote_public(orderItem.getNote_public());
 
             Log.e(TAG, "onFindOrdersTaskComplete: timestamp=" + orderItem.getDate() +
                     " ref=" + orderItem.getRef() +

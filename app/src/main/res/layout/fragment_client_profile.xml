@@ -231,6 +231,27 @@
                     android:paddingTop="@dimen/form_paddingV">
 
                     <EditText
+                        android:id="@+id/et_clientprofile_note"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/note"
+                        android:inputType="text"
+                        android:text=""
+                        android:textColorHint="@null"
+                        android:textSize="@dimen/form_input_size" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:paddingBottom="@dimen/form_paddingV"
+                    android:paddingEnd="@dimen/form_paddingH"
+                    android:paddingStart="@dimen/form_paddingH"
+                    android:paddingTop="@dimen/form_paddingV">
+
+                    <EditText
                         android:id="@+id/et_clientprofile_tva"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

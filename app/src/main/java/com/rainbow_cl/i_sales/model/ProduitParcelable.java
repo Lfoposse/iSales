@@ -45,6 +45,9 @@ public class ProduitParcelable implements Parcelable {
     private String total_tva;
     private String total_ttc;
     private long categorie_id;
+    private String note;
+    private String note_private;
+    private String note_public;
 
     private String local_poster_path;
     private DolPhoto poster;
@@ -353,6 +356,30 @@ public class ProduitParcelable implements Parcelable {
         this.categorie_id = categorie_id;
     }
 
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getNote_private() {
+        return note_private;
+    }
+
+    public void setNote_private(String note_private) {
+        this.note_private = note_private;
+    }
+
+    public String getNote_public() {
+        return note_public;
+    }
+
+    public void setNote_public(String note_public) {
+        this.note_public = note_public;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -395,6 +422,9 @@ public class ProduitParcelable implements Parcelable {
         dest.writeString(this.total_tva);
         dest.writeString(this.total_ttc);
         dest.writeLong(this.categorie_id);
+        dest.writeString(this.note);
+        dest.writeString(this.note_private);
+        dest.writeString(this.note_public);
         dest.writeString(this.local_poster_path);
         dest.writeParcelable(this.poster, flags);
     }
@@ -435,6 +465,9 @@ public class ProduitParcelable implements Parcelable {
         this.total_tva = in.readString();
         this.total_ttc = in.readString();
         this.categorie_id = in.readLong();
+        this.note = in.readString();
+        this.note_private = in.readString();
+        this.note_public = in.readString();
         this.local_poster_path = in.readString();
         this.poster = in.readParcelable(DolPhoto.class.getClassLoader());
     }

@@ -3,6 +3,8 @@ package com.rainbow_cl.i_sales.remote;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.rainbow_cl.i_sales.database.AppDatabase;
 import com.rainbow_cl.i_sales.database.entry.TokenEntry;
 
@@ -14,6 +16,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -29,7 +32,11 @@ public class RetrofitClient {
     public static Retrofit getClient(final Context context, String url) {
 //        Log.e(TAG, "getClient: input baseURL="+url );
 //        if (retrofit == null) {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+// set your desired log level
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
+//                    .addInterceptor(logging)
             OkHttpClient httpClient = new OkHttpClient.Builder()
                     .addInterceptor(new Interceptor() {
                         @Override
@@ -64,10 +71,12 @@ public class RetrofitClient {
                     .readTimeout(120, TimeUnit.SECONDS)
                     .connectTimeout(120, TimeUnit.SECONDS)
                     .build();
-
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
             retrofit = new Retrofit.Builder()
                     .client(httpClient)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .baseUrl(url)
                     .build();
 //        }

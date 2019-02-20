@@ -41,7 +41,7 @@ import retrofit2.Response;
 public class AddCustomerActivity extends AppCompatActivity {
     private static final String TAG = AddCustomerActivity.class.getSimpleName();
     private View mEnregistrerView;
-    private EditText mNomEntrepriseET, mAdresseET, mEmailET, mTelephoneET, mVilleET, mDepartementET, mRegionET, mPaysET;
+    private EditText mNomEntrepriseET, mAdresseET, mEmailET, mTelephoneET, mNoteET, mVilleET, mDepartementET, mRegionET, mPaysET;
     private ImageView mSelectLogoIV;
     private TextView mLogoNameTV;
     private Bitmap mLogoBitmap;
@@ -71,6 +71,7 @@ public class AddCustomerActivity extends AppCompatActivity {
         String adresse = mAdresseET.getText().toString();
         String email = mEmailET.getText().toString();
         String telephone = mTelephoneET.getText().toString();
+        String note = mNoteET.getText().toString();
         String ville = mVilleET.getText().toString();
         String departement = mDepartementET.getText().toString();
         String region = mRegionET.getText().toString();
@@ -144,13 +145,13 @@ public class AddCustomerActivity extends AppCompatActivity {
             Toast.makeText(AddCustomerActivity.this, getString(R.string.veuillez_choisir_logo), Toast.LENGTH_LONG).show();
             return;
         } else {
-            saveClient(nom, adresse, email, telephone, pays, region, departement, ville);
+            saveClient(nom, adresse, email, telephone, note, pays, region, departement, ville);
         }
     }
 
 
     //    enregistre un client dans le serveur
-    private void saveClient(final String nom, final String adresse, final String email, final String telephone, final String pays, final String region, final String departement, final String ville) {
+    private void saveClient(final String nom, final String adresse, final String email, final String telephone, final String note, final String pays, final String region, final String departement, final String ville) {
 //        Si le téléphone n'est pas connecté
         if (!ConnectionManager.isPhoneConnected(AddCustomerActivity.this)) {
             Toast.makeText(AddCustomerActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
@@ -174,7 +175,7 @@ public class AddCustomerActivity extends AppCompatActivity {
         logoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baosLogo);
         byte[] bytesSignComm = baosLogo.toByteArray();
 
-        Date today = new Date();
+        final Date today = new Date();
         final SimpleDateFormat logoFormat = new SimpleDateFormat("yyMMdd-HHmmss");
         final String logoName = String.format("client_logo_%s", logoFormat.format(today));
         String encodeSignComm = Base64.encodeToString(bytesSignComm, Base64.NO_WRAP);
@@ -186,14 +187,13 @@ public class AddCustomerActivity extends AppCompatActivity {
         logoClient.setFileencoding("base64");
         logoClient.setModulepart("societe");
 
-        /*
         Call<String> callUploadLogoClient = ApiUtils.getISalesService(AddCustomerActivity.this).uploadDocument(logoClient);
         callUploadLogoClient.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> responseLogoClient) {
                 if (responseLogoClient.isSuccessful()) {
                     String responseLogoClientBody = responseLogoClient.body();
-                    Log.e(TAG, "onResponse: responseLogoClient=" + responseLogoClientBody);*/
+                    Log.e(TAG, "onResponse: responseLogoClient=" + responseLogoClientBody);
 
 //                    Date today = new Date();
                     final SimpleDateFormat refOrderFormat = new SimpleDateFormat("yyMMdd-HHmmss");
@@ -206,12 +206,14 @@ public class AddCustomerActivity extends AppCompatActivity {
                     queryBody.setDepartement(departement);
                     queryBody.setPays(pays);
                     queryBody.setPhone(telephone);
+                    queryBody.setNote(note);
+                    queryBody.setNote_private(note);
                     queryBody.setEmail(email);
                     queryBody.setFirstname(nom);
                     queryBody.setName(String.format("%s", nom));
                     queryBody.setCode_client(codeCLient);
                     queryBody.setClient("1");
-//                    queryBody.setName_alias(responseLogoClientBody);
+//                    queryBody.setName_alias(responseLogoClientBody);659331009
                     queryBody.setName_alias("");
 
                     Call<Long> callSaveClient = ApiUtils.getISalesService(AddCustomerActivity.this).saveThirdpartie(queryBody);
@@ -255,7 +257,7 @@ public class AddCustomerActivity extends AppCompatActivity {
                         }
                     });
 
-                /*} else {
+                } else {
 
                     try {
                         String errBody = responseLogoClient.body();
@@ -289,6 +291,8 @@ public class AddCustomerActivity extends AppCompatActivity {
                     queryBody.setDepartement(departement);
                     queryBody.setPays(pays);
                     queryBody.setPhone(telephone);
+                    queryBody.setNote(note);
+                    queryBody.setNote_private(note);
                     queryBody.setEmail(email);
                     queryBody.setFirstname(nom);
                     queryBody.setName(String.format("%s", nom));
@@ -349,7 +353,7 @@ public class AddCustomerActivity extends AppCompatActivity {
                 return;
 
             }
-        });*/
+        });
 
     }
 
@@ -393,6 +397,7 @@ public class AddCustomerActivity extends AppCompatActivity {
         mAdresseET = (EditText) findViewById(R.id.et_client_adresse);
         mEmailET = (EditText) findViewById(R.id.et_client_email);
         mTelephoneET = (EditText) findViewById(R.id.et_client_telephone);
+        mNoteET = (EditText) findViewById(R.id.et_client_note);
         mVilleET = (EditText) findViewById(R.id.et_client_ville);
         mDepartementET = (EditText) findViewById(R.id.et_client_departement);
         mRegionET = (EditText) findViewById(R.id.et_client_region);

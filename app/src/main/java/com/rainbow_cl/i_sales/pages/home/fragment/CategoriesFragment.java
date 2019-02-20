@@ -306,6 +306,9 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             produitParcelable.setLocal_poster_path(produitEntry.getFile_content());
             produitParcelable.setCategorie_id(produitEntry.getCategorie_id());
             produitParcelable.setTva_tx(produitEntry.getTva_tx());
+            produitParcelable.setNote(produitEntry.getNote());
+            produitParcelable.setNote_private(produitEntry.getNote_private());
+            produitParcelable.setNote_public(produitEntry.getNote_public());
 
             produitParcelables.add(produitParcelable);
         }
@@ -393,6 +396,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 
 //        initialisation des valeur du produit a ajouter dans le panier
         panierEntry.setId(produitParcelable.getId());
+        panierEntry.setFk_product(produitParcelable.getId());
         panierEntry.setLabel(produitParcelable.getLabel());
         panierEntry.setDescription(produitParcelable.getDescription());
         panierEntry.setPrice(produitParcelable.getPrice());
@@ -451,6 +455,9 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
                 produitEntry.setStock_reel(productItem.getStock_reel());
                 produitEntry.setDescription(productItem.getDescription());
                 produitEntry.setTva_tx(productItem.getTva_tx());
+                produitEntry.setNote(productItem.getNote());
+                produitEntry.setNote_public(productItem.getNote_public());
+                produitEntry.setNote_private(productItem.getNote_private());
 
 //                Log.e(TAG, "onFindProductsCompleted: product name=" + produitEntry.getLabel());
                 if (mDb.produitDao().getProduitById(produitEntry.getId()) == null) {

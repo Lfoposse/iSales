@@ -172,11 +172,10 @@ public class ProduitsAdapter extends RecyclerView.Adapter<ProduitsAdapter.Produi
                     .into(holder.poster);
         }
         Log.e(TAG, "onBindViewHolder: getFilename="+produitsListFiltered.get(position).getPoster().getFilename());
-        String original_file = produitsListFiltered.get(position).getRef() + "/" + produitsListFiltered.get(position).getPoster().getFilename();
-        String module_part = "produit";
+
 //        Log.e(TAG, "onBindViewHolder: downloadLinkImg="+ApiUtils.getDownloadImg(mContext, module_part, original_file));
         Picasso.with(mContext)
-                .load(ApiUtils.getDownloadImg(mContext, module_part, original_file))
+                .load(ApiUtils.getDownloadProductImg(mContext, produitsListFiltered.get(position).getRef()))
                 .placeholder(R.drawable.isales_no_image)
                 .error(R.drawable.isales_no_image)
                 .into(holder.poster, new com.squareup.picasso.Callback() {

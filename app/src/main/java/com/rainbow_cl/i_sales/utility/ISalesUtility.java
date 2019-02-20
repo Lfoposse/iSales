@@ -83,7 +83,9 @@ public final class ISalesUtility {
 
     // Renvoi le nom de l'image du produit a partir de la description
     public static String getDescProduit(String description) {
-        if (description == null || description.isEmpty()) {
+        return description;
+
+        /*if (description == null || description.isEmpty()) {
             return null;
         }
 
@@ -103,7 +105,8 @@ public final class ISalesUtility {
         }*/
         // console.log(this.TAG, "descriptionTab:getImgProduit ", descriptionTab);
         // console.log(this.TAG, "descriptionTab:imgTab ", imgTab);
-        return descriptionTab[1];
+
+//        return descriptionTab[1];
     }
 
     // Renvoi le nom les images carousel du produit a partir de la description

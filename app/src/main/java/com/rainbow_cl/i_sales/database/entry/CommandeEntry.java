@@ -16,6 +16,11 @@ public class CommandeEntry {
     private Long date;
     private Long date_commande;
     private Long date_livraison;
+    private String mode_reglement;
+    private String mode_reglement_id;
+    private String mode_reglement_code;
+    private String note_public;
+    private String note_private;
     private String user_author_id;
     private String user_valid;
     private String ref;
@@ -138,5 +143,45 @@ public class CommandeEntry {
 
     public void setStatut(String statut) {
         this.statut = statut;
+    }
+
+    public String getMode_reglement() {
+        return mode_reglement;
+    }
+
+    public void setMode_reglement(String mode_reglement) {
+        this.mode_reglement = mode_reglement;
+    }
+
+    public String getMode_reglement_id() {
+        return mode_reglement_id;
+    }
+
+    public void setMode_reglement_id(String mode_reglement_id) {
+        this.mode_reglement_id = mode_reglement_id;
+    }
+
+    public String getMode_reglement_code() {
+        return mode_reglement_code;
+    }
+
+    public void setMode_reglement_code(String mode_reglement_code) {
+        this.mode_reglement_code = mode_reglement_code;
+    }
+
+    public String getNote_public() {
+        return note_public;
+    }
+
+    public void setNote_public(String note_public) {
+        this.note_public = note_public;
+    }
+
+    public String getNote_private() {
+        return note_private;
+    }
+
+    public void setNote_private(String note_private) {
+        this.note_private = note_private;
     }
 }

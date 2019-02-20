@@ -173,18 +173,16 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
         } else {
             // Permission has already been granted
 
-//        si il y a deja un user alors on va directement a l'accueil
+            /*
+//        si il y a deja un user alors on va directement a l'accueil 654205564
             if (mDb.userDao().getUser().size() > 0) {
 //        aller a la page d'accueil
                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                 startActivity(intent);
 
                 return;
-            }
+            } */
         }
-
-//        Ajout les serveurs dans la BD
-        initServerUrl();
 
         mServerIV = (ImageView) findViewById(R.id.iv_login_server);
         mServerET = (EditText) findViewById(R.id.et_login_server);
@@ -224,6 +222,7 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                     attemptLogin();
+
                     return true;
                 }
                 return false;
@@ -240,6 +239,23 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
 
         mProgressView = findViewById(R.id.login_progress);
         mLoginFormView = findViewById(R.id.login_form);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+//        si il y a deja un user alors on va directement a l'accueil 654205564
+        if (mDb.userDao().getUser().size() > 0) {
+//        aller a la page d'accueil
+            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+            startActivity(intent);
+
+            return;
+        }
+
+//        Ajout les serveurs dans la BD
+        initServerUrl();
     }
 
     /**
@@ -429,10 +445,13 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
 //        serverEntries.add(new ServerEntry("Serveur de test Dolibarr Bananafw", "http://dolibarr.bananafw.com/api/index.php", false));
 //        serverEntries.add(new ServerEntry("France Food Compagny", "http://food.apps-dev.fr:80/api/index.php", false));
 //        serverEntries.add(new ServerEntry("SOif Express", "http://82.253.71.109/prod/soif_express/api/index.php", false));
-        serverEntries.add(new ServerEntry("http://82.253.71.109/prod/francefood_v8/api/index.php", "France Food company FFC", "2 rue Charles De Gaulle ZI La Mariniere,", "91070", "Bondoufle", "91 - Essonne", "France", "EURO", "0758542161", "contact@francefoodcompany.fr", "", "", "France Food company FFC", false));
-        serverEntries.add(new ServerEntry("http://82.253.71.109/prod/soif_express/api/index.php", "SOIF EXPRESS", "7 AV GABRIEL PERI", "91600", "SAVIGNY SUR ORGE", "91 - Essonne", "France", "EURO", "0758088361", "", "www.test.com", "", "SOIF EXPRESS", false));
+        serverEntries.add(new ServerEntry("http://82.253.71.109/prod/francefood_v8/api/index.php", "http://82.253.71.109/prod/francefood_v8/api/ryimg", "France Food company FFC", "2 rue Charles De Gaulle ZI La Mariniere,", "91070", "Bondoufle", "91 - Essonne", "France", "EURO", "0758542161", "contact@francefoodcompany.fr", "", "", "France Food company FFC", false));
+        serverEntries.add(new ServerEntry("http://soifexpress.apps-dev.fr/api/index.php", "http://82.253.71.109/prod/soif_express/api/ryimg", "SOIF EXPRESS", "7 AV GABRIEL PERI", "91600", "SAVIGNY SUR ORGE", "91 - Essonne", "France", "EURO", "0758088361", "", "www.test.com", "", "SOIF EXPRESS", false));
 
-        mDb.serverDao().deleteAllServers();
+//        ServerEntry serverEntry = mDb.serverDao().getActiveServer(true);
+//        if (serverEntry == null) {
+//            mDb.serverDao().deleteAllServers();
+//        }
 
         for (ServerEntry serverItem : serverEntries ) {
             if (mDb.serverDao().getServerByHostname(serverItem.getHostname()) == null) {

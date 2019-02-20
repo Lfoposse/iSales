@@ -29,6 +29,9 @@ public class ClientEntry {
     private String logo_content;
     private String code_client;
     private int is_synchro;
+    private String note;
+    private String note_private;
+    private String note_public;
 
     public ClientEntry() {
     }
@@ -175,5 +178,29 @@ public class ClientEntry {
 
     public void setCode_client(String code_client) {
         this.code_client = code_client;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getNote_private() {
+        return note_private;
+    }
+
+    public void setNote_private(String note_private) {
+        this.note_private = note_private;
+    }
+
+    public String getNote_public() {
+        return note_public;
+    }
+
+    public void setNote_public(String note_public) {
+        this.note_public = note_public;
     }
 }

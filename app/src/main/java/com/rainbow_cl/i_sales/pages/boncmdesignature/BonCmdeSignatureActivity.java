@@ -1,6 +1,8 @@
 package com.rainbow_cl.i_sales.pages.boncmdesignature;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +11,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,11 +23,13 @@ import com.rainbow_cl.i_sales.database.entry.ClientEntry;
 import com.rainbow_cl.i_sales.database.entry.CommandeEntry;
 import com.rainbow_cl.i_sales.database.entry.CommandeLineEntry;
 import com.rainbow_cl.i_sales.database.entry.PanierEntry;
+import com.rainbow_cl.i_sales.database.entry.PaymentTypesEntry;
 import com.rainbow_cl.i_sales.database.entry.SignatureEntry;
 import com.rainbow_cl.i_sales.database.entry.UserEntry;
 import com.rainbow_cl.i_sales.model.ClientParcelable;
 import com.rainbow_cl.i_sales.model.CommandeParcelable;
 import com.rainbow_cl.i_sales.model.ProduitParcelable;
+import com.rainbow_cl.i_sales.pages.login.LoginActivity;
 import com.rainbow_cl.i_sales.remote.ApiUtils;
 import com.rainbow_cl.i_sales.remote.ConnectionManager;
 import com.rainbow_cl.i_sales.remote.model.Document;
@@ -48,9 +53,11 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
     private static final String TAG = BonCmdeSignatureActivity.class.getSimpleName();
     private Button mAnnulerSignClientBTN, mAnnulerSignCommBTN, mEnregistrerBTN;
     private SignatureView mClientSignatureView, mCommSignatureView;
-    private TextView mClientName, mCommName, mDateLivraisonTV;
+    private TextView mClientName, mCommName, mDateLivraisonTV, mModeReglementTV;
+    private EditText mAcompteET;
     private Switch mSynchroServeurSW;
     private View mDateLivraisonVIEW;
+    private View mModeReglementVIEW;
 
     private Calendar calLivraison = null;
     private int todayYear, todayMonth, todayDay;
@@ -60,6 +67,8 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
     private CommandeParcelable mCmdeParcelable;
 
     private UserEntry mUserEntry;
+    private List<PaymentTypesEntry> paymentTypesEntries;
+    private PaymentTypesEntry paymentTypesChoosed = null;
 
     private double mTotalPanier = 0;
     private AppDatabase mDb;
@@ -104,6 +113,9 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
         cmdeEntry.setDate_commande(today.getTimeInMillis());
         cmdeEntry.setDate_livraison(dateLivraison.getTimeInMillis());
         cmdeEntry.setRef(refOrder);
+        cmdeEntry.setMode_reglement(paymentTypesChoosed.getLabel());
+        cmdeEntry.setMode_reglement_code(paymentTypesChoosed.getCode());
+        cmdeEntry.setMode_reglement_id(paymentTypesChoosed.getId());
         cmdeEntry.setTotal_ttc("" + mTotalPanier);
         cmdeEntry.setIs_synchro(0);
         cmdeEntry.setStatut("1");
@@ -126,7 +138,7 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
                 cmdeLineEntry.setRef(pdtParcelable.getRef());
                 cmdeLineEntry.setLabel(String.format("%s", pdtParcelable.getLabel()));
                 cmdeLineEntry.setQuantity(Integer.parseInt(pdtParcelable.getQty()));
-                cmdeLineEntry.setSubprice(pdtParcelable.getPrice_ttc());
+                cmdeLineEntry.setSubprice(pdtParcelable.getPrice());
                 cmdeLineEntry.setPrice(pdtParcelable.getPrice());
                 cmdeLineEntry.setPrice_ttc(pdtParcelable.getPrice_ttc());
                 cmdeLineEntry.setDescription(pdtParcelable.getDescription());
@@ -150,7 +162,7 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
                 cmdeLineEntry.setRef(entryItem.getRef());
                 cmdeLineEntry.setLabel(String.format("%s", entryItem.getLabel()));
                 cmdeLineEntry.setQuantity(entryItem.getQuantity());
-                cmdeLineEntry.setSubprice(entryItem.getPrice_ttc());
+                cmdeLineEntry.setSubprice(entryItem.getPrice());
                 cmdeLineEntry.setPrice(entryItem.getPrice());
                 cmdeLineEntry.setPrice_ttc(entryItem.getPrice_ttc());
                 cmdeLineEntry.setDescription(entryItem.getDescription());
@@ -225,6 +237,12 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
 //        newOrder.setDate_livraison(""+(calLivraison != null ? calLivraison.getTimeInMillis() : ""));
         newOrder.setDate_livraison("" + dateLivraisonOrder);
         newOrder.setRef(refOrder);
+        newOrder.setMode_reglement(paymentTypesChoosed.getLabel());
+        newOrder.setMode_reglement_code(paymentTypesChoosed.getCode());
+        newOrder.setMode_reglement_id(paymentTypesChoosed.getId());
+        if (!mAcompteET.getText().toString().equals("")) {
+            newOrder.setNote_public(String.format("%s a donné un acompte de %s %s", mClientParcelableSelected.getName(), mAcompteET.getText().toString(), getResources().getString(R.string.symbole_euro)));
+        }
         newOrder.setLines(new ArrayList<OrderLine>());
 
 //        s'il s'agit de la relance de la commande
@@ -232,18 +250,22 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
             for (ProduitParcelable pdtParcelable : mCmdeParcelable.getProduits()) {
                 OrderLine orderLine = new OrderLine();
 
-                Log.e(TAG, "pushCommande: label=" + pdtParcelable.getLabel() +
+                Log.e(TAG, "pushCommande:mCmdeParcelable not null label=" + pdtParcelable.getLabel() +
                         " ref=" + pdtParcelable.getRef() +
-                        " description=" + pdtParcelable.getDescription());
+                        " description=" + pdtParcelable.getDescription()+
+                        " tva_tx=" + pdtParcelable.getTva_tx()+
+                        " fk_product=" + pdtParcelable.getId());
 
                 orderLine.setRef(pdtParcelable.getRef());
+                orderLine.setFk_product(pdtParcelable.getId());
                 orderLine.setProduct_ref(pdtParcelable.getRef());
                 orderLine.setProduct_label(pdtParcelable.getLabel());
                 orderLine.setLibelle(pdtParcelable.getLabel());
-                orderLine.setLabel(String.format("%s", pdtParcelable.getLabel()));
+                orderLine.setLabel(String.format("%s-%s", pdtParcelable.getRef(), pdtParcelable.getLabel()));
                 orderLine.setProduct_desc(pdtParcelable.getDescription());
                 orderLine.setQty(String.valueOf(pdtParcelable.getQty()));
-                orderLine.setSubprice(pdtParcelable.getPrice_ttc());
+                orderLine.setTva_tx(pdtParcelable.getTva_tx());
+                orderLine.setSubprice(pdtParcelable.getPrice());
                 orderLine.setDesc(pdtParcelable.getDescription());
                 orderLine.setDescription(pdtParcelable.getDescription());
                 orderLine.setId(String.valueOf(pdtParcelable.getId()));
@@ -259,16 +281,20 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
 //            CommandeLineEntry cmdeLineEntry = new CommandeLineEntry();
                 Log.e(TAG, "pushCommande: label=" + entryItem.getLabel() +
                         " ref=" + entryItem.getRef() +
-                        " description=" + entryItem.getDescription());
+                        " description=" + entryItem.getDescription() +
+                        " tva_tx=" + entryItem.getTva_tx()+
+                        " fk_product=" + entryItem.getId());
 
                 orderLine.setRef(entryItem.getRef());
+                orderLine.setFk_product(entryItem.getFk_product());
                 orderLine.setProduct_ref(entryItem.getRef());
                 orderLine.setProduct_label(entryItem.getLabel());
                 orderLine.setLibelle(entryItem.getLabel());
                 orderLine.setLabel(String.format("%s", entryItem.getLabel()));
                 orderLine.setProduct_desc(entryItem.getDescription());
                 orderLine.setQty(String.valueOf(entryItem.getQuantity()));
-                orderLine.setSubprice(entryItem.getPrice_ttc());
+                orderLine.setTva_tx(entryItem.getTva_tx());
+                orderLine.setSubprice(entryItem.getPrice());
                 orderLine.setDesc(entryItem.getDescription());
                 orderLine.setDescription(entryItem.getDescription());
                 orderLine.setId(String.valueOf(entryItem.getId()));
@@ -359,13 +385,13 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
                                             String filenameComm = String.format("%s_signature-commercial.jpeg", refOrder);
 
 //                                creation du document signature client
-                                            Document signClient = new Document();
-                                            signClient.setFilecontent(encodeSignComm);
-                                            signClient.setFilename(filenameComm);
-                                            signClient.setFileencoding("base64");
-                                            signClient.setModulepart("commande");
+                                            Document signComm = new Document();
+                                            signComm.setFilecontent(encodeSignComm);
+                                            signComm.setFilename(filenameComm);
+                                            signComm.setFileencoding("base64");
+                                            signComm.setModulepart("commande");
 
-                                            Call<String> callUploadSignComm = ApiUtils.getISalesService(BonCmdeSignatureActivity.this).uploadDocument(signClient);
+                                            Call<String> callUploadSignComm = ApiUtils.getISalesService(BonCmdeSignatureActivity.this).uploadDocument(signComm);
                                             callUploadSignComm.enqueue(new Callback<String>() {
                                                 @Override
                                                 public void onResponse(Call<String> call, Response<String> responseSignComm) {
@@ -410,6 +436,7 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
 
                                                 @Override
                                                 public void onFailure(Call<String> call, Throwable t) {
+                                                    Log.e(TAG, "onFailure:uploadDocumentComm Throwable="+t.getMessage() );
                                                     progressDialog.dismiss();
 
                                                     Toast.makeText(BonCmdeSignatureActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
@@ -444,6 +471,7 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onFailure(Call<String> call, Throwable t) {
+                                        Log.e(TAG, "onFailure:uploadDocumentCLient Throwable="+t.getMessage() );
                                         progressDialog.dismiss();
 
                                         Toast.makeText(BonCmdeSignatureActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
@@ -477,6 +505,7 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call<Order> call, Throwable t) {
+                            Log.e(TAG, "onFailure:validateCustomerOrder Throwable="+t.getMessage() );
                             progressDialog.dismiss();
 
                             Toast.makeText(BonCmdeSignatureActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
@@ -507,6 +536,7 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Long> call, Throwable t) {
+                Log.e(TAG, "onFailure:saveCustomerOrder Throwable="+t.toString()+" | message="+t.getMessage() );
                 progressDialog.dismiss();
 
                 Toast.makeText(BonCmdeSignatureActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
@@ -515,6 +545,53 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
         });
     }
 
+
+    private CharSequence[] getServersSequence() {
+        paymentTypesEntries = mDb.paymentTypesDao().getAllPayments();
+//        Log.e(TAG, "onCreate: getServersSequence() serverEntries="+serverEntries.size());
+        CharSequence[] items = new String[paymentTypesEntries.size()];
+        for (int i = 0; i < paymentTypesEntries.size(); i++) {
+            items[i] = paymentTypesEntries.get(i).getLabel();
+        }
+//        Log.e(TAG, "onCreate: getServersSequence() after serverEntries="+items.length);
+
+        return items;
+
+    }
+
+    private void showServersSelect() {
+        final int[] exportChoice = {-1};
+        AlertDialog.Builder builder = new AlertDialog.Builder(BonCmdeSignatureActivity.this);
+        builder.setTitle("Veuillez sélectioner le mode de règlement");
+        builder.setSingleChoiceItems(getServersSequence(), -1, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                exportChoice[0] = item;
+//                Toast.makeText(getApplicationContext(), FlashInventoryUtility.getExportFormat()[item], Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setPositiveButton("VALIDER",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if (exportChoice[0] >= 0) {
+                            paymentTypesChoosed = paymentTypesEntries.get(exportChoice[0]);
+
+                            mModeReglementTV.setText(paymentTypesChoosed.getLabel());
+//                            mServerET.setSelection(mServerET.getText().toString().length());  696492069
+                        }
+                    }
+                });
+        builder.setNegativeButton("ANNULER",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.setCancelable(false);
+        alert.setCanceledOnTouchOutside(false);
+        alert.show();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -564,6 +641,9 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
         mSynchroServeurSW = (Switch) findViewById(R.id.switch_boncmde_signature);
         mDateLivraisonVIEW = findViewById(R.id.view_boncmde_datelivraison);
         mDateLivraisonTV = (TextView) findViewById(R.id.tv_boncmde_datelivraison);
+        mModeReglementVIEW = findViewById(R.id.view_boncmde_modereglement);
+        mModeReglementTV = (TextView) findViewById(R.id.tv_boncmde_modereglement);
+        mAcompteET = (EditText) findViewById(R.id.et_boncmde_acompte);
 
 //        Définition des dates courantes
         Calendar calendar = Calendar.getInstance();
@@ -625,6 +705,12 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
                         .show();
             }
         });
+        mModeReglementVIEW.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showServersSelect();
+            }
+        });
 
 //        Enregistrement de la commande
         mEnregistrerBTN.setOnClickListener(new View.OnClickListener() {
@@ -642,6 +728,11 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
                 }
                 if (calLivraison == null) {
                     Toast.makeText(BonCmdeSignatureActivity.this, "Veuillez choisir la date de livraison.", Toast.LENGTH_LONG).show();
+
+                    return;
+                }
+                if (paymentTypesChoosed == null) {
+                    Toast.makeText(BonCmdeSignatureActivity.this, "Veuillez choisir le mode de règlement.", Toast.LENGTH_LONG).show();
 
                     return;
                 }

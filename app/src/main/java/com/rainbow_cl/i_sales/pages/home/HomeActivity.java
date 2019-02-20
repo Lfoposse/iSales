@@ -1,6 +1,7 @@
 package com.rainbow_cl.i_sales.pages.home;
 
 import com.rainbow_cl.i_sales.R;
+import com.rainbow_cl.i_sales.database.AppDatabase;
 import com.rainbow_cl.i_sales.interfaces.ClientsAdapterListener;
 import com.rainbow_cl.i_sales.interfaces.DialogCategorieListener;
 import com.rainbow_cl.i_sales.interfaces.DialogClientListener;
@@ -16,6 +17,7 @@ import com.rainbow_cl.i_sales.pages.home.fragment.CommandesFragment;
 import com.rainbow_cl.i_sales.pages.home.fragment.AProposFragment;
 import com.rainbow_cl.i_sales.pages.home.fragment.PanierFragment;
 import com.rainbow_cl.i_sales.pages.home.fragment.ProfilFragment;
+import com.rainbow_cl.i_sales.task.FindPaymentTypesTask;
 
 
 import android.os.Bundle;
@@ -49,6 +51,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private ClientsFragment masterClientFragment;
     private ClientProfileFragment detailsClientProfileFragment;
+
+    private AppDatabase mDb;
 
     private String tabNames[] = {"clients", "categories", "panier", "commandes", "profil", "a propos"};
 
@@ -273,6 +277,12 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        this.mDb = AppDatabase.getInstance(HomeActivity.this);
+        if (this.mDb.paymentTypesDao().getAllPayments().size() <= 0 ) {
+            FindPaymentTypesTask task = new FindPaymentTypesTask(HomeActivity.this, null);
+            task.execute();
+        }
 
         initView();
 

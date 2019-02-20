@@ -185,6 +185,7 @@
     <string name="synchro_commandes">Synchro Commandes</string>
     <string name="quantite_">Quantité :</string>
     <string name="veuillez_saisir_prix_vente">Veuillez saisir le Prix de vente.</string>
+    <string name="prix_vente_trop_petit">Prix de vente trop petit.</string>
     <string name="veuillez_saisir_quantite">Veuillez saisir la Quantité.</string>
     <string name="numero_tva">Numéro TVA</string>
     <string name="numero_siret">Numéro Siret</string>
@@ -193,6 +194,7 @@
     <string name="parametres">Paramètres</string>
     <string name="echec_envoi_logo_client">Echec d\'envoi du logo client.</string>
     <string name="toutes_les_categories">Toutes les categories</string>
+    <string name="note">Note</string>
 
     <!-- Strings related to Settings -->
 

@@ -176,10 +176,10 @@ public class PanierProduitAdapter extends RecyclerView.Adapter<PanierProduitAdap
             }
         });
 
-        if (panierEntry.getFile_content() != null) {
-            Log.e(TAG, "onBindViewHolder: getPoster_content"+panierEntry.getFile_content());
+        if (panierEntry.getPoster_content() != null) {
+            Log.e(TAG, "onBindViewHolder: getPoster_content"+panierEntry.getPoster_content());
 //            si le fichier existe dans la memoire locale
-            File imgFile = new File(panierEntry.getFile_content());
+            File imgFile = new File(panierEntry.getPoster_content());
             if (imgFile.exists()) {
                 Picasso.with(mContext)
                         .load(imgFile)
@@ -202,9 +202,9 @@ public class PanierProduitAdapter extends RecyclerView.Adapter<PanierProduitAdap
 //        holder.poster.setBackgroundResource(R.drawable.isales_no_image);
         String original_file = panierEntry.getRef() + "/" + panierEntry.getPoster_content();
         String module_part = "produit";
-        Log.e(TAG, "onBindViewHolder: downloadLinkImg=" + ApiUtils.getDownloadImg(mContext, module_part, original_file));
+        Log.e(TAG, "onBindViewHolder: downloadLinkImg=" + ApiUtils.getDownloadProductImg(mContext, panierEntry.getRef()));
         Picasso.with(mContext)
-                .load(ApiUtils.getDownloadImg(mContext, module_part, original_file))
+                .load(ApiUtils.getDownloadProductImg(mContext, panierEntry.getRef()))
                 .placeholder(R.drawable.isales_no_image)
                 .error(R.drawable.isales_no_image)
                 .into(holder.poster);

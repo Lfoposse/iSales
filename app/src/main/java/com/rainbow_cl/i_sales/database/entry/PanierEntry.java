@@ -32,6 +32,7 @@ public class PanierEntry {
     private String surface;
     private String surface_units;
     private String volume;
+    private long fk_product;
     private String volume_units;
     private String date_creation;
     private String date_modification;
@@ -309,5 +310,13 @@ public class PanierEntry {
 
     public void setPoster_content(String poster_content) {
         this.poster_content = poster_content;
+    }
+
+    public long getFk_product() {
+        return fk_product;
+    }
+
+    public void setFk_product(long fk_product) {
+        this.fk_product = fk_product;
     }
 }

@@ -26,6 +26,9 @@ public class ClientParcelable implements Parcelable {
     private String code_client;
     private long id;
     private int is_synchro;
+    private String note;
+    private String note_private;
+    private String note_public;
 
     private DolPhoto poster;
 
@@ -174,6 +177,30 @@ public class ClientParcelable implements Parcelable {
         this.code_client = code_client;
     }
 
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getNote_private() {
+        return note_private;
+    }
+
+    public void setNote_private(String note_private) {
+        this.note_private = note_private;
+    }
+
+    public String getNote_public() {
+        return note_public;
+    }
+
+    public void setNote_public(String note_public) {
+        this.note_public = note_public;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -197,6 +224,9 @@ public class ClientParcelable implements Parcelable {
         dest.writeString(this.code_client);
         dest.writeLong(this.id);
         dest.writeInt(this.is_synchro);
+        dest.writeString(this.note);
+        dest.writeString(this.note_private);
+        dest.writeString(this.note_public);
         dest.writeParcelable(this.poster, flags);
     }
 
@@ -217,6 +247,9 @@ public class ClientParcelable implements Parcelable {
         this.code_client = in.readString();
         this.id = in.readLong();
         this.is_synchro = in.readInt();
+        this.note = in.readString();
+        this.note_private = in.readString();
+        this.note_public = in.readString();
         this.poster = in.readParcelable(DolPhoto.class.getClassLoader());
     }
 

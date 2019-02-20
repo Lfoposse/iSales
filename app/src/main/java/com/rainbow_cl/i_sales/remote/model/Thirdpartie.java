@@ -42,6 +42,9 @@ public class Thirdpartie {
     private String name;
     private String lastname;
     private String firstname;
+    private String note;
+    private String note_private;
+    private String note_public;
 
     public Thirdpartie() {
     }
@@ -340,5 +343,29 @@ public class Thirdpartie {
 
     public void setLogo_mini(String logo_mini) {
         this.logo_mini = logo_mini;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getNote_private() {
+        return note_private;
+    }
+
+    public void setNote_private(String note_private) {
+        this.note_private = note_private;
+    }
+
+    public String getNote_public() {
+        return note_public;
+    }
+
+    public void setNote_public(String note_public) {
+        this.note_public = note_public;
     }
 }

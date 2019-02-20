@@ -14,6 +14,7 @@ public class OrderLine {
     private String product_label;
     private String product_desc;
     private String qty;
+    private String tva_tx;
     private String price;
     private String subprice;
     private String desc;
@@ -22,6 +23,7 @@ public class OrderLine {
     private String total_ttc;
     private String description;
     private long fk_commande;
+    private long fk_product;
     private long commande_id;
 
     public OrderLine() {
@@ -169,5 +171,21 @@ public class OrderLine {
 
     public void setCommande_id(long commande_id) {
         this.commande_id = commande_id;
+    }
+
+    public String getTva_tx() {
+        return tva_tx;
+    }
+
+    public void setTva_tx(String tva_tx) {
+        this.tva_tx = tva_tx;
+    }
+
+    public long getFk_product() {
+        return fk_product;
+    }
+
+    public void setFk_product(long fk_product) {
+        this.fk_product = fk_product;
     }
 }
