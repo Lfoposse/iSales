@@ -12,6 +12,7 @@ import com.rainbow_cl.i_sales.database.dao.CommandeDao;
 import com.rainbow_cl.i_sales.database.dao.CommandeLineDao;
 import com.rainbow_cl.i_sales.database.dao.PanierDao;
 import com.rainbow_cl.i_sales.database.dao.PaymentTypesDao;
+import com.rainbow_cl.i_sales.database.dao.ProductCustPriceDao;
 import com.rainbow_cl.i_sales.database.dao.ProduitDao;
 import com.rainbow_cl.i_sales.database.dao.ServerDao;
 import com.rainbow_cl.i_sales.database.dao.SignatureDao;
@@ -23,6 +24,7 @@ import com.rainbow_cl.i_sales.database.entry.CommandeEntry;
 import com.rainbow_cl.i_sales.database.entry.CommandeLineEntry;
 import com.rainbow_cl.i_sales.database.entry.PanierEntry;
 import com.rainbow_cl.i_sales.database.entry.PaymentTypesEntry;
+import com.rainbow_cl.i_sales.database.entry.ProductCustPriceEntry;
 import com.rainbow_cl.i_sales.database.entry.ProduitEntry;
 import com.rainbow_cl.i_sales.database.entry.ServerEntry;
 import com.rainbow_cl.i_sales.database.entry.SignatureEntry;
@@ -34,15 +36,15 @@ import com.rainbow_cl.i_sales.remote.model.PaymentTypes;
  * Created by netserve on 21/09/2018.
  */
 
-@Database(entities = {ProduitEntry.class, ClientEntry.class, CategorieEntry.class, PanierEntry.class, TokenEntry.class, UserEntry.class, CommandeEntry.class, CommandeLineEntry.class, SignatureEntry.class, ServerEntry.class, PaymentTypesEntry.class},
-        version = 8,
+@Database(entities = {ProduitEntry.class, ClientEntry.class, CategorieEntry.class, PanierEntry.class, TokenEntry.class, UserEntry.class, CommandeEntry.class, CommandeLineEntry.class, SignatureEntry.class, ServerEntry.class, PaymentTypesEntry.class, ProductCustPriceEntry.class},
+        version = 10,
         exportSchema = false)
 //@TypeConverters(DateConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String LOG_TAG = AppDatabase.class.getSimpleName();
     private static final Object LOCK = new Object();
-    private static final String DATABASE_NAME = "i-sales_store";
+    private static final String DATABASE_NAME = "isales_store";
     private static AppDatabase sInstance;
 
     public static AppDatabase getInstance(Context context) {
@@ -92,5 +94,8 @@ public abstract class AppDatabase extends RoomDatabase {
 
     //    PaymentTypes DAO
     public abstract PaymentTypesDao paymentTypesDao();
+
+    //    ProductCustomerPrice DAO
+    public abstract ProductCustPriceDao productCustPriceDao();
 
 }

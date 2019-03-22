@@ -31,6 +31,7 @@ public class ClientParcelable implements Parcelable {
     private String note_public;
 
     private DolPhoto poster;
+    private int is_current;
 
     public ClientParcelable() {}
 
@@ -201,6 +202,14 @@ public class ClientParcelable implements Parcelable {
         this.note_public = note_public;
     }
 
+    public int getIs_current() {
+        return is_current;
+    }
+
+    public void setIs_current(int is_current) {
+        this.is_current = is_current;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -228,6 +237,7 @@ public class ClientParcelable implements Parcelable {
         dest.writeString(this.note_private);
         dest.writeString(this.note_public);
         dest.writeParcelable(this.poster, flags);
+        dest.writeInt(this.is_current);
     }
 
     protected ClientParcelable(Parcel in) {
@@ -251,6 +261,7 @@ public class ClientParcelable implements Parcelable {
         this.note_private = in.readString();
         this.note_public = in.readString();
         this.poster = in.readParcelable(DolPhoto.class.getClassLoader());
+        this.is_current = in.readInt();
     }
 
     public static final Creator<ClientParcelable> CREATOR = new Creator<ClientParcelable>() {

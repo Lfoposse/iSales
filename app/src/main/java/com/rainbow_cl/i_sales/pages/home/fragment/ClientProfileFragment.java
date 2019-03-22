@@ -4,7 +4,6 @@ package com.rainbow_cl.i_sales.pages.home.fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,12 +17,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rainbow_cl.i_sales.R;
+import com.rainbow_cl.i_sales.database.AppDatabase;
+import com.rainbow_cl.i_sales.database.entry.ClientEntry;
 import com.rainbow_cl.i_sales.interfaces.ClientsAdapterListener;
 import com.rainbow_cl.i_sales.interfaces.DialogClientListener;
 import com.rainbow_cl.i_sales.interfaces.MyCropImageListener;
@@ -32,8 +35,8 @@ import com.rainbow_cl.i_sales.remote.ApiUtils;
 import com.rainbow_cl.i_sales.remote.ConnectionManager;
 import com.rainbow_cl.i_sales.remote.model.Document;
 import com.rainbow_cl.i_sales.remote.model.Thirdpartie;
+import com.rainbow_cl.i_sales.task.FindProductCustomerPriceTask;
 import com.rainbow_cl.i_sales.utility.BlurBuilder;
-import com.rainbow_cl.i_sales.utility.CircleTransform;
 import com.rainbow_cl.i_sales.utility.ISalesUtility;
 import com.soundcloud.android.crop.Crop;
 import com.squareup.picasso.Picasso;
@@ -62,11 +65,15 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
     private EditText mNomEntreprise, mAdresse, mEmail, mPhone, mPays, mRegion, mDepartement, mVille, mNote;
     private TextView mCodeClient, mDatecreation, mDatemodification;
     private ImageView mPoster, mPosterBlurry, mCallIV, mMapIV, mMailIV;
+    private RadioButton mRadioBtnCurrent;
     private View mModifierView, mAnnulerView;
     private FloatingActionButton mLogoFloatingBtn;
 
     private static MyCropImageListener myCropImageListener;
     private static ClientsAdapterListener mClientsAdapterListener;
+
+    //    database instance
+    private AppDatabase mDb;
 
     public ClientProfileFragment() {
         // Required empty public constructor
@@ -92,6 +99,8 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_client_profile, container, false);
 
+        mDb = AppDatabase.getInstance(getContext().getApplicationContext());
+
         mPoster = (ImageView) rootView.findViewById(R.id.user_profile_avatar);
         mCallIV = (ImageView) rootView.findViewById(R.id.iv_clientprofile_call);
         mMapIV = (ImageView) rootView.findViewById(R.id.iv_clientprofile_map);
@@ -106,6 +115,7 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
         mRegion = (EditText) rootView.findViewById(R.id.et_clientprofile_region);
         mDepartement = (EditText) rootView.findViewById(R.id.et_clientprofile_departement);
         mVille = (EditText) rootView.findViewById(R.id.et_clientprofile_ville);
+        mRadioBtnCurrent = (RadioButton) rootView.findViewById(R.id.rb_clientprofile_current);
         mCodeClient = (TextView) rootView.findViewById(R.id.tv_clientprofile_code);
         mDatecreation = (TextView) rootView.findViewById(R.id.tv_clientprofile_datecreation);
         mDatemodification = (TextView) rootView.findViewById(R.id.tv_clientprofile_datemodification);
@@ -175,6 +185,37 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
             }
         });
 
+        mRadioBtnCurrent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Log.e(TAG, "onCheckedChanged: BEFORE checked=" + mRadioBtnCurrent.isChecked() +
+                        " is_current=" + mClientParcelable.getIs_current() +
+                        " idclient=" + mClientParcelable.getId());
+
+                if (mClientParcelable.getIs_current() == 0) {
+                    mRadioBtnCurrent.setChecked(true);
+                    mClientParcelable.setIs_current(1);
+
+                    mDb.clientDao().updateAllCurrentClient();
+                    mDb.clientDao().updateCurrentClient(1, mClientParcelable.getId());
+
+//        Si le téléphone est connecté et le client synchronise avec le serveur
+                    if (ConnectionManager.isPhoneConnected(getContext()) && mClientParcelable.getIs_synchro() == 1) {
+                        FindProductCustomerPriceTask task = new FindProductCustomerPriceTask(getContext(), mClientParcelable.getId(), null);
+                        task.execute();
+                    }
+                } else {
+                    mRadioBtnCurrent.setChecked(false);
+                    mClientParcelable.setIs_current(0);
+
+                    mDb.clientDao().updateAllCurrentClient();
+                    mDb.productCustPriceDao().deleteAllProductCustPrice();
+                }
+                Log.e(TAG, "onCheckedChanged: AFTER checked=" + mRadioBtnCurrent.isChecked()  + " is_current=" + mClientParcelable.getIs_current());
+            }
+        });
+
         return rootView;
     }
 
@@ -212,7 +253,7 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
 //        passage des parametres de la requete au fragment
         mClientParcelable = clientParcelable;
         mPosition = position;
-        Log.e(TAG, "onClientDialogSelected: name=" + mClientParcelable.getName()+" mPosition="+mPosition);
+        Log.e(TAG, "onClientDialogSelected: name=" + mClientParcelable.getName() + " mPosition=" + mPosition);
 
         initViewContent();
     }
@@ -345,6 +386,21 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
         mDepartement.setText(mClientParcelable.getDepartement());
         mVille.setText(mClientParcelable.getTown());
         mCodeClient.setText(mClientParcelable.getCode_client());
+
+        Log.e(TAG, "initViewContent: clientId="+mClientParcelable.getId() );
+
+        mRadioBtnCurrent.setChecked(false);
+        ClientEntry clientEntry = mDb.clientDao().getCurrentClient(1);
+        if (clientEntry != null) {
+            if (mClientParcelable.getId() == clientEntry.getId()) {
+                mRadioBtnCurrent.setChecked(true);
+            }
+        }
+
+//        masque le radio de sélection du client s'il n'est pas synchronisé avec le serveur
+        if (mClientParcelable.getIs_synchro() == 0) {
+            mRadioBtnCurrent.setEnabled(false);
+        }
 
 //        date de creation et de modification du client
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss");

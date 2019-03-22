@@ -28,13 +28,11 @@ public class FindProductVirtualTask extends AsyncTask<Void, Void, FindProductVir
     private long productId;
 
     private Context context;
-    private AppDatabase mDb;
 
     public FindProductVirtualTask(Context context, long productId, FindProductVirtualListener taskComplete) {
         this.task = taskComplete;
         this.context = context;
         this.productId = productId;
-        this.mDb = AppDatabase.getInstance(context);
     }
 
     @Override

@@ -15,12 +15,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rainbow_cl.i_sales.R;
+import com.rainbow_cl.i_sales.database.AppDatabase;
+import com.rainbow_cl.i_sales.database.entry.ClientEntry;
 import com.rainbow_cl.i_sales.interfaces.AddCustomerListener;
-import com.rainbow_cl.i_sales.pages.boncmdesignature.BonCmdeSignatureActivity;
 import com.rainbow_cl.i_sales.remote.ApiUtils;
 import com.rainbow_cl.i_sales.remote.ConnectionManager;
 import com.rainbow_cl.i_sales.remote.model.Document;
@@ -44,7 +46,11 @@ public class AddCustomerActivity extends AppCompatActivity {
     private EditText mNomEntrepriseET, mAdresseET, mEmailET, mTelephoneET, mNoteET, mVilleET, mDepartementET, mRegionET, mPaysET;
     private ImageView mSelectLogoIV;
     private TextView mLogoNameTV;
+    private Switch mSwitchSynchro;
     private Bitmap mLogoBitmap;
+    private String mLogoBitmapPath;
+
+    private AppDatabase mDb;
 
     //    add customer listener
     private static AddCustomerListener addCustomerListener = new AddCustomerListener() {
@@ -145,13 +151,62 @@ public class AddCustomerActivity extends AppCompatActivity {
             Toast.makeText(AddCustomerActivity.this, getString(R.string.veuillez_choisir_logo), Toast.LENGTH_LONG).show();
             return;
         } else {
-            saveClient(nom, adresse, email, telephone, note, pays, region, departement, ville);
+            saveOfflineClient(nom, adresse, email, telephone, note, pays, region, departement, ville);
+
+            if (!mSwitchSynchro.isChecked()) {
+
+                Toast.makeText(AddCustomerActivity.this, getString(R.string.client_creee_succes), Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+            saveOnlineClient(nom, adresse, email, telephone, note, pays, region, departement, ville);
         }
     }
 
+    //    enregistre un client dans le serveur
+    private void saveOfflineClient(final String nom, final String adresse, final String email, final String telephone, final String note, final String pays, final String region, final String departement, final String ville) {
+
+//        recuperation du logo en bitmap
+        Bitmap logoBitmap = mLogoBitmap;
+
+//        conversion du logo en base64
+        ByteArrayOutputStream baosLogo = new ByteArrayOutputStream();
+        logoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baosLogo);
+        byte[] bytesSignComm = baosLogo.toByteArray();
+
+        final Date today = new Date();
+        final SimpleDateFormat logoFormat = new SimpleDateFormat("yyMMdd-HHmmss");
+        final String logoName = String.format("client_logo_%s", logoFormat.format(today));
+        String encodeContent = Base64.encodeToString(bytesSignComm, Base64.NO_WRAP);
+        final String filename = String.format("%s.jpeg", logoName);
+
+        ClientEntry clientEntry = new ClientEntry();
+        clientEntry.setAddress(adresse);
+        clientEntry.setCode_client("");
+        clientEntry.setDate_creation(today.getTime());
+        clientEntry.setDepartement(departement);
+        clientEntry.setEmail(email);
+        clientEntry.setFirstname(nom);
+        clientEntry.setIs_current(0);
+        clientEntry.setIs_synchro(0);
+        clientEntry.setLogo(filename);
+        clientEntry.setLogo_content(encodeContent);
+        clientEntry.setName(nom);
+        clientEntry.setPhone(telephone);
+        clientEntry.setNote(note);
+        clientEntry.setNote_public(note);
+        clientEntry.setPays(pays);
+        clientEntry.setTown(ville);
+        clientEntry.setRegion(region);
+
+        Log.e(TAG, "saveOfflineClient: name="+clientEntry.getName()+
+                " logo="+clientEntry.getLogo()+
+                " logoContent="+clientEntry.getLogo_content());
+        mDb.clientDao().insertClient(clientEntry);
+    }
 
     //    enregistre un client dans le serveur
-    private void saveClient(final String nom, final String adresse, final String email, final String telephone, final String note, final String pays, final String region, final String departement, final String ville) {
+    private void saveOnlineClient(final String nom, final String adresse, final String email, final String telephone, final String note, final String pays, final String region, final String departement, final String ville) {
 //        Si le téléphone n'est pas connecté
         if (!ConnectionManager.isPhoneConnected(AddCustomerActivity.this)) {
             Toast.makeText(AddCustomerActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
@@ -179,7 +234,7 @@ public class AddCustomerActivity extends AppCompatActivity {
         final SimpleDateFormat logoFormat = new SimpleDateFormat("yyMMdd-HHmmss");
         final String logoName = String.format("client_logo_%s", logoFormat.format(today));
         String encodeSignComm = Base64.encodeToString(bytesSignComm, Base64.NO_WRAP);
-        String filenameComm = String.format("%s.jpeg", logoName);
+        final String filenameComm = String.format("%s.jpeg", logoName);
 //        creation du document signature client
         Document logoClient = new Document();
         logoClient.setFilecontent(encodeSignComm);
@@ -207,6 +262,7 @@ public class AddCustomerActivity extends AppCompatActivity {
                     queryBody.setPays(pays);
                     queryBody.setPhone(telephone);
                     queryBody.setNote(note);
+                    queryBody.setLogo(filenameComm);
                     queryBody.setNote_private(note);
                     queryBody.setEmail(email);
                     queryBody.setFirstname(nom);
@@ -293,6 +349,7 @@ public class AddCustomerActivity extends AppCompatActivity {
                     queryBody.setPhone(telephone);
                     queryBody.setNote(note);
                     queryBody.setNote_private(note);
+                    queryBody.setLogo(filenameComm);
                     queryBody.setEmail(email);
                     queryBody.setFirstname(nom);
                     queryBody.setName(String.format("%s", nom));
@@ -362,12 +419,13 @@ public class AddCustomerActivity extends AppCompatActivity {
 //        Crop.of(source, destination).withMaxSize(600, 800).withAspect(1, 1).start(this);
         try {
             mLogoBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), source);
-            File file = new File(source.getPath());
+            mLogoBitmapPath = source.getPath();
 
 //            Fait roter le bitmap de -90 deg
 //            bitmap = SprintPayFunctionsUtils.rotateBitmap(bitmap, ExifInterface.ORIENTATION_ROTATE_90);
-            /*Log.e(TAG, "beginCrop: logo size=" + ISalesUtility.bitmapByteSizeOf(mLogoBitmap) +
-                    " getName=" + ISalesUtility.getFilename(AddCustomerActivity.this, source)); */
+            /* Log.e(TAG, "beginCrop: logo size=" + ISalesUtility.bitmapByteSizeOf(mLogoBitmap) +
+                    " getName=" + ISalesUtility.getFilename(AddCustomerActivity.this, source) +
+                    " getPath=" + mLogoBitmapPath); */
 
             mLogoNameTV.setText(ISalesUtility.getFilename(AddCustomerActivity.this, source));
 
@@ -392,6 +450,8 @@ public class AddCustomerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_customer);
 
+        mDb = AppDatabase.getInstance(getApplicationContext());
+
 //        reference des vues
         mNomEntrepriseET = (EditText) findViewById(R.id.et_client_nom_entreprise);
         mAdresseET = (EditText) findViewById(R.id.et_client_adresse);
@@ -404,6 +464,7 @@ public class AddCustomerActivity extends AppCompatActivity {
         mPaysET = (EditText) findViewById(R.id.et_client_pays);
         mSelectLogoIV = (ImageView) findViewById(R.id.iv_client_select_logo);
         mLogoNameTV = (TextView) findViewById(R.id.tv_client_logo_name);
+        mSwitchSynchro = (Switch) findViewById(R.id.switch_client);
         mEnregistrerView = (LinearLayout) findViewById(R.id.view_enregistrer_client);
 
 //        ecoute du click de l'enregistrement du client

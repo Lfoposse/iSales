@@ -24,6 +24,9 @@ public class Order {
     public String total_ttc;
     public String statut;
     public List<OrderLine> lines;
+    private String remise_absolue;
+    private String remise_percent;
+    private String remise;
 
     public Order() {
     }
@@ -162,5 +165,29 @@ public class Order {
 
     public void setNote_private(String note_private) {
         this.note_private = note_private;
+    }
+
+    public String getRemise_absolue() {
+        return remise_absolue;
+    }
+
+    public void setRemise_absolue(String remise_absolue) {
+        this.remise_absolue = remise_absolue;
+    }
+
+    public String getRemise_percent() {
+        return remise_percent;
+    }
+
+    public void setRemise_percent(String remise_percent) {
+        this.remise_percent = remise_percent;
+    }
+
+    public String getRemise() {
+        return remise;
+    }
+
+    public void setRemise(String remise) {
+        this.remise = remise;
     }
 }

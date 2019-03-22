@@ -32,6 +32,7 @@ public class ClientEntry {
     private String note;
     private String note_private;
     private String note_public;
+    private int is_current;
 
     public ClientEntry() {
     }
@@ -202,5 +203,13 @@ public class ClientEntry {
 
     public void setNote_public(String note_public) {
         this.note_public = note_public;
+    }
+
+    public int getIs_current() {
+        return is_current;
+    }
+
+    public void setIs_current(int is_current) {
+        this.is_current = is_current;
     }
 }

@@ -263,6 +263,26 @@
                 android:src="@drawable/ic_attach_file_black_24dp"
                 android:background="?attr/selectableItemBackgroundBorderless" />
         </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:clickable="true"
+            android:paddingStart="@dimen/form_paddingH"
+            android:paddingEnd="@dimen/form_paddingH"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp">
+
+            <Switch
+                android:id="@+id/switch_client"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textOn="Oui"
+                android:textOff="Non"
+                android:checked="true"
+                android:includeFontPadding="true"
+                android:text="Synchroniser avec le serveur" />
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/view_enregistrer_client"

@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +62,7 @@ public class RecapPanierAdapter extends RecyclerView.Adapter<RecapPanierAdapter.
     @Override
     public void onBindViewHolder(@NonNull final RecapPanierAdapter.RecapPanierViewHolder holder, int position) {
         final PanierEntry panierEntry = panierList.get(position);
+//        Log.e(TAG, "onBindViewHolder: remise="+ panierEntry.getRemise()+" remise_per="+panierEntry.getRemise_percent());
         holder.label.setText(panierEntry.getLabel());
         holder.price.setText(String.format("%s %s", ISalesUtility.amountFormat2(panierEntry.getPrice_ttc()), mContext.getString(R.string.symbole_euro)));
         holder.quantite.setText(String.format("%d ", panierEntry.getQuantity()));

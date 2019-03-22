@@ -18,10 +18,10 @@ import java.util.List;
 
 @Dao
 public interface PanierDao {
-    @Query("SELECT * FROM panier")
+    @Query("SELECT * FROM panier ORDER BY id")
     LiveData<List<PanierEntry>> loadAllPanier();
 
-    @Query("SELECT * FROM panier")
+    @Query("SELECT * FROM panier ORDER BY id")
     List<PanierEntry> getAllPanier();
 
     @Query("DELETE FROM panier")
@@ -32,6 +32,9 @@ public interface PanierDao {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     void updatePanier(PanierEntry panierEntry);
+
+    @Query("UPDATE panier SET quantity=:quantite WHERE id = :id")
+    void updateQuantite(long id, int quantite);
 
     @Delete
     void deletePanier(PanierEntry panierEntry);

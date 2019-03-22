@@ -41,6 +41,7 @@ import com.rainbow_cl.i_sales.database.AppDatabase;
 import com.rainbow_cl.i_sales.database.AppExecutors;
 import com.rainbow_cl.i_sales.database.entry.CategorieEntry;
 import com.rainbow_cl.i_sales.database.entry.PanierEntry;
+import com.rainbow_cl.i_sales.database.entry.ProductCustPriceEntry;
 import com.rainbow_cl.i_sales.database.entry.ProduitEntry;
 import com.rainbow_cl.i_sales.interfaces.DialogCategorieListener;
 import com.rainbow_cl.i_sales.interfaces.FindCategorieListener;
@@ -125,35 +126,37 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
     /* Checks if external storage is available for read and write */
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if ( Environment.MEDIA_MOUNTED.equals( state ) ) {
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
             return true;
         }
         return false;
     }
+
     /* Checks if external storage is available to at least read 695574095 */
     public boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
-        if ( Environment.MEDIA_MOUNTED.equals( state ) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals( state ) ) {
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
             return true;
         }
         return false;
     }
+
     public void showLog() {
 
-        if ( isExternalStorageWritable() ) {
+        if (isExternalStorageWritable()) {
 
-            File appDirectory = new File( Environment.getExternalStorageDirectory() + "/iSalesLog" );
-            File logDirectory = new File( appDirectory + "/log" );
-            File logFile = new File( logDirectory, "categoriefrag_logcat" + System.currentTimeMillis() + ".txt" );
+            File appDirectory = new File(Environment.getExternalStorageDirectory() + "/iSalesLog");
+            File logDirectory = new File(appDirectory + "/log");
+            File logFile = new File(logDirectory, "categoriefrag_logcat" + System.currentTimeMillis() + ".txt");
 
             // create app folder
-            if ( !appDirectory.exists() ) {
+            if (!appDirectory.exists()) {
                 appDirectory.mkdir();
             }
 
             // create log folder
-            if ( !logDirectory.exists() ) {
+            if (!logDirectory.exists()) {
                 logDirectory.mkdir();
             }
 
@@ -161,18 +164,19 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             try {
                 Process process = Runtime.getRuntime().exec("logcat -c");
                 process = Runtime.getRuntime().exec("logcat -f " + logFile);
-            } catch ( IOException e ) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
-        } else if ( isExternalStorageReadable() ) {
+        } else if (isExternalStorageReadable()) {
             // only readable
-            Log.e(TAG, "onCreate: isExternalStorageReadable" );
+            Log.e(TAG, "onCreate: isExternalStorageReadable");
         } else {
             // not accessible
-            Log.e(TAG, "onCreate: non isExternalStorageReadable" );
+            Log.e(TAG, "onCreate: non isExternalStorageReadable");
         }
     }
+
     //    Recupération de la liste des produits
     private void executeFindProducts() {
 
@@ -243,25 +247,26 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 //        Log.e(TAG, "loadProduits: produitazero="+produitazero+" produits="+produits.size());
 
         if (categorieId > 0) {
-            if (produitazero){
+            if (produitazero) {
                 if (searchString == null) {
-                    produitEntries = mDb.produitDao().getProduitsLimitByCategorieAZero(mLastProduitId, categorieId, mLimit);
+                    produitEntries = mDb.produitDao().getProduitsLimitByCategorieAZero(mLastProduitId, categorieId);
                 } else {
-                    produitEntries = mDb.produitDao().getProduitsLimitByCategorieStrAZero(mLastProduitId, categorieId, mLimit, searchString);
+                    produitEntries = mDb.produitDao().getProduitsLimitByCategorieStrAZero(mLastProduitId, categorieId, searchString);
                 }
             } else {
                 if (searchString == null) {
-                            produitEntries = mDb.produitDao().getProduitsLimitByCategorie(mLastProduitId, categorieId, mLimit);
+//                    produitEntries = mDb.produitDao().getProduitsLimitByCategorie(mLastProduitId, categorieId, mLimit);
+                    produitEntries = mDb.produitDao().getProduitsLimitByCategorie(mLastProduitId, categorieId);
                 } else {
-                    produitEntries = mDb.produitDao().getProduitsLimitByCategorieStr(mLastProduitId, categorieId, mLimit, searchString);
+                    produitEntries = mDb.produitDao().getProduitsLimitByCategorieStr(mLastProduitId, categorieId, searchString);
                 }
             }
         } else {
-            if (produitazero){
+            if (produitazero) {
                 if (searchString == null) {
                     produitEntries = mDb.produitDao().getProduitsLimitAZero(mLastProduitId, mLimit);
                 } else {
-                        produitEntries = mDb.produitDao().getProduitsLimitByStrAZero(mLastProduitId, mLimit, searchString);
+                    produitEntries = mDb.produitDao().getProduitsLimitByStrAZero(mLastProduitId, mLimit, searchString);
                 }
             } else {
                 if (searchString == null) {
@@ -292,11 +297,24 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 //        Affichage de la liste des produits sur la vue
         ArrayList<ProduitParcelable> produitParcelables = new ArrayList<>();
         for (ProduitEntry produitEntry : produitEntries) {
+            ProductCustPriceEntry custPriceEntry = mDb.productCustPriceDao().getProductCustPriceByPrdt(produitEntry.getId());
+
             ProduitParcelable produitParcelable = new ProduitParcelable();
+
             produitParcelable.setId(produitEntry.getId());
             produitParcelable.setLabel(produitEntry.getLabel());
-            produitParcelable.setPrice(produitEntry.getPrice());
-            produitParcelable.setPrice_ttc(produitEntry.getPrice_ttc());
+
+//            S'il existe un produit client ayant le meme id produit, alors on prends plutot celui-ci
+            if (custPriceEntry != null) {
+                produitParcelable.setPrice(custPriceEntry.getPrice());
+                produitParcelable.setPrice_ttc(custPriceEntry.getPrice_ttc());
+                produitParcelable.setTva_tx(custPriceEntry.getTva_tx());
+            } else {
+                produitParcelable.setPrice(produitEntry.getPrice());
+                produitParcelable.setPrice_ttc(produitEntry.getPrice_ttc());
+                produitParcelable.setTva_tx(produitEntry.getTva_tx());
+            }
+
             produitParcelable.setRef(produitEntry.getRef());
             produitParcelable.setPoster(new DolPhoto());
             produitParcelable.setStock_reel(produitEntry.getStock_reel());
@@ -305,7 +323,6 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             produitParcelable.getPoster().setFilename(ISalesUtility.getImgProduit(produitEntry.getDescription()));
             produitParcelable.setLocal_poster_path(produitEntry.getFile_content());
             produitParcelable.setCategorie_id(produitEntry.getCategorie_id());
-            produitParcelable.setTva_tx(produitEntry.getTva_tx());
             produitParcelable.setNote(produitEntry.getNote());
             produitParcelable.setNote_private(produitEntry.getNote_private());
             produitParcelable.setNote_public(produitEntry.getNote_public());
@@ -407,6 +424,8 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
         panierEntry.setStock_reel(produitParcelable.getStock_reel());
         panierEntry.setTva_tx(produitParcelable.getTva_tx());
         panierEntry.setQuantity(1);
+        panierEntry.setRemise("0");
+        panierEntry.setRemise_percent("0");
 
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
@@ -439,7 +458,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
     public void onFindProductsCompleted(FindProductsREST findProductsREST) {
 //            modification de la position de la requete courante de recupération des produits
         mCurrentPdtQuery++;
-        Log.e(TAG, "onFindProductsCompleted: FindProductsREST getThirdparties mCurrentPdtQuery="+mCurrentPdtQuery+" mTotalPdtQuery="+mTotalPdtQuery);
+        Log.e(TAG, "onFindProductsCompleted: FindProductsREST getThirdparties mCurrentPdtQuery=" + mCurrentPdtQuery + " mTotalPdtQuery=" + mTotalPdtQuery);
 
         if (findProductsREST != null && findProductsREST.getProducts() != null) {
 //            Log.e(TAG, "onFindProductsCompleted: saving product categorie=" + findProductsREST.getCategorie_id() + " pdtSize=" + findProductsREST.getProducts().size());
@@ -459,16 +478,9 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
                 produitEntry.setNote_public(productItem.getNote_public());
                 produitEntry.setNote_private(productItem.getNote_private());
 
-//                Log.e(TAG, "onFindProductsCompleted: product name=" + produitEntry.getLabel());
-                if (mDb.produitDao().getProduitById(produitEntry.getId()) == null) {
 //                    Log.e(TAG, "onFindThirdpartieCompleted: insert produitEntry");
 //            insertion du client dans la BD
-                    mDb.produitDao().insertProduit(produitEntry);
-                } else {
-//                    Log.e(TAG, "onFindThirdpartieCompleted: update produitEntry");
-//            mise a jour du client dans la BD
-                    mDb.produitDao().updateProduit(produitEntry);
-                }
+                mDb.produitDao().insertProduit(produitEntry);
             }
             Log.e(TAG, "onFindProductsCompleted: mPage=" + mCurrentPdtQuery);
 
@@ -535,15 +547,9 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             categorieEntry.setDescription(categorieItem.getDescription());
             categorieEntry.setPoster_name(ISalesUtility.getImgProduit(categorieItem.getDescription()));
 
-            if (mDb.categorieDao().getCategorieById(categorieEntry.getId()) == null) {
-                Log.e(TAG, "onFindThirdpartieCompleted: insert categorieEntry");
+            Log.e(TAG, "onFindThirdpartieCompleted: insert categorieEntry");
 //            insertion du client dans la BD
-                mDb.categorieDao().insertCategorie(categorieEntry);
-            } else {
-                Log.e(TAG, "onFindThirdpartieCompleted: update categorieEntry");
-//            mise a jour du client dans la BD
-                mDb.categorieDao().updateCategorie(categorieEntry);
-            }
+            mDb.categorieDao().insertCategorie(categorieEntry);
         }
         Log.e(TAG, "onFindCategorieCompleted: mPage=" + mPageCategorie);
 
@@ -605,10 +611,13 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 //                    Log.e(TAG, "onScroll: lastPosition=" + lastPosition + " itemsCount=" + itemsCount);
                     if (lastPosition > 0 && (lastPosition + 2) >= itemsCount) {
                         long idCategorie = 0;
-                        if (mCategorieParcelable != null)
-                            idCategorie = Long.parseLong(mCategorieParcelable.getId());
+                        if (mCategorieParcelable == null) {
+                            loadProduits(idCategorie, null);
+                            /* idCategorie = Long.parseLong(mCategorieParcelable.getId());
+                            loadProduits(idCategorie, null);
+                            return; */
+                        }
 //                        executeFindProducts(idCategorie);
-                        loadProduits(idCategorie, null);
                     }
                 }
             }
@@ -650,7 +659,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             @Override
             public void afterTextChanged(Editable editable) {
 
-                Log.e(TAG, "afterTextChanged: string="+editable.toString() );
+                Log.e(TAG, "afterTextChanged: string=" + editable.toString());
                 if (editable.toString().equals("")) {
                     mSearchCancelIB.setVisibility(View.GONE);
                     mSearchIB.setVisibility(View.VISIBLE);
@@ -793,8 +802,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
     public void onCategorieDialogSelected(CategorieParcelable categorieParcelable) {
         if (categorieParcelable == null) {
             return;
-        }
-        else if (categorieParcelable.getId().equals("-1")) {
+        } else if (categorieParcelable.getId().equals("-1")) {
             mCategorieParcelable = null;
 //        modification du label de la categorie
             mCategoryTV.setText(getContext().getResources().getString(R.string.toutes_les_categories));

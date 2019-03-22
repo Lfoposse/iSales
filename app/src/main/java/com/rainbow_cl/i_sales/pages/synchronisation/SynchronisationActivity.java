@@ -223,11 +223,20 @@ public class SynchronisationActivity extends AppCompatActivity
         Log.e(TAG, "executeSendOrder: commandeEntries size=" + commandeEntries.size());
         for (int i = 0; i < commandeEntries.size(); i++) {
             CommandeEntry cmdeEntryItem = commandeEntries.get(i);
+            final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
             Order order = new Order();
-            order.setSocid(String.valueOf(cmdeEntryItem.getSocid()));
-            order.setDate_commande(String.valueOf(cmdeEntryItem.getDate_commande()));
+
+            order.setSocid(""+cmdeEntryItem.getSocid());
+            order.setDate_commande(dateFormat.format(cmdeEntryItem.getDate_commande()));
+            order.setDate(dateFormat.format(cmdeEntryItem.getDate()));
+            order.setDate_livraison(dateFormat.format(cmdeEntryItem.getDate_livraison()));
             order.setRef(cmdeEntryItem.getRef());
+            order.setRemise_percent(cmdeEntryItem.getRemise_percent());
+            order.setMode_reglement(cmdeEntryItem.getMode_reglement());
+            order.setMode_reglement_code(cmdeEntryItem.getMode_reglement_code());
+            order.setMode_reglement_id(cmdeEntryItem.getMode_reglement_id());
+            order.setNote_public(cmdeEntryItem.getNote_public());
             order.setLines(new ArrayList<OrderLine>());
 
 //            Recupération de la listes des produits de la commande
@@ -242,17 +251,21 @@ public class SynchronisationActivity extends AppCompatActivity
                 CommandeLineEntry cmdeLineEntry = cmdeLineEntryList.get(j);
 
                 orderLine.setRef(cmdeLineEntry.getRef());
+                orderLine.setFk_product(cmdeLineEntry.getId());
                 orderLine.setProduct_ref(cmdeLineEntry.getRef());
                 orderLine.setProduct_label(cmdeLineEntry.getLabel());
                 orderLine.setLibelle(cmdeLineEntry.getLabel());
-                orderLine.setLabel(cmdeLineEntry.getLabel());
+                orderLine.setLabel(String.format("%s-%s", cmdeLineEntry.getRef(), cmdeLineEntry.getLabel()));
                 orderLine.setProduct_desc(cmdeLineEntry.getDescription());
                 orderLine.setQty(String.valueOf(cmdeLineEntry.getQuantity()));
+                orderLine.setTva_tx(cmdeLineEntry.getTva_tx());
                 orderLine.setSubprice(cmdeLineEntry.getPrice());
                 orderLine.setDesc(cmdeLineEntry.getDescription());
                 orderLine.setDescription(cmdeLineEntry.getDescription());
                 orderLine.setId(String.valueOf(cmdeLineEntry.getId()));
                 orderLine.setRowid(String.valueOf(cmdeLineEntry.getId()));
+                orderLine.setRemise(cmdeLineEntry.getRemise());
+                orderLine.setRemise_percent(cmdeLineEntry.getRemise_percent());
 
 //                Ajout de la ligne dans la commande
                 order.getLines().add(orderLine);

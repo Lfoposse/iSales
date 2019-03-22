@@ -3,6 +3,8 @@ package com.rainbow_cl.i_sales.pages.home.fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -15,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -48,13 +51,18 @@ import com.rainbow_cl.i_sales.pages.home.dialog.ClientProfileDialog;
 import com.rainbow_cl.i_sales.pages.home.dialog.FullScreenCatPdtDialog;
 import com.rainbow_cl.i_sales.remote.ApiUtils;
 import com.rainbow_cl.i_sales.remote.ConnectionManager;
+import com.rainbow_cl.i_sales.remote.model.Document;
 import com.rainbow_cl.i_sales.remote.model.DolPhoto;
 import com.rainbow_cl.i_sales.remote.model.Thirdpartie;
 import com.rainbow_cl.i_sales.remote.rest.FindThirdpartieREST;
 import com.rainbow_cl.i_sales.task.FindThirdpartieTask;
+import com.rainbow_cl.i_sales.task.InsertThirdpartieTask;
 import com.rainbow_cl.i_sales.utility.ISalesUtility;
 
+import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ClientsFragment extends Fragment implements ClientsAdapterListener,
@@ -151,6 +159,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
             clientParcelable.setDepartement(clientEntry.getDepartement());
             clientParcelable.setCode_client(clientEntry.getCode_client());
             clientParcelable.setIs_synchro(clientEntry.getIs_synchro());
+            clientParcelable.setIs_current(clientEntry.getIs_current());
 //            initialisation du poster du client
             clientParcelable.setPoster(new DolPhoto());
             clientParcelable.getPoster().setContent(clientEntry.getLogo_content());
@@ -163,9 +172,9 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 //        incrementation du nombre de page
         mLastClientId = clientEntries.get(clientEntries.size() - 1).getId();
 
-        if (clientParcelableList.size() > 0 && mLastClientId <= 0) {
-            clientParcelableList.clear();
-        }
+//        if (clientParcelableList.size() > 0 && mLastClientId <= 0) {
+//            clientParcelableList.clear();
+//        }
 
         clientParcelableList.addAll(clientParcelables);
 
@@ -306,6 +315,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 
             mLastClientId = 0;
             loadClients(null);
+            showProgressDialog(false, null, null);
 
             return;
         }
@@ -315,7 +325,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
             ClientEntry clientEntry = new ClientEntry();
             if (thirdpartie.getId() != null) {
                 String logo = thirdpartie.getName_alias() == null ? thirdpartie.getLogo() : thirdpartie.getName_alias();
-                Log.e(TAG, "onFindThirdpartieCompleted: logo=" + logo + " getName_alias=" + thirdpartie.getName_alias() + " getLogo=" + thirdpartie.getLogo());
+//                Log.e(TAG, "onFindThirdpartieCompleted: logo=" + logo + " getName_alias=" + thirdpartie.getName_alias() + " getLogo=" + thirdpartie.getLogo());
                 clientEntry.setName(thirdpartie.getName());
                 clientEntry.setName_alias(thirdpartie.getName_alias());
                 clientEntry.setFirstname(thirdpartie.getFirstname());
@@ -337,15 +347,9 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
                 clientEntry.setNote_private(thirdpartie.getNote_private());
                 clientEntry.setNote_public(thirdpartie.getNote_public());
 
-                if (mDb.clientDao().getClientById(clientEntry.getId()) == null) {
 //                Log.e(TAG, "onFindThirdpartieCompleted: insert clientEntry");
 //            insertion du client dans la BD
-                    mDb.clientDao().insertClient(clientEntry);
-                } else {
-//                Log.e(TAG, "onFindThirdpartieCompleted: update clientEntry");
-//            mise a jour du client dans la BD
-                    mDb.clientDao().updateClient(clientEntry);
-                }
+                mDb.clientDao().insertClient(clientEntry);
             }
         }
 
@@ -430,7 +434,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 
                     int itemsCount = recyclerView.getAdapter().getItemCount();
 
-                    Log.e(TAG, "onScroll: lastPosition=" + lastPosition + " itemsCount=" + itemsCount + " mLastClientId=" + mLastClientId);
+//                    Log.e(TAG, "onScroll: lastPosition=" + lastPosition + " itemsCount=" + itemsCount + " mLastClientId=" + mLastClientId);
                     if (lastPosition > 0 && (lastPosition + 2) >= itemsCount) {
 //        affichage de l'image d'attente
                         showProgress(true);
@@ -458,6 +462,8 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
                 String searchString = charSequence.toString();
 
                 List<ClientEntry> clientEntries = mDb.clientDao().getClientsLikeLimit(mLimit, searchString);
+
+                clientParcelableList.clear();
                 loadClients(clientEntries);
 //                Log.e(TAG, "onTextChanged: searchString="+searchString);
                 mAdapter.performFiltering(searchString);
@@ -572,9 +578,6 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
         switch (item.getItemId()) {
 //        redirige le user vers la page de synchronisation
             case R.id.action_fragclient_sync:
-                /*
-                Intent intent = new Intent(getContext(), SynchronisationActivity.class);
-                startActivity(intent); */
 
 //        Si le téléphone n'est pas connecté
                 if (!ConnectionManager.isPhoneConnected(getContext())) {
@@ -585,8 +588,47 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 //                affichage du loader dialog
                 showProgressDialog(true, null, getString(R.string.synchro_comptes_cient_encours));
 
-                mDb.clientDao().deleteAllClient();
+                List<ClientEntry> clientEntriesSynchro = mDb.clientDao().getAllClientBySynchro(0);
+                Log.e(TAG, "onOptionsItemSelected:clientEntriesSynchro size="+clientEntriesSynchro.size() );
+                if (clientEntriesSynchro.size() > 0) {
+                    for (int i = 0; i < clientEntriesSynchro.size(); i++) {
+                        ClientEntry itemClient = clientEntriesSynchro.get(i);
 
+//        creation du document signature client
+                        Document logoClient = null;
+                        if (itemClient.getLogo_content() != null && !itemClient.getLogo_content().equals("")) {
+                            logoClient = new Document();
+
+                            logoClient.setFilecontent(itemClient.getLogo_content());
+                            logoClient.setFilename(itemClient.getLogo());
+                            logoClient.setFileencoding("base64");
+                            logoClient.setModulepart("societe");
+                        }
+
+                        Thirdpartie thirdpartie = new Thirdpartie();
+                        thirdpartie.setAddress(itemClient.getAddress());
+                        thirdpartie.setTown(itemClient.getTown());
+                        thirdpartie.setRegion(itemClient.getRegion());
+                        thirdpartie.setDepartement(itemClient.getDepartement());
+                        thirdpartie.setPays(itemClient.getPays());
+                        thirdpartie.setPhone(itemClient.getPhone());
+                        thirdpartie.setNote(itemClient.getNote());
+                        thirdpartie.setNote_private(itemClient.getNote());
+                        thirdpartie.setLogo(itemClient.getLogo());
+                        thirdpartie.setEmail(itemClient.getEmail());
+                        thirdpartie.setFirstname(itemClient.getFirstname());
+                        thirdpartie.setName(String.format("%s", itemClient.getName()));
+                        thirdpartie.setCode_client(itemClient.getCode_client());
+                        thirdpartie.setClient("1");
+                        thirdpartie.setName_alias("");
+
+                        InsertThirdpartieTask task = new InsertThirdpartieTask(getContext(), null, thirdpartie, logoClient);
+                        task.execute();
+                    }
+                }
+
+
+                mDb.clientDao().deleteAllClient();
 //        Suppression des images des clients en local
                 ISalesUtility.deleteClientsImgFolder();
 

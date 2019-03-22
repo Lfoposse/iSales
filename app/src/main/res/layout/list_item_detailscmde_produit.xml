@@ -22,10 +22,11 @@
             android:layout_centerInParent="true" />
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
         <TextView
             android:id="@+id/tv_detailscmde_produit_label"
             android:layout_width="match_parent"
@@ -43,11 +44,10 @@
             android:id="@+id/tv_detailscmde_produit_total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
+            android:layout_gravity="end|center_vertical"
             android:layout_margin="5dp"
             tools:text="240 €"
             android:textSize="@dimen/produit_item_label_size"
             android:textColor="@color/colorPrimary"/>
-    </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>

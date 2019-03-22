@@ -161,6 +161,66 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="0.8"
+                        android:background="@color/colorPrimaryTransparent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:paddingStart="4dp">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/et_produitdetails_price_u"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:background="@null"
+                                android:gravity="center_vertical"
+                                android:hint="Prix de vente unitaire"
+                                android:inputType="numberSigned|numberDecimal"
+                                android:maxLines="1"
+                                android:singleLine="true"
+                                android:textColorHint="@color/black_cc" />
+
+                        </android.support.design.widget.TextInputLayout>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="4"
+                            android:background="@color/colorPrimaryTransparent"
+                            android:gravity="center"
+                            android:text="€ HT"
+                            android:textColor="@color/black_cc"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_produitdetails_price_u_nature"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:gravity="start|center_vertical"
+                        android:paddingStart="12dp"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        tools:text="/ UNITÉ" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:background="@color/colorPrimaryTransparent"
                         android:orientation="horizontal"
@@ -209,10 +269,6 @@
                         android:paddingStart="12dp"
                         android:gravity="start|center_vertical"/>
                 </LinearLayout>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sélectionner une quantité à commander"/>
                 <!-- <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
                     android:id="@+id/numbtn_produitdetails_quantite"
                     android:layout_width="126dp"
@@ -227,7 +283,7 @@
                     fab:initialNumber="1"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"/> -->
-                <LinearLayout
+                <!-- <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -256,6 +312,156 @@
                         android:textStyle="bold"
                         android:layout_marginStart="12dp"
                         android:gravity="start|center_vertical"/>
+                </LinearLayout> -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:background="@color/colorPrimaryTransparent"
+                        android:orientation="horizontal"
+                        android:layout_weight="0.8">
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingStart="4dp"
+                            android:layout_gravity="center">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/et_produitdetails_quantite"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:background="@null"
+                                android:gravity="center_vertical"
+                                android:hint="@string/quantite_"
+                                android:textColorHint="@color/black_cc"
+                                android:inputType="numberSigned|numberDecimal"
+                                android:maxLines="1"
+                                android:singleLine="true" />
+
+                        </android.support.design.widget.TextInputLayout>
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/tv_produitdetails_quantite_nature"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.2"
+                        android:textSize="17sp"
+                        tools:text="UNITÉ(S)"
+                        android:textStyle="bold"
+                        android:paddingStart="12dp"
+                        android:gravity="start|center_vertical"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:background="@color/colorPrimaryTransparent"
+                        android:orientation="horizontal"
+                        android:layout_weight="0.8"
+                        android:visibility="gone">
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingStart="4dp"
+                            android:layout_gravity="center">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/et_produitdetails_remise_valeur"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:background="@null"
+                                android:gravity="center_vertical"
+                                android:hint="Remise en Valeur"
+                                android:textColorHint="@color/black_cc"
+                                android:inputType="numberSigned|numberDecimal"
+                                android:maxLines="1"
+                                android:singleLine="true" />
+
+                        </android.support.design.widget.TextInputLayout>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/colorPrimaryTransparent"
+                            android:text="€"
+                            android:textSize="15sp"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:layout_weight="4"
+                            android:textColor="@color/black_cc"/>
+                    </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.2"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:background="@color/colorPrimaryTransparent"
+                        android:orientation="horizontal"
+                        android:layout_weight="0.8">
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingStart="4dp"
+                            android:layout_gravity="center">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/et_produitdetails_remise_percent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:background="@null"
+                                android:gravity="center_vertical"
+                                android:hint="Remise en Pourcentage"
+                                android:textColorHint="@color/black_cc"
+                                android:inputType="numberSigned|numberDecimal"
+                                android:maxLines="1"
+                                android:singleLine="true" />
+
+                        </android.support.design.widget.TextInputLayout>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/colorPrimaryTransparent"
+                            android:text="%"
+                            android:textSize="15sp"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:layout_weight="4"
+                            android:textColor="@color/black_cc"/>
+                    </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.2"/>
                 </LinearLayout>
             </LinearLayout>
             <LinearLayout

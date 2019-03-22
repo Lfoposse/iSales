@@ -42,6 +42,8 @@ public class PanierEntry {
     private String height_units;
     private String file_content;
     private String ref;
+    private String remise;
+    private String remise_percent;
     private int quantity;
     private String poster_content;
 
@@ -318,5 +320,21 @@ public class PanierEntry {
 
     public void setFk_product(long fk_product) {
         this.fk_product = fk_product;
+    }
+
+    public String getRemise() {
+        return remise;
+    }
+
+    public void setRemise(String remise) {
+        this.remise = remise;
+    }
+
+    public String getRemise_percent() {
+        return remise_percent;
+    }
+
+    public void setRemise_percent(String remise_percent) {
+        this.remise_percent = remise_percent;
     }
 }

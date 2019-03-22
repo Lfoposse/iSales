@@ -48,6 +48,8 @@ public class CommandeLineEntry {
     private String total_ht;
     private String total_tva;
     private String total_ttc;
+    private String remise;
+    private String remise_percent;
     private int quantity;
     private String poster_content;
 
@@ -348,5 +350,21 @@ public class CommandeLineEntry {
 
     public void setTotal_ttc(String total_ttc) {
         this.total_ttc = total_ttc;
+    }
+
+    public String getRemise() {
+        return remise;
+    }
+
+    public void setRemise(String remise) {
+        this.remise = remise;
+    }
+
+    public String getRemise_percent() {
+        return remise_percent;
+    }
+
+    public void setRemise_percent(String remise_percent) {
+        this.remise_percent = remise_percent;
     }
 }

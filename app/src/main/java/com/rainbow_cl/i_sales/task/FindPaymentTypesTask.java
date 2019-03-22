@@ -86,19 +86,21 @@ public class FindPaymentTypesTask extends AsyncTask<Void, Void, FindPaymentTypes
     protected void onPostExecute(FindPaymentTypesREST findPaymentTypesREST) {
         Log.e(TAG, "onPostExecute: ");
 
+        if (findPaymentTypesREST.getPaymentTypes() != null) {
 //        Insertion dans la BD
-        List<PaymentTypesEntry> paymentTypesEntries = new ArrayList<>();
-        for (PaymentTypes paymentTypes : findPaymentTypesREST.getPaymentTypes()) {
-            Log.e(TAG, "onPostExecute: paymentTypes item="+paymentTypes.getLabel());
-            PaymentTypesEntry paymentTypesEntry = new PaymentTypesEntry();
-            paymentTypesEntry.setId(paymentTypes.getId());
-            paymentTypesEntry.setCode(paymentTypes.getCode());
-            paymentTypesEntry.setLabel(paymentTypes.getLabel());
-            paymentTypesEntry.setType(paymentTypes.getType());
+            List<PaymentTypesEntry> paymentTypesEntries = new ArrayList<>();
+            for (PaymentTypes paymentTypes : findPaymentTypesREST.getPaymentTypes()) {
+                Log.e(TAG, "onPostExecute: paymentTypes item="+paymentTypes.getLabel());
+                PaymentTypesEntry paymentTypesEntry = new PaymentTypesEntry();
+                paymentTypesEntry.setId(paymentTypes.getId());
+                paymentTypesEntry.setCode(paymentTypes.getCode());
+                paymentTypesEntry.setLabel(paymentTypes.getLabel());
+                paymentTypesEntry.setType(paymentTypes.getType());
 
-            paymentTypesEntries.add(paymentTypesEntry);
+                paymentTypesEntries.add(paymentTypesEntry);
+            }
+            mDb.paymentTypesDao().insertAllPayments(paymentTypesEntries);
         }
-        mDb.paymentTypesDao().insertAllPayments(paymentTypesEntries);
 
         if (task != null) {
             task.onFindPaymentTypesComplete(findPaymentTypesREST);

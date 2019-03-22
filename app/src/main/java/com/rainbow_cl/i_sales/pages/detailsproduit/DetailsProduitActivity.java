@@ -10,7 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,7 +50,7 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
     private TextView mLabelTV, mRefTV, mPrixHtTV, mPrixTtcTV, mStockTV, mTvaTV, mDescriptionTV, mNoteTV, mPriceNature, mQuantiteNature;
     private ImageView mPosterIV;
     private EditText mQuantiteNumberBtn;
-    private EditText mPriceET;
+    private EditText mPriceET, mPriceUnitaireET, mRemiseValeur, mRemisePourcentage;
     private RecyclerView mPdtVirtualRecyclerview;
     private FloatingActionButton mShoppingFAB;
 
@@ -62,35 +64,37 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
     /* Checks if external storage is available for read and write */
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if ( Environment.MEDIA_MOUNTED.equals( state ) ) {
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
             return true;
         }
         return false;
     }
+
     /* Checks if external storage is available to at least read */
     public boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
-        if ( Environment.MEDIA_MOUNTED.equals( state ) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals( state ) ) {
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
             return true;
         }
         return false;
     }
+
     public void showLog() {
 
-        if ( isExternalStorageWritable() ) {
+        if (isExternalStorageWritable()) {
 
-            File appDirectory = new File( Environment.getExternalStorageDirectory() + "/iSalesLog" );
-            File logDirectory = new File( appDirectory + "/log" );
-            File logFile = new File( logDirectory, "details_produit_logcat" + System.currentTimeMillis() + ".txt" );
+            File appDirectory = new File(Environment.getExternalStorageDirectory() + "/iSalesLog");
+            File logDirectory = new File(appDirectory + "/log");
+            File logFile = new File(logDirectory, "details_produit_logcat" + System.currentTimeMillis() + ".txt");
 
             // create app folder
-            if ( !appDirectory.exists() ) {
+            if (!appDirectory.exists()) {
                 appDirectory.mkdir();
             }
 
             // create log folder
-            if ( !logDirectory.exists() ) {
+            if (!logDirectory.exists()) {
                 logDirectory.mkdir();
             }
 
@@ -98,27 +102,28 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
             try {
                 Process process = Runtime.getRuntime().exec("logcat -c");
                 process = Runtime.getRuntime().exec("logcat -f " + logFile);
-            } catch ( IOException e ) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
-        } else if ( isExternalStorageReadable() ) {
+        } else if (isExternalStorageReadable()) {
             // only readable
-            Log.e(TAG, "onCreate: isExternalStorageReadable" );
+            Log.e(TAG, "onCreate: isExternalStorageReadable");
         } else {
             // not accessible
-            Log.e(TAG, "onCreate: non isExternalStorageReadable" );
+            Log.e(TAG, "onCreate: non isExternalStorageReadable");
         }
     }
+
     public void initValues() {
         mProductVirtual = new ProductVirtual();
-        mProductVirtual.setRowid(""+mProduitParcelable.getId());
-        mProductVirtual.setFk_product_fils(""+mProduitParcelable.getId());
-        mProductVirtual.setFk_product_pere(""+mProduitParcelable.getId());
+        mProductVirtual.setRowid("" + mProduitParcelable.getId());
+        mProductVirtual.setFk_product_fils("" + mProduitParcelable.getId());
+        mProductVirtual.setFk_product_pere("" + mProduitParcelable.getId());
         mProductVirtual.setQty("1");
         mProductVirtual.setRef(mProduitParcelable.getRef());
         mProductVirtual.setDatec(mProduitParcelable.getDate_creation());
-        mProductVirtual.setLabel(mProduitParcelable.getLabel()+" UNITÉ");
+        mProductVirtual.setLabel(mProduitParcelable.getLabel() + " UNITÉ");
         mProductVirtual.setDescription(mProduitParcelable.getDescription());
         mProductVirtual.setNote_public(mProduitParcelable.getNote_public());
         mProductVirtual.setNote(mProduitParcelable.getNote());
@@ -130,7 +135,7 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
         mProductVirtual.setTva_tx(mProduitParcelable.getTva_tx());
         mProductVirtual.setLocal_poster_path(mProduitParcelable.getLocal_poster_path());
         mProductVirtual.setSeuil_stock_alerte(mProduitParcelable.getSeuil_stock_alerte());
-        mProductVirtual.setStock(""+mProduitParcelable.getStock_reel());
+        mProductVirtual.setStock("" + mProduitParcelable.getStock_reel());
         productVirtualList.add(mProductVirtual);
 
         productVirtualAdapter.notifyDataSetChanged();
@@ -145,15 +150,18 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
                 ISalesUtility.CURRENCY));
         mStockTV.setText(String.format("%s", mProduitParcelable.getStock_reel()));
         mTvaTV.setText(String.format("%s %s", ISalesUtility.amountFormat2(mProduitParcelable.getTva_tx()), "%"));
-        mPriceET.setText(ISalesUtility.roundOffTo2DecPlaces(mProduitParcelable.getPrice()));
+        mPriceUnitaireET.setText(ISalesUtility.roundOffTo2DecPlaces(mProduitParcelable.getPrice()));
         mDescriptionTV.setText(ISalesUtility.getDescProduit(mProduitParcelable.getDescription()));
         mNoteTV.setText(mProduitParcelable.getNote());
         mQuantiteNumberBtn.setText("0");
 
+        double price = Double.parseDouble(mProduitParcelable.getPrice()) * Integer.parseInt(mProductVirtual.getQty());
+        mPriceET.setText(ISalesUtility.roundOffTo2DecPlaces("" + price));
+
         String[] label = mProductVirtual.getLabel().split(" ");
 
-        mPriceNature.setText(String.format("/ %s", label[label.length-1]));
-        mQuantiteNature.setText(String.format("%s(S)", label[label.length-1]));
+        mPriceNature.setText(String.format("/ %s", label[label.length - 1]));
+        mQuantiteNature.setText(String.format("%s(S)", label[label.length - 1]));
 
         mQuantiteNumberBtn.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -191,7 +199,7 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
                         Bitmap imageBitmap = ((BitmapDrawable) mPosterIV.getDrawable()).getBitmap();
 
                         String pathFile = ISalesUtility.saveProduitImage(DetailsProduitActivity.this, imageBitmap, mProduitParcelable.getRef());
-                        Log.e(TAG, "onPostExecute: pathFile=" + pathFile);
+//                        Log.e(TAG, "onPostExecute: pathFile=" + pathFile);
 
                         if (pathFile != null) mProduitParcelable.setLocal_poster_path(pathFile);
 
@@ -208,7 +216,8 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
 
     private void updateProductValues(ProductVirtual productVirtual) {
         mProductVirtual = productVirtual;
-        Log.e(TAG, "updateProductValues: qty="+mProductVirtual.getQty());
+
+        Log.e(TAG, "updateProductValues: qty=" + mProductVirtual.getQty());
 
         mPrixHtTV.setText(String.format("%s %s HT",
                 ISalesUtility.amountFormat2(mProductVirtual.getPrice()),
@@ -218,18 +227,28 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
                 ISalesUtility.CURRENCY));
         mStockTV.setText(String.format("%s", mProductVirtual.getStock()));
         mTvaTV.setText(String.format("%s %s", ISalesUtility.amountFormat2(mProductVirtual.getTva_tx()), "%"));
-        mPriceET.setText(ISalesUtility.roundOffTo2DecPlaces(mProductVirtual.getPrice()));
+
+
+        String prixU = mPriceUnitaireET.getText().toString().replace(",", ".");
+        prixU = prixU.equals("") ? mProduitParcelable.getPrice() : prixU;
+        double price = Double.parseDouble(prixU) * Integer.parseInt(mProductVirtual.getQty());
+
+        mPriceET.setText(ISalesUtility.roundOffTo2DecPlaces("" + price));
 
         String[] label = mProductVirtual.getLabel().split(" ");
 
-        mPriceNature.setText(String.format("/ %s", label[label.length-1]));
-        mQuantiteNature.setText(String.format("%s(S)", label[label.length-1]));
+        mPriceNature.setText(String.format("/ %s", label[label.length - 1]));
+        mQuantiteNature.setText(String.format("%s(S)", label[label.length - 1]));
     }
 
     //    insert a movie in database
     public void addPanier() {
         boolean cancel = false;
         View focusView = null;
+        double prix = 0;
+        double remiseVal = 0;
+        double remisePercent = 0;
+
         if (mQuantiteNumberBtn.getText().toString().equals("")) {
             mQuantiteNumberBtn.setError(getString(R.string.veuillez_saisir_quantite));
             focusView = mQuantiteNumberBtn;
@@ -241,11 +260,31 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
             cancel = true;
         }
 
-        double prix = Double.parseDouble(mPriceET.getText().toString().replace(",", "."));
-        if (prix < Double.parseDouble(mProductVirtual.getPrice())) {
-            mPriceET.setError(getString(R.string.prix_vente_trop_petit));
-            focusView = mPriceET;
-            cancel = true;
+        /*
+        if (!mPriceET.getText().toString().equals("")) {
+            if (prix < Double.parseDouble(mProductVirtual.getPrice())) {
+                mPriceET.setError(getString(R.string.prix_vente_trop_petit));
+                focusView = mPriceET;
+                cancel = true;
+            }
+        } */
+
+        if (!mRemiseValeur.getText().toString().equals("")) {
+            remiseVal = Double.parseDouble(mRemiseValeur.getText().toString().replace(",", "."));
+            if (remiseVal > Double.parseDouble(mProductVirtual.getPrice())) {
+                mRemiseValeur.setError(getString(R.string.remise_doit_etre_inferieure_au_prix_u));
+                focusView = mRemiseValeur;
+                cancel = true;
+            }
+        }
+
+        if (!mRemisePourcentage.getText().toString().equals("")) {
+            remisePercent = Double.parseDouble(mRemisePourcentage.getText().toString().replace(",", "."));
+            if (remisePercent > 100) {
+                mRemisePourcentage.setError(getString(R.string.remise_doit_etre_inferieure_cent));
+                focusView = mRemisePourcentage;
+                cancel = true;
+            }
         }
 
         if (cancel) {
@@ -255,13 +294,15 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
             return;
         }
 
-        double prix_u = prix / Integer.parseInt(mProductVirtual.getQty());
-        int quantite = Integer.parseInt(mQuantiteNumberBtn.getText().toString()) * Integer.parseInt(mProductVirtual.getQty());
-        Log.e(TAG, "addPanier: id = " + mProduitParcelable.getId() + " quantite" + quantite + " prix_u" + prix_u);
+        prix = Double.parseDouble(mPriceET.getText().toString().replace(",", "."));
+        double prix_u = prix;
+//        int quantite = Integer.parseInt(mQuantiteNumberBtn.getText().toString()) * Integer.parseInt(mProductVirtual.getQty());
+        int quantite = Integer.parseInt(mQuantiteNumberBtn.getText().toString());
+        Log.e(TAG, "addPanier: id = " + mProductVirtual.getRowid() + " quantite" + quantite + " prix_u" + prix_u);
 
         // get movie in db
 //        final PanierEntry panierEntryTest = mDb.panierDao().getPanierById(mProduitParcelable.getId());
-        final PanierEntry panierEntryTest = mDb.panierDao().getPanierById(mProduitParcelable.getId());
+        final PanierEntry panierEntryTest = mDb.panierDao().getPanierById(Long.parseLong(mProductVirtual.getRowid()));
 
 //        Teste si le produit n'est pas deja dans le panier
         if (panierEntryTest != null) {
@@ -269,7 +310,7 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
             if (panierEntryTest.getQuantity() == quantite) {
 //            Toast.makeText(getContext(), String.format("%s ajouté dans le panier.", produitParcelable.getLabel()), Toast.LENGTH_SHORT).show();
                 final Snackbar snackbar = Snackbar
-                        .make(activityView, String.format("%s existe dans le panier.", mProduitParcelable.getLabel()), Snackbar.LENGTH_LONG);
+                        .make(activityView, String.format("%s existe dans le panier.", mProductVirtual.getLabel()), Snackbar.LENGTH_LONG);
 
 // Changing action button text color
                 View sbView = snackbar.getView();
@@ -288,8 +329,8 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
                 String priceString = mPriceET.getText().toString();
 
 //                double price = Double.parseDouble(priceString.replace(',', '.'));
-                double tva = Double.parseDouble(mProduitParcelable.getTva_tx());
-                double pricettc = prix_u + ((prix_u * tva)/100);
+                double tva = Double.parseDouble(mProductVirtual.getTva_tx());
+                double pricettc = prix_u + ((prix_u * tva) / 100);
 
 //                Sinon, on modifi la quantite a commander
                 panierEntryTest.setQuantity(quantite);
@@ -303,7 +344,7 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
 //                Log.e(TAG, "run: addPanier");
 //                Toast.makeText(getContext(), String.format("%s ajouté dans le panier.", produitParcelable.getLabel()), Toast.LENGTH_SHORT).show();
                         final Snackbar snackbar = Snackbar
-                                .make(activityView, String.format("Quantité %s mis à jour.", mProduitParcelable.getLabel()), Snackbar.LENGTH_LONG);
+                                .make(activityView, String.format("Quantité %s mis à jour.", mProductVirtual.getLabel()), Snackbar.LENGTH_LONG);
 
 // Changing action button text color
                         View sbView = snackbar.getView();
@@ -328,31 +369,25 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
         String priceString = mPriceET.getText().toString();
 
 //        double price = Double.parseDouble(priceString.replace(',', '.'));
-        double tva = Double.parseDouble(mProduitParcelable.getTva_tx());
+        double tva = Double.parseDouble(mProductVirtual.getTva_tx());
 
-        Log.e(TAG, "addPanier: priceString=" + priceString + " price=" + prix_u + " fk_product=" + mProduitParcelable.getId());
-//        if (prix_u >= Double.parseDouble(mProduitParcelable.getPrice())) {
-            double pricettc = prix_u + ((prix_u * tva)/100);
+        Log.e(TAG, "addPanier: priceString=" + priceString + " price=" + prix_u + " fk_product=" + mProductVirtual.getRowid());
+        double pricettc = prix_u + ((prix_u * tva) / 100);
 
-            panierEntry.setPrice("" + prix_u);
-            panierEntry.setPrice_ttc("" + pricettc);
-        /*} else {
-            double price2 = Double.parseDouble(mProduitParcelable.getPrice().replace(',', '.'));
-            double pricettc = price2 + ((price2 * tva)/100);
-
-            panierEntry.setPrice("" + price2);
-            panierEntry.setPrice_ttc("" + pricettc);
-        }*/
+        panierEntry.setPrice("" + prix_u);
+        panierEntry.setPrice_ttc("" + pricettc);
+        panierEntry.setRemise("" + remiseVal);
+        panierEntry.setRemise_percent("" + remisePercent);
 
 //        initialisation des valeur du produit a ajouter dans le panier
-        panierEntry.setId(mProduitParcelable.getId());
-        panierEntry.setFk_product(mProduitParcelable.getId());
-        panierEntry.setLabel(mProduitParcelable.getLabel());
-        panierEntry.setDescription(mProduitParcelable.getDescription());
-        panierEntry.setRef(mProduitParcelable.getRef());
+        panierEntry.setId(Long.parseLong(mProductVirtual.getRowid()));
+        panierEntry.setFk_product(Long.parseLong(mProductVirtual.getRowid()));
+        panierEntry.setLabel(mProductVirtual.getLabel());
+        panierEntry.setDescription(mProductVirtual.getDescription());
+        panierEntry.setRef(mProductVirtual.getRef());
         panierEntry.setPoster_content(mProduitParcelable.getLocal_poster_path());
-        panierEntry.setStock_reel(mProduitParcelable.getStock_reel());
-        panierEntry.setTva_tx(mProduitParcelable.getTva_tx());
+//        panierEntry.setStock_reel(mProduitParcelable.getStock_reel());
+        panierEntry.setTva_tx(mProductVirtual.getTva_tx());
         panierEntry.setQuantity(quantite);
 
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
@@ -363,7 +398,7 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
 //                Log.e(TAG, "run: addPanier");
 //                Toast.makeText(getContext(), String.format("%s ajouté dans le panier.", produitParcelable.getLabel()), Toast.LENGTH_SHORT).show();
                 final Snackbar snackbar = Snackbar
-                        .make(activityView, String.format("%s ajouté dans le panier.", mProduitParcelable.getLabel()), Snackbar.LENGTH_LONG);
+                        .make(activityView, String.format("%s ajouté dans le panier.", mProductVirtual.getLabel()), Snackbar.LENGTH_LONG);
 
 // Changing action button text color
                 View sbView = snackbar.getView();
@@ -385,6 +420,7 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
         FindProductVirtualTask task = new FindProductVirtualTask(DetailsProduitActivity.this, mProduitParcelable.getId(), DetailsProduitActivity.this);
         task.execute();
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        Creation fichier de log pour les erreurs
@@ -421,6 +457,9 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
         mShoppingFAB = (FloatingActionButton) findViewById(R.id.fab_produitdetails_shopping);
         mQuantiteNumberBtn = (EditText) findViewById(R.id.et_produitdetails_quantite);
         mPriceET = (EditText) findViewById(R.id.et_produitdetails_price);
+        mPriceUnitaireET = (EditText) findViewById(R.id.et_produitdetails_price_u);
+        mRemiseValeur = (EditText) findViewById(R.id.et_produitdetails_remise_valeur);
+        mRemisePourcentage = (EditText) findViewById(R.id.et_produitdetails_remise_percent);
 
         productVirtualList = new ArrayList<>();
 
@@ -447,6 +486,36 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
         }
 
         initValues();
+        mPriceUnitaireET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//                Log.e(TAG, "beforeTextChanged: charSequence=" + charSequence);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+//                Log.e(TAG, "afterTextChanged: editable=" + editable.toString());
+
+                if (editable.toString().equals("")) {
+//                    Log.e(TAG, "afterTextChanged: editable empty");
+                    return;
+                }
+
+                double newValue = Double.parseDouble(editable.toString().replace(",", "."));
+
+                Log.e(TAG, "afterTextChanged:mPriceUnitaireET newValue=" + newValue);
+
+                double price = newValue * Integer.parseInt(mProductVirtual.getQty());
+                mPriceET.setText(ISalesUtility.roundOffTo2DecPlaces("" + price));
+            }
+        });
+
+
     }
 
     @Override
@@ -468,23 +537,34 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
 
     @Override
     public void onFindProductVirtualCompleted(FindProductVirtualREST findProductVirtualREST) {
-        if (findProductVirtualREST.getProductVirtuals() != null) {
+        if (findProductVirtualREST != null && findProductVirtualREST.getProductVirtuals() != null) {
             if (findProductVirtualREST.getProductVirtuals().size() > 0) {
 //                Log.e(TAG, "onFindProductVirtualCompleted: size="+findProductVirtualREST.getProductVirtuals().size()+
 //                        " product_parent_id="+findProductVirtualREST.getProduct_parent_id());
 
+                for (int i = 0; i < findProductVirtualREST.getProductVirtuals().size(); i++) {
+                    double price = Double.parseDouble(mProduitParcelable.getPrice()) * Integer.parseInt(findProductVirtualREST.getProductVirtuals().get(i).getQty());
+                    double priceTTC = Double.parseDouble(mProduitParcelable.getPrice_ttc()) * Integer.parseInt(findProductVirtualREST.getProductVirtuals().get(i).getQty());
+                    findProductVirtualREST.getProductVirtuals().get(i).setPrice("" + price);
+                    findProductVirtualREST.getProductVirtuals().get(i).setPrice_ttc("" + priceTTC);
+                }
+
                 productVirtualList.addAll(findProductVirtualREST.getProductVirtuals());
 
                 productVirtualAdapter.notifyDataSetChanged();
+
+                int activePos = productVirtualList.size() >=1 ? 1 : 0;
+
+                updateProductValues(productVirtualList.get(activePos));
             }
         }
     }
 
     @Override
     public void onProductVirtualClicked(ProductVirtual productVirtual, int position) {
-        Log.e(TAG, "onProductVirtualClicked: position="+position+
-                " label="+productVirtual.getLabel()+
-                " Qty="+productVirtual.getQty());
+        Log.e(TAG, "onProductVirtualClicked: position=" + position +
+                " label=" + productVirtual.getLabel() +
+                " Qty=" + productVirtual.getQty());
 
         if (!mProductVirtual.getRowid().equals(productVirtual.getRowid())) {
             updateProductValues(productVirtual);

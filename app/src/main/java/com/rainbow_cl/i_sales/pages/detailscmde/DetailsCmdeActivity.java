@@ -53,7 +53,7 @@ public class DetailsCmdeActivity extends AppCompatActivity implements FindThirdp
         FindDocumentListener{
     private static final String TAG = DetailsCmdeActivity.class.getSimpleName();
 
-    private TextView mRefTV, mDateTV, mDateLivraisonTV, mModeRegTV, mTotalCmdeTV, mClientNom, mClientEmail, mClientAdresse;
+    private TextView mRefTV, mDateTV, mDateLivraisonTV, mModeRegTV, mTotalCmdeTV, mClientNom, mClientEmail, mClientAdresse, mRemiseTV;
     private RecyclerView mRecyclerView;
     private ImageView mSignClientIV, mSignCommIV;
 
@@ -161,6 +161,9 @@ public class DetailsCmdeActivity extends AppCompatActivity implements FindThirdp
         }
 
         mModeRegTV.setText(mCmdeParcelable.getMode_reglement());
+        mRemiseTV.setText(String.format("%s %s",
+                ISalesUtility.amountFormat2(mCmdeParcelable.getRemise_percent() == null || mCmdeParcelable.getRemise_percent().equals("") ? "0" : mCmdeParcelable.getRemise_percent()),
+                "%"));
 
 //        Chargement des produit dans la liste
         produitParcelables.addAll(mCmdeParcelable.getProduits());
@@ -273,6 +276,7 @@ public class DetailsCmdeActivity extends AppCompatActivity implements FindThirdp
         mDateTV = findViewById(R.id.tv_detailscmde_date);
         mDateLivraisonTV = findViewById(R.id.tv_detailscmde_datelivraison);
         mModeRegTV = findViewById(R.id.tv_detailscmde_modereglement);
+        mRemiseTV = findViewById(R.id.tv_detailscmde_remise);
         mTotalCmdeTV = findViewById(R.id.tv_detailscmde_total);
         mClientNom = findViewById(R.id.tv_detailscmde_client_nom);
         mClientEmail = findViewById(R.id.tv_detailscmde_client_email);

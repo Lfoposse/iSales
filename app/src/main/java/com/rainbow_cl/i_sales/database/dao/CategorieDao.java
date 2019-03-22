@@ -22,13 +22,13 @@ public interface CategorieDao {
     @Query("SELECT * FROM categorie")
     LiveData<List<CategorieEntry>> loadAllCategorie();
 
-    @Query("SELECT cat.id id, cat.fk_parent fk_parent, cat.label label, cat.description description, cat.color color, cat.type type, cat.ref ref, cat.ref_ext ref_ext, cat.visible visible, cat.entity entity, cat.poster_name poster_name, cat.poster_content poster_content, (SELECT COUNT(pdt.id) FROM produit pdt WHERE pdt.categorie_id = cat.id) count_produits FROM categorie cat")
+    @Query("SELECT cat.id id, cat.fk_parent fk_parent, cat.label label, cat.description description, cat.color color, cat.type type, cat.ref ref, cat.ref_ext ref_ext, cat.visible visible, cat.entity entity, cat.poster_name poster_name, cat.poster_content poster_content, (SELECT COUNT(pdt.id) FROM produit pdt WHERE pdt.categorie_id = cat.id) count_produits FROM categorie cat ORDER BY cat.label")
     List<CategorieEntry> getAllCategories();
 
-    @Query("SELECT * FROM (SELECT cat.id id, cat.fk_parent fk_parent, cat.label label, cat.description description, cat.color color, cat.type type, cat.ref ref, cat.ref_ext ref_ext, cat.visible visible, cat.entity entity, cat.poster_name poster_name, cat.poster_content poster_content, (SELECT COUNT(pdt.id) FROM produit pdt WHERE pdt.categorie_id = cat.id) count_produits FROM categorie cat) tab WHERE tab.count_produits > 0")
+    @Query("SELECT * FROM (SELECT cat.id id, cat.fk_parent fk_parent, cat.label label, cat.description description, cat.color color, cat.type type, cat.ref ref, cat.ref_ext ref_ext, cat.visible visible, cat.entity entity, cat.poster_name poster_name, cat.poster_content poster_content, (SELECT COUNT(pdt.id) FROM produit pdt WHERE pdt.categorie_id = cat.id) count_produits FROM categorie cat ORDER BY cat.label) tab WHERE tab.count_produits > 0")
     List<CategorieEntry> getAllCategoriesAZero();
 
-    @Query("SELECT * FROM categorie")
+    @Query("SELECT * FROM categorie ORDER BY label")
     List<CategorieEntry> getCategories();
 
     @Query("DELETE FROM categorie")

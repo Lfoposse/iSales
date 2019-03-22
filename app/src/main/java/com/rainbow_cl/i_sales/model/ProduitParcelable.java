@@ -48,6 +48,8 @@ public class ProduitParcelable implements Parcelable {
     private String note;
     private String note_private;
     private String note_public;
+    private String remise;
+    private String remise_percent;
 
     private String local_poster_path;
     private DolPhoto poster;
@@ -380,6 +382,22 @@ public class ProduitParcelable implements Parcelable {
         this.note_public = note_public;
     }
 
+    public String getRemise() {
+        return remise;
+    }
+
+    public void setRemise(String remise) {
+        this.remise = remise;
+    }
+
+    public String getRemise_percent() {
+        return remise_percent;
+    }
+
+    public void setRemise_percent(String remise_percent) {
+        this.remise_percent = remise_percent;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -425,6 +443,8 @@ public class ProduitParcelable implements Parcelable {
         dest.writeString(this.note);
         dest.writeString(this.note_private);
         dest.writeString(this.note_public);
+        dest.writeString(this.remise);
+        dest.writeString(this.remise_percent);
         dest.writeString(this.local_poster_path);
         dest.writeParcelable(this.poster, flags);
     }
@@ -468,6 +488,8 @@ public class ProduitParcelable implements Parcelable {
         this.note = in.readString();
         this.note_private = in.readString();
         this.note_public = in.readString();
+        this.remise = in.readString();
+        this.remise_percent = in.readString();
         this.local_poster_path = in.readString();
         this.poster = in.readParcelable(DolPhoto.class.getClassLoader());
     }

@@ -78,10 +78,14 @@ public class CmdeProduitAdapter extends RecyclerView.Adapter<CmdeProduitAdapter.
     public void onBindViewHolder(@NonNull final CmdeProduitAdapter.CmdeProduitViewHolder holder, int position) {
 
         holder.label.setText(produitsList.get(position).getLabel());
-        holder.qtyPrice.setText(String.format("%s %s X %s",
-                ISalesUtility.amountFormat2(produitsList.get(position).getPrice_ttc()),
+        holder.qtyPrice.setText(String.format("%s %s X %s  •  TVA %s %s  •  Remise %s %s",
+                ISalesUtility.amountFormat2(produitsList.get(position).getPrice_ttc() == null || produitsList.get(position).getPrice_ttc().equals("") ? "0" : produitsList.get(position).getPrice_ttc()),
                 ISalesUtility.CURRENCY,
-                ISalesUtility.amountFormat2(produitsList.get(position).getQty())) );
+                ISalesUtility.amountFormat2(produitsList.get(position).getQty()),
+                ISalesUtility.amountFormat2(produitsList.get(position).getTva_tx() == null || produitsList.get(position).getTva_tx().equals("") ? "0" : produitsList.get(position).getTva_tx()),
+                "%",
+                ISalesUtility.amountFormat2(produitsList.get(position).getRemise_percent() == null || produitsList.get(position).getRemise_percent().equals("") ? "0" : produitsList.get(position).getRemise_percent()),
+                "%"));
         holder.total.setText(String.format("%s %s",
                 ISalesUtility.amountFormat2(produitsList.get(position).getTotal_ht()),
                 ISalesUtility.CURRENCY) );

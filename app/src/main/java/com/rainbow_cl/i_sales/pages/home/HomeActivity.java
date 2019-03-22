@@ -54,7 +54,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private AppDatabase mDb;
 
-    private String tabNames[] = {"clients", "categories", "panier", "commandes", "profil", "a propos"};
+    private String tabNames[] = {"clients", "panier", "categories", "commandes", "profil", "a propos"};
 
     private int[] tabIconsUnSelected = {
             R.drawable.ic_clients_desactive,
@@ -187,6 +187,25 @@ public class HomeActivity extends AppCompatActivity {
 
             case 1:
                 if(isLayoutInDualPaneMode(true)) {
+                    final PanierFragment detailsFragment = PanierFragment.newInstance();
+                    fragmentTransaction.replace(R.id.master_frame, ClientsRadioFragment.newInstance(new DialogClientListener() {
+                        @Override
+                        public void onClientDialogSelected(ClientParcelable clientParcelable, int position) {
+
+                            detailsFragment.onClientDialogSelected(clientParcelable, position);
+                        }
+                    }));
+
+                    fragmentTransaction.replace(R.id.details_frame, detailsFragment);
+                } else {
+                    fragmentTransaction.replace(R.id.master_frame, PanierFragment.newInstance());
+                }
+
+                activeTab = 1;
+                break;
+
+            case 2:
+                if(isLayoutInDualPaneMode(true)) {
 
                     final CategoriesFragment detailsFragment = CategoriesFragment.newInstance();
                     fragmentTransaction.replace(R.id.master_frame, CategorieProduitFragment.newInstance(new DialogCategorieListener() {
@@ -201,25 +220,6 @@ public class HomeActivity extends AppCompatActivity {
 
                 } else {
                     fragmentTransaction.replace(R.id.master_frame, CategoriesFragment.newInstance());
-                }
-
-                activeTab = 1;
-                break;
-
-            case 2:
-                if(isLayoutInDualPaneMode(true)) {
-                    final PanierFragment detailsFragment = PanierFragment.newInstance();
-                    fragmentTransaction.replace(R.id.master_frame, ClientsRadioFragment.newInstance(new DialogClientListener() {
-                        @Override
-                        public void onClientDialogSelected(ClientParcelable clientParcelable, int position) {
-
-                            detailsFragment.onClientDialogSelected(clientParcelable, position);
-                        }
-                    }));
-
-                    fragmentTransaction.replace(R.id.details_frame, detailsFragment);
-                } else {
-                    fragmentTransaction.replace(R.id.master_frame, PanierFragment.newInstance());
                 }
 
                 activeTab = 2;

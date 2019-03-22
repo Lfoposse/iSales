@@ -182,11 +182,11 @@ public class ProduitsAdapter extends RecyclerView.Adapter<ProduitsAdapter.Produi
                     @Override
                     public void onSuccess() {
 //                        Log.e(TAG, "onSuccess: Picasso loadin img");
-                        if (mContext != null) {
+                        if (mContext != null && position >= produitsListFiltered.size()) {
                             Bitmap imageBitmap = ((BitmapDrawable) holder.poster.getDrawable()).getBitmap();
 
                             String pathFile = ISalesUtility.saveProduitImage(mContext, imageBitmap, produitsListFiltered.get(position).getRef());
-                            Log.e(TAG, "onPostExecute: pathFile=" + pathFile);
+//                            Log.e(TAG, "onPostExecute: pathFile=" + pathFile);
 
                             if (pathFile != null) produitsListFiltered.get(position).setLocal_poster_path(pathFile);
 //                    produitParcelable.setPoster(findDolPhotoREST.getDolPhoto());

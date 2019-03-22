@@ -19,15 +19,16 @@
         <ImageView
             android:id="@+id/iv_panier_produit_poster"
             android:layout_width="@dimen/panier_product_item_img_width"
-            android:layout_height="@dimen/panier_product_item_width"
+            android:layout_height="@dimen/panier_product_item_img_width"
             android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
+            android:layout_alignParentTop="true"
             android:src="@drawable/isales_no_image"
             android:scaleType="fitXY" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/panier_product_item_width"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
             android:paddingBottom="3dp"
@@ -44,38 +45,40 @@
 
             <LinearLayout
                 android:layout_below="@+id/tv_panier_produit_label"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:layout_alignParentStart="true">
                 <TextView
                     android:id="@+id/tv_panier_produit_price_ttc"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="start"
+                    android:gravity="start|center_vertical"
+                    android:layout_weight="1"
                     android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/produit_panier_item_price_ht_size"
                     tools:text="40,5 € TTC  •  40 € HT" />
 
                 <TextView
-                    android:id="@+id/tv_panier_produit_tva"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tv_panier_produit_total"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="start"
-                    android:textSize="@dimen/produit_panier_item_price_ht_size"
-                    tools:text="TVA : 19,25 %" />
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="2.5"
+                    android:gravity="end|center_vertical"
+                    android:textColor="@color/red_amount"
+                    android:textSize="@dimen/produit_item_price_ht_size"
+                    tools:text="40 €" />
             </LinearLayout>
 
             <TextView
-                android:id="@+id/tv_panier_produit_total"
+                android:id="@+id/tv_panier_produit_tva"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
                 android:gravity="start"
-                android:textColor="@color/red_amount"
-                android:textSize="@dimen/produit_item_price_ht_size"
-                tools:text="40 €" />
+                android:textSize="@dimen/produit_panier_item_price_ht_size"
+                tools:text="TVA : 19,25 %  •  Remise en Valeur 1.50 €  •  Remise en Pourcentage 35 %" />
 
             <!-- <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
                 android:id="@+id/numbtn_panier_produit"
@@ -89,35 +92,58 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"/> -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true">
-                <TextView
-                    android:layout_width="wrap_content"
+                android:paddingEnd="4dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/quantite_"/>
-                <EditText
-                    android:id="@+id/et_panier_quantite"
-                    android:layout_width="50dp"
-                    android:layout_height="wrap_content"
-                    android:inputType="number" />
-            </LinearLayout>
+                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    android:gravity="start|center_vertical"
+                    android:paddingEnd="4dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/quantite_"
+                        />
+                    <!--<EditText-->
+                        <!--android:id="@+id/et_panier_quantite"-->
+                        <!--android:layout_width="50dp"-->
+                        <!--android:text=""-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:inputType="number" />-->
+                    <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
+                        android:id="@+id/numbtn_panier_produit"
+                        android:layout_width="96dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_outline_primary"
+                        card_view:backGroundColor="@color/transparent"
+                        card_view:textColor="@color/black"
+                        fab:initialNumber="1"
+                        android:scrollbarStyle="insideInset"/>
+                </LinearLayout>
 
-            <ImageButton
-                android:id="@+id/ib_panier_produit_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:foregroundGravity="center"
-                android:padding="4dp"
-                android:src="@drawable/ic_delete_black_700_24dp" />
-        </RelativeLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:gravity="end|center_vertical"
+                    android:orientation="horizontal">
+                    <ImageButton
+                        android:id="@+id/ib_panier_produit_delete"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|center_vertical"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:foregroundGravity="center"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_delete_black_700_24dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
 
     </RelativeLayout>
 

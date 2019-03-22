@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +33,7 @@ import com.rainbow_cl.i_sales.database.AppDatabase;
 import com.rainbow_cl.i_sales.database.entry.ClientEntry;
 import com.rainbow_cl.i_sales.database.entry.CommandeEntry;
 import com.rainbow_cl.i_sales.database.entry.CommandeLineEntry;
+import com.rainbow_cl.i_sales.database.entry.SignatureEntry;
 import com.rainbow_cl.i_sales.interfaces.CommandeAdapterListener;
 import com.rainbow_cl.i_sales.interfaces.DialogClientListener;
 import com.rainbow_cl.i_sales.interfaces.FindOrdersListener;
@@ -44,13 +44,18 @@ import com.rainbow_cl.i_sales.pages.boncmdesignature.BonCmdeSignatureActivity;
 import com.rainbow_cl.i_sales.pages.detailscmde.DetailsCmdeActivity;
 import com.rainbow_cl.i_sales.pages.home.dialog.ClientDialog;
 import com.rainbow_cl.i_sales.remote.ConnectionManager;
+import com.rainbow_cl.i_sales.remote.model.Document;
 import com.rainbow_cl.i_sales.remote.model.DolPhoto;
 import com.rainbow_cl.i_sales.remote.model.Order;
 import com.rainbow_cl.i_sales.remote.model.OrderLine;
+import com.rainbow_cl.i_sales.remote.model.Thirdpartie;
 import com.rainbow_cl.i_sales.remote.rest.FindOrderLinesREST;
 import com.rainbow_cl.i_sales.remote.rest.FindOrdersREST;
 import com.rainbow_cl.i_sales.task.FindOrderLinesTask;
 import com.rainbow_cl.i_sales.task.FindOrderTask;
+import com.rainbow_cl.i_sales.task.InsertThirdpartieTask;
+import com.rainbow_cl.i_sales.task.SendDocumentTask;
+import com.rainbow_cl.i_sales.task.SendOrderTask;
 import com.rainbow_cl.i_sales.utility.CircleTransform;
 import com.rainbow_cl.i_sales.utility.ISalesUtility;
 import com.squareup.picasso.Picasso;
@@ -171,11 +176,11 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
         ArrayList<CommandeParcelable> commandeParcelablesList = new ArrayList<>();
         for (int i = cmdeEntryList.size() - 1; i >= 0; i--) {
             CommandeEntry cmdeEntry = cmdeEntryList.get(i);
-            Log.e(TAG, "onFindOrdersTaskComplete: timestamp=" + cmdeEntry.getDate() +
+            /*Log.e(TAG, "onFindOrdersTaskComplete: timestamp=" + cmdeEntry.getDate() +
                     " getCommande_id=" + cmdeEntry.getCommande_id() +
                     " dateCmde=" + cmdeEntry.getDate_commande() +
                     " total=" + cmdeEntry.getTotal_ttc() +
-                    " statut=" + cmdeEntry.getStatut());
+                    " statut=" + cmdeEntry.getStatut()); */
             CommandeParcelable cmdeParcelable = new CommandeParcelable();
 //            client id
             cmdeParcelable.setSocid(cmdeEntry.getSocid());
@@ -187,6 +192,9 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
             cmdeParcelable.setMode_reglement_id(cmdeEntry.getMode_reglement_id());
             cmdeParcelable.setNote_private(cmdeEntry.getNote_private());
             cmdeParcelable.setNote_public(cmdeEntry.getNote_public());
+            cmdeParcelable.setRemise(cmdeEntry.getRemise());
+            cmdeParcelable.setRemise_percent(cmdeEntry.getRemise_percent());
+            cmdeParcelable.setRemise_absolue(cmdeEntry.getRemise_absolue());
 
 //            cmdeParcelable.setId(cmdeEntry.getId());
             cmdeParcelable.setRef(cmdeEntry.getRef());
@@ -260,6 +268,9 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
                 pdtParcelable.setTotal_ttc(cmdeLineEntry.getTotal_ttc());
                 pdtParcelable.setPoster(new DolPhoto());
                 pdtParcelable.getPoster().setFilename(ISalesUtility.getImgProduit(cmdeLineEntry.getDescription()));
+                pdtParcelable.setRemise(cmdeLineEntry.getRemise());
+                pdtParcelable.setRemise_percent(cmdeLineEntry.getRemise_percent());
+                pdtParcelable.setTva_tx(cmdeLineEntry.getTva_tx());
 
                 cmdeParcelable.getProduits().add(pdtParcelable);
             }
@@ -364,6 +375,89 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
         mAdapter.notifyDataSetChanged();
     }
 
+    //    Envoi de la liste des commandes sur le serveur
+    private void executeSendOrderSynchro() {
+
+//        Recuperation des commandes non synchronisées
+        List<CommandeEntry> commandeEntries = mDb.commandeDao().getAllCmdeNotSynchro();
+        Log.e(TAG, "executeSendOrderSynchro: commandeEntries size=" + commandeEntries.size());
+        for (int i = 0; i < commandeEntries.size(); i++) {
+            CommandeEntry cmdeEntryItem = commandeEntries.get(i);
+            final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            Order order = new Order();
+
+            order.setSocid(""+cmdeEntryItem.getSocid());
+            order.setDate_commande(dateFormat.format(cmdeEntryItem.getDate_commande()));
+            order.setDate(dateFormat.format(cmdeEntryItem.getDate()));
+            order.setDate_livraison(dateFormat.format(cmdeEntryItem.getDate_livraison()));
+            order.setRef(cmdeEntryItem.getRef());
+            order.setRemise_percent(cmdeEntryItem.getRemise_percent());
+            order.setMode_reglement(cmdeEntryItem.getMode_reglement());
+            order.setMode_reglement_code(cmdeEntryItem.getMode_reglement_code());
+            order.setMode_reglement_id(cmdeEntryItem.getMode_reglement_id());
+            order.setNote_public(cmdeEntryItem.getNote_public());
+            order.setLines(new ArrayList<OrderLine>());
+
+//            Recupération de la listes des produits de la commande
+            List<CommandeLineEntry> cmdeLineEntryList = mDb.commandeLineDao().getAllCmdeLineByCmdeRef(cmdeEntryItem.getCommande_id());
+            List<SignatureEntry> signatureEntries = mDb.signatureDao().getAllSignatureByCmdeRef(cmdeEntryItem.getCommande_id());
+            Log.e(TAG, "executeSendOrderSynchro: cmdeLineEntryList size=" + cmdeLineEntryList.size() +
+                    " signatureEntries size=" + signatureEntries.size());
+
+//            Ajout des lignes commande dans la commande
+            for (int j = 0; j < cmdeLineEntryList.size(); j++) {
+                OrderLine orderLine = new OrderLine();
+                CommandeLineEntry cmdeLineEntry = cmdeLineEntryList.get(j);
+
+                orderLine.setRef(cmdeLineEntry.getRef());
+                orderLine.setFk_product(cmdeLineEntry.getId());
+                orderLine.setProduct_ref(cmdeLineEntry.getRef());
+                orderLine.setProduct_label(cmdeLineEntry.getLabel());
+                orderLine.setLibelle(cmdeLineEntry.getLabel());
+                orderLine.setLabel(String.format("%s-%s", cmdeLineEntry.getRef(), cmdeLineEntry.getLabel()));
+                orderLine.setProduct_desc(cmdeLineEntry.getDescription());
+                orderLine.setQty(String.valueOf(cmdeLineEntry.getQuantity()));
+                orderLine.setTva_tx(cmdeLineEntry.getTva_tx());
+                orderLine.setSubprice(cmdeLineEntry.getPrice());
+                orderLine.setDesc(cmdeLineEntry.getDescription());
+                orderLine.setDescription(cmdeLineEntry.getDescription());
+                orderLine.setId(String.valueOf(cmdeLineEntry.getId()));
+                orderLine.setRowid(String.valueOf(cmdeLineEntry.getId()));
+                orderLine.setRemise(cmdeLineEntry.getRemise());
+                orderLine.setRemise_percent(cmdeLineEntry.getRemise_percent());
+
+//                Ajout de la ligne dans la commande
+                order.getLines().add(orderLine);
+            }
+
+//                                creation du document signature client
+            Document sign1 = new Document();
+            sign1.setFilecontent(signatureEntries.get(0).getContent());
+            sign1.setFilename(signatureEntries.get(0).getName());
+            sign1.setFileencoding("base64");
+            sign1.setModulepart("commande");
+
+//                                creation du document signature client
+            Document sign2 = new Document();
+            sign2.setFilecontent(signatureEntries.get(1).getContent());
+            sign2.setFilename(signatureEntries.get(1).getName());
+            sign2.setFileencoding("base64");
+            sign2.setModulepart("commande");
+
+//            execution de la task d'envoi de la commande sur le servur
+            SendOrderTask sendOrderTask = new SendOrderTask(order, getContext());
+            sendOrderTask.execute();
+
+//            execution task envoi des signatures
+            SendDocumentTask sendDocumentTask1 = new SendDocumentTask(sign1, getContext());
+            sendDocumentTask1.execute();
+            SendDocumentTask sendDocumentTask2 = new SendDocumentTask(sign2, getContext());
+            sendDocumentTask2.execute();
+
+        }
+
+    }
 
     public CommandesFragment() {
         // Required empty public constructor
@@ -637,13 +731,35 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
                     return true;
                 }
 
-                mDb.commandeDao().deleteAllCmde();
-                mDb.commandeLineDao().deleteAllCmdeLine();
+                /*
+//                Verification s'il existe des clients non synchro au serveur
+                List<ClientEntry> clientEntriesSynchro = mDb.clientDao().getAllClientBySynchro(0);
+                Log.e(TAG, "onOptionsItemSelected:clientEntriesSynchro size="+clientEntriesSynchro.size() );
+                if (clientEntriesSynchro.size() > 0) {
+                    AlertDialog alert = new AlertDialog.Builder(getContext()).create();
+                    alert.setTitle("ATTENTION");
+                    alert.setMessage(getString(R.string.client_en_attente_synchronisation));
+                    alert.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    alert.show();
+                    return true;
+                } */
+
 
 //                affichage du loader dialog
                 showProgressDialog(true, null, getString(R.string.synchro_commandes_recuperer_encours));
 
-//            recupere la liste des clients sur le serveur
+                executeSendOrderSynchro();
+
+//                Suppression des commandes dans la BD
+                mDb.commandeDao().deleteAllCmde();
+                mDb.commandeLineDao().deleteAllCmdeLine();
+
+//            recupere la liste des commandes sur le serveur
                 executeFindOrder();
                 break;
             default:
@@ -658,7 +774,7 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
 //        mFindOrderLinesTask = null;
 
 //            chargement des produits de la commande
-        if (findOrderLinesREST.getLines() != null ) {
+        if (findOrderLinesREST.getLines() != null) {
 
             for (OrderLine orderLine : findOrderLinesREST.getLines()) {
                 CommandeLineEntry cmdeLineEntry = new CommandeLineEntry();
@@ -675,6 +791,8 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
                 cmdeLineEntry.setTotal_tva(orderLine.getTotal_tva());
                 cmdeLineEntry.setTotal_ttc(orderLine.getTotal_ttc());
                 cmdeLineEntry.setCommande_ref(commande_ref);
+                cmdeLineEntry.setRemise(orderLine.getRemise());
+                cmdeLineEntry.setRemise_percent(orderLine.getRemise_percent());
 
 //                    Log.e(TAG, "onFindOrdersTaskComplete: product name=" + cmdeLineEntry.getLabel());
 //            insertion de la commandeLine dans la BD
@@ -722,6 +840,9 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
             cmdeEntry.setMode_reglement_code(orderItem.getMode_reglement_code());
             cmdeEntry.setNote_private(orderItem.getNote_private());
             cmdeEntry.setNote_public(orderItem.getNote_public());
+            cmdeEntry.setRemise_percent(orderItem.getRemise_percent());
+            cmdeEntry.setRemise(orderItem.getRemise());
+            cmdeEntry.setRemise_absolue(orderItem.getRemise_absolue());
 
             /* Log.e(TAG, "onFindOrdersTaskComplete: timestamp=" + orderItem.getDate() +
                     " ref=" + orderItem.getRef() +
@@ -760,72 +881,40 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
             cmdeEntry.setIs_synchro(1);
 
             Log.e(TAG, "onFindOrdersTaskComplete: commande date=" + cmdeEntry.getDate() + " Date_commande=" + cmdeEntry.getDate_commande() + " Date_livraison=" + cmdeEntry.getDate_livraison());
-            CommandeEntry testCmde = mDb.commandeDao().getCmdesById(cmdeEntry.getId());
-            if (testCmde == null) {
+
 //                Log.e(TAG, "onFindOrdersTaskComplete: insert CommandeEntry");
 //            insertion du client dans la BD
-                long cmdeEntryId = mDb.commandeDao().insertCmde(cmdeEntry);
+            long cmdeEntryId = mDb.commandeDao().insertCmde(cmdeEntry);
 //                Log.e(TAG, "onFindOrdersTaskComplete: " + cmdeEntryId);
 
 //                executeFindOrderLines(cmdeEntry.getId(), cmdeEntryId);
 
 //            chargement des produits de la commande
-                for (OrderLine orderLine : orderItem.getLines()) {
-                    CommandeLineEntry cmdeLineEntry = new CommandeLineEntry();
+            for (OrderLine orderLine : orderItem.getLines()) {
+                CommandeLineEntry cmdeLineEntry = new CommandeLineEntry();
 
-                    cmdeLineEntry.setId(Long.parseLong(orderLine.getId()));
-                    cmdeLineEntry.setRef(orderLine.getRef());
-                    cmdeLineEntry.setLabel(orderLine.getLibelle() != null ? orderLine.getLibelle() : orderLine.getLabel());
-                    cmdeLineEntry.setDescription(orderLine.getDescription());
-                    cmdeLineEntry.setQuantity(Integer.parseInt(orderLine.getQty()));
-                    cmdeLineEntry.setPrice(orderLine.getPrice());
-                    cmdeLineEntry.setPrice_ttc(orderLine.getPrice());
-                    cmdeLineEntry.setSubprice(orderLine.getSubprice());
-                    cmdeLineEntry.setTotal_ht(orderLine.getTotal_ht());
-                    cmdeLineEntry.setTotal_tva(orderLine.getTotal_tva());
-                    cmdeLineEntry.setTotal_ttc(orderLine.getTotal_ttc());
-                    cmdeLineEntry.setCommande_ref(cmdeEntryId);
+                cmdeLineEntry.setId(Long.parseLong(orderLine.getId()));
+                cmdeLineEntry.setRef(orderLine.getRef());
+                cmdeLineEntry.setLabel(orderLine.getLibelle() != null ? orderLine.getLibelle() : orderLine.getLabel());
+                cmdeLineEntry.setDescription(orderLine.getDescription());
+                cmdeLineEntry.setQuantity(Integer.parseInt(orderLine.getQty()));
+                cmdeLineEntry.setPrice(orderLine.getPrice());
+                cmdeLineEntry.setPrice_ttc(orderLine.getPrice());
+                cmdeLineEntry.setSubprice(orderLine.getSubprice());
+                cmdeLineEntry.setTotal_ht(orderLine.getTotal_ht());
+                cmdeLineEntry.setTotal_tva(orderLine.getTotal_tva());
+                cmdeLineEntry.setTotal_ttc(orderLine.getTotal_ttc());
+                cmdeLineEntry.setTva_tx(orderLine.getTva_tx());
+                cmdeLineEntry.setCommande_ref(cmdeEntryId);
+                cmdeLineEntry.setRemise(orderLine.getRemise());
+                cmdeLineEntry.setRemise_percent(orderLine.getRemise_percent());
 
-//                    Log.e(TAG, "onFindOrdersTaskComplete: product name=" + cmdeLineEntry.getLabel());
+                    Log.e(TAG, "onFindOrdersTaskComplete: product name=" + cmdeLineEntry.getLabel()+" tva_tx="+orderLine.getTva_tx()
+                            +" total_tva="+orderLine.getTotal_tva()
+                            +" remise_percent="+orderLine.getRemise_percent());
 //            insertion de la commandeLine dans la BD
-                    mDb.commandeLineDao().insertCmdeLine(cmdeLineEntry);
-                }
-
-            } else {
-//                Log.e(TAG, "onFindOrdersTaskComplete: CommandeEntry already exist " + cmdeEntry.getRef());
-//            insertion du client dans la BD
-                mDb.commandeDao().updateCmde(cmdeEntry);
-
-//                executeFindOrderLines(cmdeEntry.getId(), testCmde.getId());
-
-//            chargement des produits de la commande
-                for (OrderLine orderLine : orderItem.getLines()) {
-                    CommandeLineEntry cmdeLineEntry = new CommandeLineEntry();
-
-                    cmdeLineEntry.setId(Long.parseLong(orderLine.getId()));
-                    cmdeLineEntry.setRef(orderLine.getRef());
-                    cmdeLineEntry.setLabel(orderLine.getLibelle() != null ? orderLine.getLibelle() : orderLine.getLabel());
-                    cmdeLineEntry.setDescription(orderLine.getDescription());
-                    cmdeLineEntry.setQuantity(Integer.parseInt(orderLine.getQty()));
-                    cmdeLineEntry.setPrice(orderLine.getPrice());
-                    cmdeLineEntry.setPrice_ttc(orderLine.getPrice());
-                    cmdeLineEntry.setSubprice(orderLine.getSubprice());
-                    cmdeLineEntry.setTotal_ht(orderLine.getTotal_ht());
-                    cmdeLineEntry.setTotal_tva(orderLine.getTotal_tva());
-                    cmdeLineEntry.setTotal_ttc(orderLine.getTotal_ttc());
-                    cmdeLineEntry.setCommande_ref(cmdeEntry.getId());
-
-//                    Log.e(TAG, "onFindOrdersTaskComplete: product name=" + cmdeLineEntry.getLabel());
-//            insertion de la commandeLine dans la BD
-                    CommandeLineEntry testCmdeLine = mDb.commandeLineDao().getCmdeLineById(cmdeLineEntry.getId());
-                    if (testCmdeLine == null) {
-                        mDb.commandeLineDao().insertCmdeLine(cmdeLineEntry);
-                    } else {
-                        mDb.commandeLineDao().updateCmdeLine(cmdeLineEntry);
-                    }
-                }
+                mDb.commandeLineDao().insertCmdeLine(cmdeLineEntry);
             }
-
 
         }
 

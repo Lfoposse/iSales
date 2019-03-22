@@ -13,7 +13,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,7 +63,7 @@ public class ClientsAdapter extends RecyclerView.Adapter<ClientsAdapter.ClientsV
     public class ClientsViewHolder extends RecyclerView.ViewHolder {
         public TextView name, address;
         public ImageView thumbnail;
-        public RelativeLayout viewBackground, viewForeground;
+        public View viewBackground, viewForeground;
         private View statut;
 
         public ClientsViewHolder(View view) {

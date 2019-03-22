@@ -23,7 +23,7 @@
     <dimen name="card_margin">5dp</dimen>
     <dimen name="card_album_elevation">4dp</dimen>
     <dimen name="product_item_img_height">200dp</dimen>
-    <dimen name="panier_product_item_img_width">106dp</dimen>
+    <dimen name="panier_product_item_img_width">76dp</dimen>
     <dimen name="panier_product_item_width">106dp</dimen>
 
     <dimen name="produit_item_label_size">15sp</dimen>

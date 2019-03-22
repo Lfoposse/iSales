@@ -9,11 +9,13 @@ import com.rainbow_cl.i_sales.remote.model.Order;
 import com.rainbow_cl.i_sales.remote.model.OrderLine;
 import com.rainbow_cl.i_sales.remote.model.PaymentTypes;
 import com.rainbow_cl.i_sales.remote.model.Product;
+import com.rainbow_cl.i_sales.remote.model.ProductCustomerPrice;
 import com.rainbow_cl.i_sales.remote.model.ProductVirtual;
 import com.rainbow_cl.i_sales.remote.model.Thirdpartie;
 import com.rainbow_cl.i_sales.remote.model.User;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -129,8 +131,12 @@ public interface ISalesServicesRemote {
 
     // ======== RYImg endpoinds  ==========
 
-    //  Recupération d'un user a partir de son login
+    //  Recupération des produit virtuels d'un produit
     @GET("product_virtual.php")
     Call<ArrayList<ProductVirtual>> ryFindProductVirtual(@Query(ApiUtils.id) Long productId);
+
+    //  Recupération des produits affecté a un client
+    @GET("product_customer_price.php")
+    Call<List<ProductCustomerPrice>> ryFindProductPrice(@Query(ApiUtils.soc_id) Long productId);
 
 }

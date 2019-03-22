@@ -195,6 +195,11 @@
     <string name="echec_envoi_logo_client">Echec d\'envoi du logo client.</string>
     <string name="toutes_les_categories">Toutes les categories</string>
     <string name="note">Note</string>
+    <string name="remise_doit_etre_inferieure_au_prix_u">La remise doit être inferieure au prix unitaire.</string>
+    <string name="remise_doit_etre_inferieure_cent">La remise doit être inférieure ou égal a 100.</string>
+    <string name="client_en_attente_synchronisation">Des clients sont en attente de synchronisation. Veuillez synchroniser les clients.</string>
+    <string name="valider_le_panier">Valider le panier</string>
+    <string name="vider_le_panier">Vider le panier</string>
 
     <!-- Strings related to Settings -->
 

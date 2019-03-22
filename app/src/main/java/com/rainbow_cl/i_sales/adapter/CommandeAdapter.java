@@ -105,9 +105,9 @@ public class CommandeAdapter extends RecyclerView.Adapter<CommandeAdapter.Comman
 
     @Override
     public void onBindViewHolder(@NonNull CommandeAdapter.CommandeViewHolder holder, int position) {
-        /* Log.e(TAG, "onBindViewHolder: commandeListFiltered.get(position).getDate()=" + commandeListFiltered.get(position).getDate() +
+        Log.e(TAG, "onBindViewHolder: commandeListFiltered.get(position).getDate()=" + commandeListFiltered.get(position).getDate() +
                 " date_commande=" + commandeListFiltered.get(position).getDate_commande()+
-        " statut="+commandeListFiltered.get(position).getStatut()); */
+        " getSocid="+commandeListFiltered.get(position).getSocid());
 
         holder.ref.setText(commandeListFiltered.get(position).getRef());
 //        holder.client.setText(commandeListFiltered.get(position).getClient().getName());
@@ -165,7 +165,7 @@ public class CommandeAdapter extends RecyclerView.Adapter<CommandeAdapter.Comman
         ArrayList<CommandeParcelable> filteredList = new ArrayList<>();
         for (CommandeParcelable row : commandeList) {
 
-            Log.e(TAG, "performFilteringPreference: statut="+row.getStatut()+" synchro="+row.getIs_synchro() );
+//            Log.e(TAG, "performFilteringPreference: statut="+row.getStatut()+" synchro="+row.getIs_synchro() );
             // Si mode de la commande est egale a 1 (online)
             if (synchro == 1 && row.getIs_synchro() == 1) {
                 if (effectuer && row.getStatut() == 1) {

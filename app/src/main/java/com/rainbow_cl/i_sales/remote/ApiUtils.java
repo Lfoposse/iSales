@@ -38,6 +38,7 @@ public final class ApiUtils {
     public static final String original_file = "original_file";
     public static final String thirdparty_ids = "thirdparty_ids";
     public static final String id = "id";
+    public static final String soc_id = "soc_id";
 
     //    Mode de recuperation des thirdpartie
     public static final int THIRDPARTIE_CLIENT = 1;
@@ -66,7 +67,7 @@ public final class ApiUtils {
         ServerEntry serverEntry = mDb.serverDao().getActiveServer(true);
 //        http://localhost:8888/Images.iSales/download.php?module_part=produit&original_file=cheese_cake/cheese_cake-Cheese_cake.jpg&DOLAPIKEY=9c524dc13288320153128086e6e69144fa743be3
         String url = String.format("%s/download.php?module_part=%s&original_file=%s&DOLAPIKEY=%s", serverEntry.getHostname_img(), module_part, original_file, tokenEntry.getToken());
-        Log.e(TAG, "getDownloadImg: url="+url);
+//        Log.e(TAG, "getDownloadImg: url="+url);
         return url;
     }
 

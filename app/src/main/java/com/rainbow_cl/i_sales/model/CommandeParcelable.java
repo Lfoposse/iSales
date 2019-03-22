@@ -28,6 +28,9 @@ public class CommandeParcelable implements Parcelable {
     private long date_livraison;
     private int statut;
     private int is_synchro;
+    private String remise_absolue;
+    private String remise_percent;
+    private String remise;
 
     private ClientParcelable client;
     private ArrayList<ProduitParcelable> produits;
@@ -171,6 +174,30 @@ public class CommandeParcelable implements Parcelable {
         this.note_private = note_private;
     }
 
+    public String getRemise_absolue() {
+        return remise_absolue;
+    }
+
+    public void setRemise_absolue(String remise_absolue) {
+        this.remise_absolue = remise_absolue;
+    }
+
+    public String getRemise_percent() {
+        return remise_percent;
+    }
+
+    public void setRemise_percent(String remise_percent) {
+        this.remise_percent = remise_percent;
+    }
+
+    public String getRemise() {
+        return remise;
+    }
+
+    public void setRemise(String remise) {
+        this.remise = remise;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -193,6 +220,9 @@ public class CommandeParcelable implements Parcelable {
         dest.writeLong(this.date_livraison);
         dest.writeInt(this.statut);
         dest.writeInt(this.is_synchro);
+        dest.writeString(this.remise_absolue);
+        dest.writeString(this.remise_percent);
+        dest.writeString(this.remise);
         dest.writeParcelable(this.client, flags);
         dest.writeTypedList(this.produits);
     }
@@ -213,6 +243,9 @@ public class CommandeParcelable implements Parcelable {
         this.date_livraison = in.readLong();
         this.statut = in.readInt();
         this.is_synchro = in.readInt();
+        this.remise_absolue = in.readString();
+        this.remise_percent = in.readString();
+        this.remise = in.readString();
         this.client = in.readParcelable(ClientParcelable.class.getClassLoader());
         this.produits = in.createTypedArrayList(ProduitParcelable.CREATOR);
     }

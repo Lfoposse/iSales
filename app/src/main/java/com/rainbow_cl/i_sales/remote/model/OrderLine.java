@@ -22,6 +22,8 @@ public class OrderLine {
     private String total_tva;
     private String total_ttc;
     private String description;
+    private String remise;
+    private String remise_percent;
     private long fk_commande;
     private long fk_product;
     private long commande_id;
@@ -187,5 +189,21 @@ public class OrderLine {
 
     public void setFk_product(long fk_product) {
         this.fk_product = fk_product;
+    }
+
+    public String getRemise() {
+        return remise;
+    }
+
+    public void setRemise(String remise) {
+        this.remise = remise;
+    }
+
+    public String getRemise_percent() {
+        return remise_percent;
+    }
+
+    public void setRemise_percent(String remise_percent) {
+        this.remise_percent = remise_percent;
     }
 }

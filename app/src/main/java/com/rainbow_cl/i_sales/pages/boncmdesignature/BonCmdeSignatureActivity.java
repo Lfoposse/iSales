@@ -4,7 +4,9 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
@@ -26,15 +28,18 @@ import com.rainbow_cl.i_sales.database.entry.PanierEntry;
 import com.rainbow_cl.i_sales.database.entry.PaymentTypesEntry;
 import com.rainbow_cl.i_sales.database.entry.SignatureEntry;
 import com.rainbow_cl.i_sales.database.entry.UserEntry;
+import com.rainbow_cl.i_sales.interfaces.InsertThirdpartieListener;
 import com.rainbow_cl.i_sales.model.ClientParcelable;
 import com.rainbow_cl.i_sales.model.CommandeParcelable;
 import com.rainbow_cl.i_sales.model.ProduitParcelable;
-import com.rainbow_cl.i_sales.pages.login.LoginActivity;
 import com.rainbow_cl.i_sales.remote.ApiUtils;
 import com.rainbow_cl.i_sales.remote.ConnectionManager;
 import com.rainbow_cl.i_sales.remote.model.Document;
 import com.rainbow_cl.i_sales.remote.model.Order;
 import com.rainbow_cl.i_sales.remote.model.OrderLine;
+import com.rainbow_cl.i_sales.remote.model.Thirdpartie;
+import com.rainbow_cl.i_sales.remote.rest.InsertThirdpartieREST;
+import com.rainbow_cl.i_sales.task.InsertThirdpartieTask;
 import com.rainbow_cl.i_sales.utility.ISalesUtility;
 import com.tsongkha.spinnerdatepicker.SpinnerDatePickerDialogBuilder;
 
@@ -43,18 +48,19 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BonCmdeSignatureActivity extends AppCompatActivity {
+public class BonCmdeSignatureActivity extends AppCompatActivity implements InsertThirdpartieListener {
     private static final String TAG = BonCmdeSignatureActivity.class.getSimpleName();
     private Button mAnnulerSignClientBTN, mAnnulerSignCommBTN, mEnregistrerBTN;
     private SignatureView mClientSignatureView, mCommSignatureView;
     private TextView mClientName, mCommName, mDateLivraisonTV, mModeReglementTV;
-    private EditText mAcompteET;
+    private EditText mAcompteET, mRemiseET;
     private Switch mSynchroServeurSW;
     private View mDateLivraisonVIEW;
     private View mModeReglementVIEW;
@@ -75,11 +81,6 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
 
     //    pousse la commande sur le serveur
     public void pushCommande() {
-//        Si le téléphone n'est pas connecté
-        if (!ConnectionManager.isPhoneConnected(BonCmdeSignatureActivity.this)) {
-            Toast.makeText(BonCmdeSignatureActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
-            return;
-        }
 
         final ProgressDialog progressDialog = new ProgressDialog(BonCmdeSignatureActivity.this);
         progressDialog.setMessage(ISalesUtility.strCapitalize(getString(R.string.enregistrement_commande_encours)));
@@ -101,7 +102,10 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         final String refOrder = String.format("CMD%s", refOrderFormat.format(today.getTime()));
 //        String dateOrder = String.valueOf(today.getTime());
-
+        double remisePercent = 0;
+        if (!mRemiseET.getText().toString().equals("")) {
+            remisePercent = Double.parseDouble(mRemiseET.getText().toString().replace(",", "."));
+        }
 //        today.roll(Calendar.DAY_OF_MONTH, -1);
         String dateOrder = dateFormat.format(today.getTime());
 //        String dateLivraisonOrder = dateFormat.format(dateLivraison.getTime());
@@ -111,6 +115,7 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
 
         cmdeEntry.setSocid(mClientParcelableSelected.getId());
         cmdeEntry.setDate_commande(today.getTimeInMillis());
+        cmdeEntry.setDate(today.getTimeInMillis());
         cmdeEntry.setDate_livraison(dateLivraison.getTimeInMillis());
         cmdeEntry.setRef(refOrder);
         cmdeEntry.setMode_reglement(paymentTypesChoosed.getLabel());
@@ -119,6 +124,10 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
         cmdeEntry.setTotal_ttc("" + mTotalPanier);
         cmdeEntry.setIs_synchro(0);
         cmdeEntry.setStatut("1");
+        cmdeEntry.setRemise_percent(""+remisePercent);
+        if (!mAcompteET.getText().toString().equals("")) {
+            cmdeEntry.setNote_public(String.format("%s a donné un acompte de %s %s", mClientParcelableSelected.getName(), mAcompteET.getText().toString(), getResources().getString(R.string.symbole_euro)));
+        }
 
         long cmdeEntryId = mDb.commandeDao().insertCmde(cmdeEntry);
         cmdeEntry.setId(cmdeEntryId);
@@ -141,11 +150,14 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
                 cmdeLineEntry.setSubprice(pdtParcelable.getPrice());
                 cmdeLineEntry.setPrice(pdtParcelable.getPrice());
                 cmdeLineEntry.setPrice_ttc(pdtParcelable.getPrice_ttc());
+                cmdeLineEntry.setTva_tx(pdtParcelable.getTva_tx());
                 cmdeLineEntry.setDescription(pdtParcelable.getDescription());
                 cmdeLineEntry.setId(pdtParcelable.getId());
                 cmdeLineEntry.setCommande_ref(cmdeEntryId);
                 cmdeLineEntry.setTotal_ht("" + totalHt);
                 cmdeLineEntry.setTotal_ttc("" + totalTttc);
+                cmdeLineEntry.setRemise(pdtParcelable.getRemise());
+                cmdeLineEntry.setRemise_percent(pdtParcelable.getRemise_percent());
 
 //            Ajout de la ligne dans le panier
                 cmdeLineEntryList.add(cmdeLineEntry);
@@ -165,11 +177,14 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
                 cmdeLineEntry.setSubprice(entryItem.getPrice());
                 cmdeLineEntry.setPrice(entryItem.getPrice());
                 cmdeLineEntry.setPrice_ttc(entryItem.getPrice_ttc());
+                cmdeLineEntry.setTva_tx(entryItem.getTva_tx());
                 cmdeLineEntry.setDescription(entryItem.getDescription());
                 cmdeLineEntry.setId(entryItem.getId());
                 cmdeLineEntry.setCommande_ref(cmdeEntryId);
                 cmdeLineEntry.setTotal_ht("" + totalHt);
                 cmdeLineEntry.setTotal_ttc("" + totalTttc);
+                cmdeLineEntry.setRemise(entryItem.getRemise());
+                cmdeLineEntry.setRemise_percent(entryItem.getRemise_percent());
 
 //            Ajout de la ligne dans le panier
                 cmdeLineEntryList.add(cmdeLineEntry);
@@ -220,6 +235,11 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
             finish();
             return;
         }
+//        Si le téléphone n'est pas connecté
+        if (!ConnectionManager.isPhoneConnected(BonCmdeSignatureActivity.this)) {
+            Toast.makeText(BonCmdeSignatureActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
+            return;
+        }
 
         progressDialog.setMessage("Synchronisation de la commande avec le serveur...");
 
@@ -237,6 +257,7 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
 //        newOrder.setDate_livraison(""+(calLivraison != null ? calLivraison.getTimeInMillis() : ""));
         newOrder.setDate_livraison("" + dateLivraisonOrder);
         newOrder.setRef(refOrder);
+        newOrder.setRemise_percent("" + remisePercent);
         newOrder.setMode_reglement(paymentTypesChoosed.getLabel());
         newOrder.setMode_reglement_code(paymentTypesChoosed.getCode());
         newOrder.setMode_reglement_id(paymentTypesChoosed.getId());
@@ -270,6 +291,8 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
                 orderLine.setDescription(pdtParcelable.getDescription());
                 orderLine.setId(String.valueOf(pdtParcelable.getId()));
                 orderLine.setRowid(String.valueOf(pdtParcelable.getId()));
+                orderLine.setRemise(pdtParcelable.getRemise());
+                orderLine.setRemise_percent(pdtParcelable.getRemise_percent());
 
 //            Ajout de la ligne dans le panier
                 newOrder.getLines().add(orderLine);
@@ -283,7 +306,9 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
                         " ref=" + entryItem.getRef() +
                         " description=" + entryItem.getDescription() +
                         " tva_tx=" + entryItem.getTva_tx()+
-                        " fk_product=" + entryItem.getId());
+                        " fk_product=" + entryItem.getId()+
+                        " remise=" + entryItem.getRemise()+
+                        " remise_percent=" + entryItem.getRemise_percent());
 
                 orderLine.setRef(entryItem.getRef());
                 orderLine.setFk_product(entryItem.getFk_product());
@@ -299,6 +324,8 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
                 orderLine.setDescription(entryItem.getDescription());
                 orderLine.setId(String.valueOf(entryItem.getId()));
                 orderLine.setRowid(String.valueOf(entryItem.getId()));
+                orderLine.setRemise(entryItem.getRemise());
+                orderLine.setRemise_percent(entryItem.getRemise_percent());
 
 //            Ajout de la ligne dans le panier
                 newOrder.getLines().add(orderLine);
@@ -546,24 +573,24 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
     }
 
 
-    private CharSequence[] getServersSequence() {
+    private CharSequence[] getPaymentsSequence() {
         paymentTypesEntries = mDb.paymentTypesDao().getAllPayments();
-//        Log.e(TAG, "onCreate: getServersSequence() serverEntries="+serverEntries.size());
+//        Log.e(TAG, "onCreate: getPaymentsSequence() serverEntries="+serverEntries.size());
         CharSequence[] items = new String[paymentTypesEntries.size()];
         for (int i = 0; i < paymentTypesEntries.size(); i++) {
             items[i] = paymentTypesEntries.get(i).getLabel();
         }
-//        Log.e(TAG, "onCreate: getServersSequence() after serverEntries="+items.length);
+//        Log.e(TAG, "onCreate: getPaymentsSequence() after serverEntries="+items.length);
 
         return items;
 
     }
 
-    private void showServersSelect() {
+    private void showPaymentsSelect() {
         final int[] exportChoice = {-1};
         AlertDialog.Builder builder = new AlertDialog.Builder(BonCmdeSignatureActivity.this);
         builder.setTitle("Veuillez sélectioner le mode de règlement");
-        builder.setSingleChoiceItems(getServersSequence(), -1, new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(getPaymentsSequence(), -1, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
                 exportChoice[0] = item;
 //                Toast.makeText(getApplicationContext(), FlashInventoryUtility.getExportFormat()[item], Toast.LENGTH_SHORT).show();
@@ -644,6 +671,7 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
         mModeReglementVIEW = findViewById(R.id.view_boncmde_modereglement);
         mModeReglementTV = (TextView) findViewById(R.id.tv_boncmde_modereglement);
         mAcompteET = (EditText) findViewById(R.id.et_boncmde_acompte);
+        mRemiseET = (EditText) findViewById(R.id.et_boncmde_remise);
 
 //        Définition des dates courantes
         Calendar calendar = Calendar.getInstance();
@@ -708,7 +736,7 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
         mModeReglementVIEW.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showServersSelect();
+                showPaymentsSelect();
             }
         });
 
@@ -737,7 +765,61 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
                     return;
                 }
 
-                pushCommande();
+
+                if (!mRemiseET.getText().toString().equals("")) {
+                    double remisePercent = Double.parseDouble(mRemiseET.getText().toString().replace(",", "."));
+                    if (remisePercent > 100) {
+                        Toast.makeText(BonCmdeSignatureActivity.this, getString(R.string.remise_doit_etre_inferieure_cent), Toast.LENGTH_LONG).show();
+
+                        return;
+                    }
+                }
+
+                if (mClientParcelableSelected.getIs_synchro() == 0) {
+                    ClientEntry clientEntry = mDb.clientDao().getClientById(mClientParcelableSelected.getId());
+                    Log.e(TAG, "onClick:mEnregistrerBTN saveClient logopath="+clientEntry.getLogo()+" logoContent="+clientEntry.getLogo_content());
+//        recuperation du logo en bitmap
+//                    Bitmap logoBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mClientParcelableSelected.getLogo());;
+                    Bitmap logoBitmap = BitmapFactory.decodeFile(mClientParcelableSelected.getLogo());
+
+//        creation du document signature client
+                    Document logoClient = null;
+                    if (logoBitmap != null) {
+                        logoClient = new Document();
+
+                        logoClient.setFilecontent(clientEntry.getLogo_content());
+                        logoClient.setFilename(clientEntry.getLogo());
+                        logoClient.setFileencoding("base64");
+                        logoClient.setModulepart("societe");
+                    }
+
+                    Thirdpartie thirdpartie = new Thirdpartie();
+                    thirdpartie.setAddress(clientEntry.getAddress());
+                    thirdpartie.setTown(clientEntry.getTown());
+                    thirdpartie.setRegion(clientEntry.getRegion());
+                    thirdpartie.setDepartement(clientEntry.getDepartement());
+                    thirdpartie.setPays(clientEntry.getPays());
+                    thirdpartie.setPhone(clientEntry.getPhone());
+                    thirdpartie.setNote(clientEntry.getNote());
+                    thirdpartie.setNote_private(clientEntry.getNote());
+                    thirdpartie.setLogo(clientEntry.getLogo());
+                    thirdpartie.setEmail(clientEntry.getEmail());
+                    thirdpartie.setFirstname(clientEntry.getFirstname());
+                    thirdpartie.setName(String.format("%s", clientEntry.getName()));
+                    thirdpartie.setCode_client(clientEntry.getCode_client());
+                    thirdpartie.setClient("1");
+                    thirdpartie.setName_alias("");
+
+//        Si le téléphone n'est pas connecté
+                    if (ConnectionManager.isPhoneConnected(BonCmdeSignatureActivity.this)) {
+                        InsertThirdpartieTask insertThirdpartieTask = new InsertThirdpartieTask(BonCmdeSignatureActivity.this, BonCmdeSignatureActivity.this, thirdpartie, logoClient);
+                        insertThirdpartieTask.execute();
+                    }
+                } else {
+                    Log.e(TAG, "onClick:mEnregistrerBTN directly pushCmde");
+
+                    pushCommande();
+                }
 
             }
         });
@@ -755,5 +837,15 @@ public class BonCmdeSignatureActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onInsertThirdpartieCompleted(InsertThirdpartieREST insertThirdpartieREST) {
+
+        if (insertThirdpartieREST != null) {
+            Log.e(TAG, "onInsertThirdpartieCompleted: id="+insertThirdpartieREST.getThirdpartie_id() );
+
+            pushCommande();
+        }
     }
 }

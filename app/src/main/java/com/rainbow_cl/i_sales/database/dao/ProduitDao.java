@@ -36,17 +36,18 @@ public interface ProduitDao {
     @Query("SELECT * FROM produit WHERE stock_reel > 0 AND id > :lastId AND (LOWER(label) LIKE '%'||:keyword||'%' OR LOWER(ref) LIKE '%'||:keyword||'%') ORDER BY id LIMIT :limit")
     List<ProduitEntry> getProduitsLimitByStrAZero(long lastId, int limit, String keyword);
 
-    @Query("SELECT * FROM produit WHERE id > :lastId AND categorie_id = :categorieId GROUP BY id ORDER BY label LIMIT :limit")
-    List<ProduitEntry> getProduitsLimitByCategorie(long lastId, long categorieId, int limit);
+//    @Query("SELECT * FROM produit WHERE id > :lastId AND categorie_id = :categorieId ORDER BY label LIMIT :limit")
+    @Query("SELECT * FROM produit WHERE id > :lastId AND categorie_id = :categorieId GROUP BY id ORDER BY label")
+    List<ProduitEntry> getProduitsLimitByCategorie(long lastId, long categorieId);
 
-    @Query("SELECT * FROM produit WHERE id > :lastId AND categorie_id = :categorieId AND (LOWER(label) LIKE '%'||:keyword||'%' OR LOWER(ref) LIKE '%'||:keyword||'%') GROUP BY id ORDER BY label LIMIT :limit")
-    List<ProduitEntry> getProduitsLimitByCategorieStr(long lastId, long categorieId, int limit, String keyword);
+    @Query("SELECT * FROM produit WHERE id > :lastId AND categorie_id = :categorieId AND (LOWER(label) LIKE '%'||:keyword||'%' OR LOWER(ref) LIKE '%'||:keyword||'%') GROUP BY id ORDER BY label")
+    List<ProduitEntry> getProduitsLimitByCategorieStr(long lastId, long categorieId, String keyword);
 
-    @Query("SELECT * FROM produit WHERE stock_reel > 0 AND id > :lastId AND categorie_id = :categorieId GROUP BY id ORDER BY label LIMIT :limit")
-    List<ProduitEntry> getProduitsLimitByCategorieAZero(long lastId, long categorieId, int limit);
+    @Query("SELECT * FROM produit WHERE stock_reel > 0 AND id > :lastId AND categorie_id = :categorieId GROUP BY id ORDER BY label")
+    List<ProduitEntry> getProduitsLimitByCategorieAZero(long lastId, long categorieId);
 
-    @Query("SELECT * FROM produit WHERE stock_reel > 0 AND id > :lastId AND categorie_id = :categorieId AND (LOWER(label) LIKE '%'||:keyword||'%' OR LOWER(ref) LIKE '%'||:keyword||'%') GROUP BY id ORDER BY label LIMIT :limit")
-    List<ProduitEntry> getProduitsLimitByCategorieStrAZero(long lastId, long categorieId, int limit, String keyword);
+    @Query("SELECT * FROM produit WHERE stock_reel > 0 AND id > :lastId AND categorie_id = :categorieId AND (LOWER(label) LIKE '%'||:keyword||'%' OR LOWER(ref) LIKE '%'||:keyword||'%') GROUP BY id ORDER BY label")
+    List<ProduitEntry> getProduitsLimitByCategorieStrAZero(long lastId, long categorieId, String keyword);
 
     @Query("UPDATE produit SET file_content=:localPath WHERE id = :id")
     void updateLocalImgPath(long id, String localPath);

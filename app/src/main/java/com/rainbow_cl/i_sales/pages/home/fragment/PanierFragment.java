@@ -1,36 +1,15 @@
 package com.rainbow_cl.i_sales.pages.home.fragment;
 
-import com.rainbow_cl.i_sales.R;
-import com.rainbow_cl.i_sales.adapter.PanierProduitAdapter;
-import com.rainbow_cl.i_sales.database.AppDatabase;
-import com.rainbow_cl.i_sales.database.AppExecutors;
-import com.rainbow_cl.i_sales.database.entry.PanierEntry;
-import com.rainbow_cl.i_sales.interfaces.DialogClientListener;
-import com.rainbow_cl.i_sales.interfaces.PanierProduitAdapterListener;
-import com.rainbow_cl.i_sales.model.ClientParcelable;
-import com.rainbow_cl.i_sales.pages.boncmdeverification.BonCmdeVerificationActivity;
-import com.rainbow_cl.i_sales.pages.home.dialog.ClientDialog;
-import com.rainbow_cl.i_sales.pages.home.viewmodel.PanierViewModel;
-import com.rainbow_cl.i_sales.utility.CircleTransform;
-import com.rainbow_cl.i_sales.utility.ISalesUtility;
-import com.squareup.picasso.Picasso;
-
 import android.app.AlertDialog;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +20,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rainbow_cl.i_sales.R;
+import com.rainbow_cl.i_sales.adapter.PanierProduitAdapter;
+import com.rainbow_cl.i_sales.database.AppDatabase;
+import com.rainbow_cl.i_sales.database.AppExecutors;
+import com.rainbow_cl.i_sales.database.entry.ClientEntry;
+import com.rainbow_cl.i_sales.database.entry.PanierEntry;
+import com.rainbow_cl.i_sales.interfaces.DialogClientListener;
+import com.rainbow_cl.i_sales.interfaces.PanierProduitAdapterListener;
+import com.rainbow_cl.i_sales.model.ClientParcelable;
+import com.rainbow_cl.i_sales.pages.boncmdeverification.BonCmdeVerificationActivity;
+import com.rainbow_cl.i_sales.pages.home.dialog.ClientDialog;
+import com.rainbow_cl.i_sales.remote.model.DolPhoto;
+import com.rainbow_cl.i_sales.utility.CircleTransform;
+import com.rainbow_cl.i_sales.utility.ISalesUtility;
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,17 +45,20 @@ public class PanierFragment extends Fragment implements PanierProduitAdapterList
 
     private RecyclerView mRecyclerView;
     private ImageView mProgressIV, mPosterClient;
-    private TextView mPanierTotal, mNameClient;
+    private TextView mPanierTotal, mNameClient, mCountProduits;
     private ImageButton mShowClientsDialog;
-    private Button mCommanderBtn;
+    private Button mCommanderBtn, mValiderPanierBtn, mViderPanierBtn;
 
     private PanierProduitAdapter mAdapter;
     private ArrayList<PanierEntry> panierEntriesList;
     private ClientParcelable mClientParcelableSelected = null;
 
+    private boolean isPanierValidated;
     private double mTotalPanier = 0;
 
+    ProgressDialog mProgressDialog;
     private AppDatabase mDb;
+
     /**
      * fetches json by making http calls
      */
@@ -82,27 +80,24 @@ public class PanierFragment extends Fragment implements PanierProduitAdapterList
         mAdapter.notifyDataSetChanged();
     }
 
-//    recuperation des produits du panier
+    //    recuperation des produits du panier
     private void loadPanier() {
-        final PanierViewModel viewModel = ViewModelProviders.of(this).get(PanierViewModel.class);
-        viewModel.getAllPanierEntries().observe(this, new Observer<List<PanierEntry>>() {
-            @Override
-            public void onChanged(@Nullable List<PanierEntry> panierEntries) {
-
+        mProgressIV.setVisibility(View.VISIBLE);
+        List<PanierEntry> panierEntries = mDb.panierDao().getAllPanier();
 //        ajout des clientParcelables dans la liste
-                if (panierEntriesList != null) {
-                    panierEntriesList.clear();
-                }
-                panierEntriesList.addAll(panierEntries);
+        if (panierEntriesList != null) {
+            panierEntriesList.clear();
+            mAdapter.notifyDataSetChanged();
+        }
+        panierEntriesList.addAll(panierEntries);
 
 //        Mise a jour du montant total du panier
-                setMontantTotalPanier();
+        setMontantTotalPanier();
 
-                // rafraichissement du recyclerview
-                mAdapter.notifyDataSetChanged();
-                mProgressIV.setVisibility(View.GONE);
-            }
-        });
+        mCountProduits.setText(String.format("%s produit(s) dans le panier", panierEntriesList.size()));
+        // rafraichissement du recyclerview
+        mAdapter.notifyDataSetChanged();
+        mProgressIV.setVisibility(View.GONE);
     }
 
     private void setMontantTotalPanier() {
@@ -115,13 +110,13 @@ public class PanierFragment extends Fragment implements PanierProduitAdapterList
 
         mTotalPanier = total;
 
-        mPanierTotal.setText(String.format("%s %s", ISalesUtility.amountFormat2(""+total),
+        mPanierTotal.setText(String.format("%s %s", ISalesUtility.amountFormat2("" + total),
                 ISalesUtility.CURRENCY));
     }
 
     @Override
     public void onRemoveItemPanier(final PanierEntry panierEntry, final int position) {
-        final AlertDialog alertDialog = new  AlertDialog.Builder(getContext()).create();
+        final AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
         alertDialog.setTitle("Confirmation");
         alertDialog.setMessage("Voulez-vous vraiment retirer ce produit du panier ?");
         alertDialog.setCancelable(false);
@@ -142,6 +137,7 @@ public class PanierFragment extends Fragment implements PanierProduitAdapterList
 
 //                mise a jour de la vue
                                 mAdapter.notifyDataSetChanged();
+                                mCountProduits.setText(String.format("%s produit(s) dans le panier", panierEntriesList.size()));
                             }
                         });
                     }
@@ -158,14 +154,19 @@ public class PanierFragment extends Fragment implements PanierProduitAdapterList
     }
 
     @Override
-    public void onChangeQuantityItemPanier(final int position, int quantity) {
-        Log.e(TAG, "onChangeQuantityItemPanier: getQuantity="+panierEntriesList.get(position).getQuantity()+" quantity="+quantity);
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+    public void onChangeQuantityItemPanier(final int position, final int quantity) {
+        Log.e(TAG, "onChangeQuantityItemPanier: getQuantity=" + panierEntriesList.get(position).getQuantity() + " quantity=" + quantity);
+
+//        Mise a jour du montant total du panier
+        setMontantTotalPanier();
+        this.isPanierValidated = false;
+        mValiderPanierBtn.setEnabled(true);
+        /*AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
                 // insert new panier
 //                NB: la valeude la quantite est automatiquement mise a jour dans l'adapter
-                mDb.panierDao().updatePanier(panierEntriesList.get(position));
+                mDb.panierDao().updateQuantite(panierEntriesList.get(position).getId(), quantity);
 
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -175,7 +176,7 @@ public class PanierFragment extends Fragment implements PanierProduitAdapterList
                     }
                 });
             }
-        });
+        }); */
     }
 
     @Override
@@ -184,7 +185,7 @@ public class PanierFragment extends Fragment implements PanierProduitAdapterList
         mClientParcelableSelected = clientParcelable;
 
         if (mClientParcelableSelected != null) {
-            Log.e(TAG, "onClientDialogSelected: name="+clientParcelable.getName());
+            Log.e(TAG, "onClientDialogSelected: name=" + clientParcelable.getName());
 //        modification du label de la categorie
             mNameClient.setText(mClientParcelableSelected.getName());
 
@@ -249,6 +250,9 @@ public class PanierFragment extends Fragment implements PanierProduitAdapterList
         mShowClientsDialog = (ImageButton) rootView.findViewById(R.id.ib_clientsradio_show);
         mPosterClient = (ImageView) rootView.findViewById(R.id.iv_selected_client);
         mNameClient = (TextView) rootView.findViewById(R.id.tv_selected_client);
+        mCountProduits = (TextView) rootView.findViewById(R.id.tv_panier_count);
+        mViderPanierBtn = (Button) rootView.findViewById(R.id.btn_panier_vider);
+        mValiderPanierBtn = (Button) rootView.findViewById(R.id.btn_panier_valider);
         mCommanderBtn = (Button) rootView.findViewById(R.id.btn_panier_commander);
 
         panierEntriesList = new ArrayList<>();
@@ -271,6 +275,36 @@ public class PanierFragment extends Fragment implements PanierProduitAdapterList
             }
         });
 
+        mViderPanierBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+                alertDialog.setTitle("Panier");
+                alertDialog.setMessage("Voulez-vous vraiment vider le panier ?");
+                alertDialog.setCancelable(false);
+                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "OUI", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mDb.panierDao().deleteAllPanier();
+
+                        loadPanier();
+                    }
+                });
+                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "NON", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        alertDialog.dismiss();
+                    }
+                });
+                alertDialog.show();
+            }
+        });
+        mValiderPanierBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changePanierQuntity();
+            }
+        });
 //        ecoute du clique sur le bouton commander
         mCommanderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -284,6 +318,10 @@ public class PanierFragment extends Fragment implements PanierProduitAdapterList
                     Toast.makeText(getContext(), "Veuillez choisir un client pour le panier.", Toast.LENGTH_LONG).show();
                     return;
                 }
+                if (!isPanierValidated) {
+                    Toast.makeText(getContext(), "Veuillez valider le panier.", Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 Intent intent = new Intent(getContext(), BonCmdeVerificationActivity.class);
 //                Mise a null de la photo du client pour éviter que l'application ne crash
@@ -291,14 +329,95 @@ public class PanierFragment extends Fragment implements PanierProduitAdapterList
                 clientParcelable.getPoster().setContent(null);
                 intent.putExtra("client", clientParcelable);
                 intent.putExtra("totalPanier", mTotalPanier);
-                Log.e(TAG, "onClick: before start activity mClientParcelableSelected"+mClientParcelableSelected.getPoster().getContent() );
+                Log.e(TAG, "onClick: before start activity mClientParcelableSelected" + mClientParcelableSelected.getPoster().getContent());
                 startActivity(intent);
             }
         });
 
+        return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
 //        recuperation des clients sur le serveur
         loadPanier();
 
-        return rootView;
+        this.isPanierValidated = true;
+//        recuperation du client courrant
+        ClientEntry clientEntry = mDb.clientDao().getCurrentClient(1);
+        if (clientEntry != null) {
+
+            ClientParcelable clientParcelable = new ClientParcelable();
+            clientParcelable.setName(clientEntry.getName());
+            clientParcelable.setFirstname(clientEntry.getFirstname());
+            clientParcelable.setLastname(clientEntry.getLastname());
+            clientParcelable.setAddress(clientEntry.getAddress());
+            clientParcelable.setTown(clientEntry.getTown());
+            clientParcelable.setLogo(clientEntry.getName_alias());
+            clientParcelable.setDate_creation(clientEntry.getDate_creation());
+            clientParcelable.setDate_modification(clientEntry.getDate_modification());
+            clientParcelable.setId(clientEntry.getId());
+            clientParcelable.setEmail(clientEntry.getEmail());
+            clientParcelable.setPhone(clientEntry.getPhone());
+            clientParcelable.setPays(clientEntry.getPays());
+            clientParcelable.setRegion(clientEntry.getRegion());
+            clientParcelable.setDepartement(clientEntry.getDepartement());
+            clientParcelable.setIs_synchro(clientEntry.getIs_synchro());
+
+//            initialisation du poster du client
+            clientParcelable.setPoster(new DolPhoto());
+            clientParcelable.getPoster().setContent(clientEntry.getLogo_content());
+
+            Log.e(TAG, "onResume: client is_synchro=" + clientParcelable.getIs_synchro() +
+                    " name=" + clientParcelable.getName());
+            onClientDialogSelected(clientParcelable, 0);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    void changePanierQuntity() {
+        showProgressDialog(true, "Panier", "Mises a jour du panier");
+        List<PanierEntry> panierEntries = mAdapter.getPanierItems();
+//        Log.e(TAG, "onPause:panierEntries size="+panierEntries.size());
+
+        for (PanierEntry item : panierEntries) {
+            Log.e(TAG, "onPause:panierEntries Item quantite=" + item.getQuantity() +
+                    " label=" + item.getLabel() +
+                    " id=" + item.getId());
+            mDb.panierDao().updateQuantite(item.getId(), item.getQuantity());
+        }
+
+//        loadPanier();
+
+        mAdapter.notifyDataSetChanged();
+        this.isPanierValidated = true;
+        mValiderPanierBtn.setEnabled(false);
+        showProgressDialog(false, null, null);
+    }
+
+    /**
+     * Shows the progress UI and hides.
+     */
+    private void showProgressDialog(boolean show, String title, String message) {
+
+        if (show) {
+            mProgressDialog = new ProgressDialog(getContext());
+            if (title != null) mProgressDialog.setTitle(title);
+            if (message != null) mProgressDialog.setMessage(message);
+
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setCanceledOnTouchOutside(false);
+            mProgressDialog.setProgressDrawable(getResources().getDrawable(R.drawable.circular_progress_view));
+            mProgressDialog.show();
+        } else {
+            mProgressDialog.dismiss();
+        }
     }
 }

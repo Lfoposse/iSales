@@ -25,10 +25,16 @@ public interface ClientDao {
     @Query("SELECT * FROM client")
     List<ClientEntry> getAllClient();
 
-    @Query("SELECT * FROM client WHERE id > :lastId ORDER BY id LIMIT :limit")
+    @Query("SELECT * FROM client WHERE is_synchro = :synchro")
+    List<ClientEntry> getAllClientBySynchro(int synchro);
+
+    @Query("SELECT * FROM client WHERE id > :lastId GROUP BY id ORDER BY id LIMIT :limit")
     List<ClientEntry> getClientsLimit(long lastId, int limit);
 
-    @Query("SELECT * FROM client WHERE LOWER(address) LIKE '%'||:keyword||'%' OR LOWER(name) LIKE '%'||:keyword||'%' ORDER BY id LIMIT :limit")
+    @Query("SELECT * FROM client WHERE is_current = :current")
+    ClientEntry getCurrentClient(int current);
+
+    @Query("SELECT * FROM client WHERE LOWER(address) LIKE '%'||:keyword||'%' OR LOWER(name) LIKE '%'||:keyword||'%' GROUP BY id ORDER BY id LIMIT :limit")
     List<ClientEntry> getClientsLikeLimit(int limit, String keyword);
 
     @Insert
@@ -44,6 +50,18 @@ public interface ClientDao {
 //    Mise a jour du logo d'un client
     @Query("UPDATE client SET logo = :logoPath WHERE id = :clientId")
     void updateLogo(String logoPath, long clientId);
+
+//    Mise a jour du client courant. 1 si client courant, 0 sinon
+    @Query("UPDATE client SET is_current = :current WHERE id = :clientId")
+    void updateCurrentClient(int current, long clientId);
+
+//    Mise a jour du client courant. 1 si client courant, 0 sinon
+    @Query("UPDATE client SET id = :idThirdpartie WHERE name = :name AND email = :email")
+    void updateIdClient(long idThirdpartie, String name, String email);
+
+//    Mise a jour du client courant
+    @Query("UPDATE client SET is_current = 0")
+    void updateAllCurrentClient();
 
     @Query("SELECT * FROM client WHERE id = :id")
     LiveData<ClientEntry> loadClientById(long id);

@@ -134,6 +134,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:divider="@drawable/divider_horizontal"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/form_paddingV"
+                android:paddingBottom="@dimen/form_paddingV"
+                android:paddingEnd="@dimen/form_paddingH"
+                android:paddingStart="@dimen/form_paddingH">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="Sélectionner le Client :"/>
+
+                <RadioButton
+                    android:id="@+id/rb_clientprofile_current"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:buttonTint="@color/colorAccent"
+                    tools:checked="true" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/divider_horizontal"
                 android:orientation="vertical"
                 android:showDividers="middle">
 
@@ -392,7 +417,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
-                            android:background="@drawable/ic_save_white_24dp" />
+                            android:background="@drawable/ic_cancel_primary_24dp" />
 
                         <TextView
                             android:layout_width="wrap_content"

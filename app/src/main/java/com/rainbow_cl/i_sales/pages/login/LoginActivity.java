@@ -19,7 +19,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.webkit.URLUtil;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -80,35 +79,37 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
     /* Checks if external storage is available for read and write */
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if ( Environment.MEDIA_MOUNTED.equals( state ) ) {
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
             return true;
         }
         return false;
     }
+
     /* Checks if external storage is available to at least read */
     public boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
-        if ( Environment.MEDIA_MOUNTED.equals( state ) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals( state ) ) {
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
             return true;
         }
         return false;
     }
+
     public void showLog() {
 
-        if ( isExternalStorageWritable() ) {
+        if (isExternalStorageWritable()) {
 
-            File appDirectory = new File( Environment.getExternalStorageDirectory() + "/iSalesLog" );
-            File logDirectory = new File( appDirectory + "/log" );
-            File logFile = new File( logDirectory, "login_logcat" + System.currentTimeMillis() + ".txt" );
+            File appDirectory = new File(Environment.getExternalStorageDirectory() + "/iSalesLog");
+            File logDirectory = new File(appDirectory + "/log");
+            File logFile = new File(logDirectory, "login_logcat" + System.currentTimeMillis() + ".txt");
 
             // create app folder
-            if ( !appDirectory.exists() ) {
+            if (!appDirectory.exists()) {
                 appDirectory.mkdir();
             }
 
             // create log folder
-            if ( !logDirectory.exists() ) {
+            if (!logDirectory.exists()) {
                 logDirectory.mkdir();
             }
 
@@ -116,18 +117,19 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
             try {
                 Process process = Runtime.getRuntime().exec("logcat -c");
                 process = Runtime.getRuntime().exec("logcat -f " + logFile);
-            } catch ( IOException e ) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
-        } else if ( isExternalStorageReadable() ) {
+        } else if (isExternalStorageReadable()) {
             // only readable
-            Log.e(TAG, "onCreate: isExternalStorageReadable" );
+            Log.e(TAG, "onCreate: isExternalStorageReadable");
         } else {
             // not accessible
-            Log.e(TAG, "onCreate: non isExternalStorageReadable" );
+            Log.e(TAG, "onCreate: non isExternalStorageReadable");
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -316,21 +318,20 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
         mPasswordET.setError(null);
 
         // Store values at the time of the login attempt.
-//        mServer = mServerET.getText().toString();
+        mServer = mServerET.getText().toString();
         mUsername = mUsernameET.getText().toString();
         mPassword = mPasswordET.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        /*
         // Teste de validité de l'adresse du serveur
         if (!isFieldValid(mServer)) {
             mServerET.setError(getString(R.string.veuillez_remplir_url_serveur));
             focusView = mServerET;
             cancel = true;
         }
-        if (!URLUtil.isValidUrl(mServer)) {
+        /*if (!URLUtil.isValidUrl(mServer)) {
             mServerET.setError(getString(R.string.url_invalide));
             focusView = mServerET;
             cancel = true;
@@ -357,8 +358,28 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            saveServerurl();
-            executeLogin(mUsername, mPassword);
+
+            String doliServer = mServerET.getText().toString();
+//            String doliServer = mServer;
+
+            serverEntries = mDb.serverDao().getAllServers();
+            int i = 0;
+//        Log.e(TAG, "onCreate: getServersSequence() serverEntries="+serverEntries.size());
+            while (i < serverEntries.size()) {
+                Log.e(TAG, "attemptLogin: getHostname=" + serverEntries.get(i).getHostname() + " doliServer=" + doliServer);
+//                recupere le nom de sous-domaine dans le hostname
+                if (serverEntries.get(i).getHostname().contains(doliServer)) {
+                    Log.e(TAG, "attemptLogin: equaled doliServer=" + doliServer);
+                    mServerChoose = serverEntries.get(i);
+
+                    saveServerurl();
+                    executeLogin(mUsername, mPassword);
+                    return;
+                }
+
+                i++;
+            }
+
         }
     }
 
@@ -440,20 +461,24 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
     }
 
     private void initServerUrl() {
+//        Suppression des serveurs
+        mDb.serverDao().deleteAllServers();
+
 //        desactivation de tous les serveurs en local
         List<ServerEntry> serverEntries = new ArrayList<>();
 //        serverEntries.add(new ServerEntry("Serveur de test Dolibarr Bananafw", "http://dolibarr.bananafw.com/api/index.php", false));
 //        serverEntries.add(new ServerEntry("France Food Compagny", "http://food.apps-dev.fr:80/api/index.php", false));
 //        serverEntries.add(new ServerEntry("SOif Express", "http://82.253.71.109/prod/soif_express/api/index.php", false));
         serverEntries.add(new ServerEntry("http://82.253.71.109/prod/francefood_v8/api/index.php", "http://82.253.71.109/prod/francefood_v8/api/ryimg", "France Food company FFC", "2 rue Charles De Gaulle ZI La Mariniere,", "91070", "Bondoufle", "91 - Essonne", "France", "EURO", "0758542161", "contact@francefoodcompany.fr", "", "", "France Food company FFC", false));
-        serverEntries.add(new ServerEntry("http://soifexpress.apps-dev.fr/api/index.php", "http://82.253.71.109/prod/soif_express/api/ryimg", "SOIF EXPRESS", "7 AV GABRIEL PERI", "91600", "SAVIGNY SUR ORGE", "91 - Essonne", "France", "EURO", "0758088361", "", "www.test.com", "", "SOIF EXPRESS", false));
+        serverEntries.add(new ServerEntry("http://soifexpress.apps-dev.fr/api/index.php", "http://soifexpress.apps-dev.fr/api/ryimg", "SOIF EXPRESS", "7 AV GABRIEL PERI", "91600", "SAVIGNY SUR ORGE", "91 - Essonne", "France", "EURO", "0758088361", "", "www.test.com", "", "SOIF EXPRESS", false));
+        serverEntries.add(new ServerEntry("http://asiafood.apps-dev.fr/api/index.php", "http://82.253.71.109/prod/asiafood_v8/api/ryimg", "Asia Food", "8 avenue Duval le Camus", "92210", "ST CLOUD", "92 - Hauts-de-Seine", "France", "EURO", "+33(0)177583700", "contact@asiafoodco.com", "http://www.asiafoodco.com", "", "ASIA FOOD", false));
 
 //        ServerEntry serverEntry = mDb.serverDao().getActiveServer(true);
 //        if (serverEntry == null) {
 //            mDb.serverDao().deleteAllServers();
 //        }
 
-        for (ServerEntry serverItem : serverEntries ) {
+        for (ServerEntry serverItem : serverEntries) {
             if (mDb.serverDao().getServerByHostname(serverItem.getHostname()) == null) {
                 mDb.serverDao().insertServer(serverItem);
             }
