@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.rainbow_cl.i_sales"
+        applicationId "com.iSales"
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1

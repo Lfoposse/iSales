@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:mContext="com.rainbow_cl.i_sales.pages.detailscmde.DetailsCmdeActivity">
+    tools:mContext="com.iSales.pages.detailscmde.DetailsCmdeActivity">
 
     <ScrollView
         android:layout_width="match_parent"

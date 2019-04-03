@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.rainbow_cl.i_sales.pages.home.fragment.AProposFragment">
+    tools:context="com.iSales.pages.home.fragment.AProposFragment">
 
     <ScrollView
         android:layout_width="match_parent"

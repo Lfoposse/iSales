@@ -10,12 +10,12 @@
         android:layout_height="match_parent">
 
         <fragment
-            android:name="com.rainbow_cl.i_sales.pages.home.dialog.CommandePreferenceDialog"
+            android:name="com.iSales.pages.home.dialog.CommandePreferenceDialog"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </FrameLayout>
     <!--<fragment-->
-    <!--android:name="com.rainbow_cl.i_sales.pages.home.dialog.CommandePreferenceDialog"-->
+    <!--android:name="iSalespages.home.dialog.CommandePreferenceDialog"-->
     <!--android:id="@+id/frame_commander_pref_dialog"-->
     <!--android:layout_width="match_parent"-->
     <!--android:layout_height="match_parent" />-->

@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.rainbow_cl.i_sales.pages.parametres.ParametresActivity">
+    tools:context="com.iSales.pages.parametres.ParametresActivity">
 
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        android:name="com.rainbow_cl.i_sales.pages.parametres.ParametresMainFragment"
+        android:name="com.iSales.pages.parametres.ParametresMainFragment"
         android:id="@+id/rypm_settings_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

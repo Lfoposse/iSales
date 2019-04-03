@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:mContext="com.rainbow_cl.i_sales.pages.synchronisation.SynchronisationActivity">
+    tools:mContext="com.iSales.pages.synchronisation.SynchronisationActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

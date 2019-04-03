@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.rainbow_cl.i_sales">
+    package="com.iSales">
 
     <!-- To auto-complete usernamemail text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -22,7 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".pages.welcome.WelcomeActivity"
+            android:name="com.iSales.pages.welcome.WelcomeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:theme="@style/FullscreenTheme">
@@ -33,74 +33,74 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".pages.login.LoginActivity"
+            android:name="com.iSales.pages.login.LoginActivity"
             android:label="@string/title_activity_login" />
         <activity
-            android:name=".pages.home.HomeActivity"
+            android:name="com.iSales.pages.home.HomeActivity"
             android:theme="@style/AppTheme.Template.Base" />
         <activity
-            android:name=".pages.addcustomer.AddCustomerActivity"
+            android:name="com.iSales.pages.addcustomer.AddCustomerActivity"
             android:label="@string/ajouter_client"
-            android:parentActivityName=".pages.home.HomeActivity">
+            android:parentActivityName="com.iSales.pages.home.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".pages.home.HomeActivity" />
+                android:value="com.iSales.pages.home.HomeActivity" />
         </activity>
         <activity
-            android:name=".pages.addcategorie.AddCategorieActivity"
+            android:name="com.iSales.pages.addcategorie.AddCategorieActivity"
             android:label="@string/ajouter_categorie"
-            android:parentActivityName=".pages.home.HomeActivity">
+            android:parentActivityName="com.iSales.pages.home.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".pages.home.HomeActivity" />
+                android:value="com.iSales.pages.home.HomeActivity" />
         </activity>
         <activity
-            android:name=".pages.boncmdeverification.BonCmdeVerificationActivity"
+            android:name="com.iSales.pages.boncmdeverification.BonCmdeVerificationActivity"
             android:label="@string/verification"
-            android:parentActivityName=".pages.home.HomeActivity">
+            android:parentActivityName="com.iSales.pages.home.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".pages.home.HomeActivity" />
+                android:value="com.iSales.pages.home.HomeActivity" />
         </activity>
         <activity
-            android:name=".pages.boncmdesignature.BonCmdeSignatureActivity"
+            android:name="com.iSales.pages.boncmdesignature.BonCmdeSignatureActivity"
             android:label="@string/signature"
-            android:parentActivityName=".pages.boncmdeverification.BonCmdeVerificationActivity">
+            android:parentActivityName="com.iSales.pages.boncmdeverification.BonCmdeVerificationActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".pages.boncmdeverification.BonCmdeVerificationActivity" />
+                android:value="com.iSales.pages.boncmdeverification.BonCmdeVerificationActivity" />
         </activity>
         <activity
-            android:name=".pages.detailscmde.DetailsCmdeActivity"
+            android:name="com.iSales.pages.detailscmde.DetailsCmdeActivity"
             android:label="@string/details_commande"
-            android:parentActivityName=".pages.home.HomeActivity">
+            android:parentActivityName="com.iSales.pages.home.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".pages.home.HomeActivity" />
+                android:value="com.iSales.pages.home.HomeActivity" />
         </activity>
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
         <activity
-            android:name=".pages.detailsproduit.DetailsProduitActivity"
+            android:name="com.iSales.pages.detailsproduit.DetailsProduitActivity"
             android:label="@string/details_produit"
-            android:parentActivityName=".pages.home.HomeActivity">
+            android:parentActivityName="com.iSales.pages.home.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".pages.home.HomeActivity" />
+                android:value="com.iSales.pages.home.HomeActivity" />
         </activity>
         <activity
-            android:name=".pages.synchronisation.SynchronisationActivity"
+            android:name="com.iSales.pages.synchronisation.SynchronisationActivity"
             android:label="@string/synchronisation"
-            android:parentActivityName=".pages.home.HomeActivity">
+            android:parentActivityName="com.iSales.pages.home.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".pages.home.HomeActivity" />
+                android:value="com.iSales.pages.home.HomeActivity" />
         </activity>
-        <activity android:name=".pages.parametres.ParametresActivity"
+        <activity android:name="com.iSales.pages.parametres.ParametresActivity"
             android:label="@string/parametres"
-            android:parentActivityName=".pages.home.HomeActivity">
+            android:parentActivityName="com.iSales.pages.home.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".pages.home.HomeActivity" />
+                android:value="com.iSales.pages.home.HomeActivity" />
         </activity>
     </application>
 

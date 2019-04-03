@@ -6,7 +6,7 @@
     android:id="@+id/view_produitdetails"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:mContext="com.rainbow_cl.i_sales.pages.detailsproduit.DetailsProduitActivity">
+    tools:mContext="com.iSales.pages.detailsproduit.DetailsProduitActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:mContext="com.rainbow_cl.i_sales.pages.home.fragment.CommandesFragment">
+    tools:mContext="com.iSales.pages.home.fragment.CommandesFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
