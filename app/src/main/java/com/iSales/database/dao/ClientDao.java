@@ -21,19 +21,23 @@ public interface ClientDao {
     @Query("SELECT * FROM client")
     LiveData<List<ClientEntry>> loadAllClient();
 
-    @Query("SELECT * FROM client")
+//    @Query("SELECT * FROM client ORDER BY name")
+    @Query("SELECT  DISTINCT id, _rowid_ as oid, is_current, note_public, note_private, note, is_synchro, code_client, logo_content, logo, client_id, name, name_alias, firstname, lastname, address, email, phone, region, departement, pays, date_modification, date_creation, town FROM client ORDER BY name")
     List<ClientEntry> getAllClient();
 
     @Query("SELECT * FROM client WHERE is_synchro = :synchro")
     List<ClientEntry> getAllClientBySynchro(int synchro);
 
-    @Query("SELECT * FROM client WHERE id > :lastId GROUP BY id ORDER BY id LIMIT :limit")
+//    @Query("SELECT rowid,  FROM client WHERE id > :lastId ORDER BY name LIMIT :limit")
+//    List<ClientEntry> getClientsLimit(long lastId, int limit);
+
+    @Query("SELECT  DISTINCT id, _rowid_ as oid, is_current, note_public, note_private, note, is_synchro, code_client, logo_content, logo, client_id, name, name_alias, firstname, lastname, address, email, phone, region, departement, pays, date_modification, date_creation, town FROM client WHERE id > :lastId ORDER BY name LIMIT :limit")
     List<ClientEntry> getClientsLimit(long lastId, int limit);
 
     @Query("SELECT * FROM client WHERE is_current = :current")
     ClientEntry getCurrentClient(int current);
 
-    @Query("SELECT * FROM client WHERE LOWER(address) LIKE '%'||:keyword||'%' OR LOWER(name) LIKE '%'||:keyword||'%' GROUP BY id ORDER BY id LIMIT :limit")
+    @Query("SELECT DISTINCT id, _rowid_ as oid, is_current, note_public, note_private, note, is_synchro, code_client, logo_content, logo, client_id, name, name_alias, firstname, lastname, address, email, phone, region, departement, pays, date_modification, date_creation, town FROM client WHERE LOWER(address) LIKE '%'||:keyword||'%' OR LOWER(name) LIKE '%'||:keyword||'%' GROUP BY id ORDER BY name LIMIT :limit")
     List<ClientEntry> getClientsLikeLimit(int limit, String keyword);
 
     @Insert
@@ -53,6 +57,10 @@ public interface ClientDao {
 //    Mise a jour du client courant. 1 si client courant, 0 sinon
     @Query("UPDATE client SET is_current = :current WHERE id = :clientId")
     void updateCurrentClient(int current, long clientId);
+
+//    Mise a jour du client courant. 1 si client courant, 0 sinon
+    @Query("UPDATE client SET is_synchro = :synchro WHERE id = :clientId")
+    void updateSynchroClient(int synchro, long clientId);
 
 //    Mise a jour du client courant. 1 si client courant, 0 sinon
     @Query("UPDATE client SET id = :idThirdpartie WHERE name = :name AND email = :email")
@@ -76,4 +84,7 @@ public interface ClientDao {
 
     @Query("DELETE FROM client WHERE id = :id")
     void deleteClientById(long id);
+
+    @Query("DELETE FROM client WHERE client_id = :id")
+    void deleteClientByClientId(long id);
 }

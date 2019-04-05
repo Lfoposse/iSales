@@ -25,6 +25,8 @@ public class ClientParcelable implements Parcelable {
     private String logo;
     private String code_client;
     private long id;
+    private long client_id;
+    private long oid;
     private int is_synchro;
     private String note;
     private String note_private;
@@ -210,6 +212,22 @@ public class ClientParcelable implements Parcelable {
         this.is_current = is_current;
     }
 
+    public long getClient_id() {
+        return client_id;
+    }
+
+    public void setClient_id(long client_id) {
+        this.client_id = client_id;
+    }
+
+    public long getOid() {
+        return oid;
+    }
+
+    public void setOid(long oid) {
+        this.oid = oid;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -232,6 +250,8 @@ public class ClientParcelable implements Parcelable {
         dest.writeString(this.logo);
         dest.writeString(this.code_client);
         dest.writeLong(this.id);
+        dest.writeLong(this.client_id);
+        dest.writeLong(this.oid);
         dest.writeInt(this.is_synchro);
         dest.writeString(this.note);
         dest.writeString(this.note_private);
@@ -256,6 +276,8 @@ public class ClientParcelable implements Parcelable {
         this.logo = in.readString();
         this.code_client = in.readString();
         this.id = in.readLong();
+        this.client_id = in.readLong();
+        this.oid = in.readLong();
         this.is_synchro = in.readInt();
         this.note = in.readString();
         this.note_private = in.readString();
@@ -264,15 +286,15 @@ public class ClientParcelable implements Parcelable {
         this.is_current = in.readInt();
     }
 
-    public static final Creator<com.iSales.model.ClientParcelable> CREATOR = new Creator<com.iSales.model.ClientParcelable>() {
+    public static final Creator<ClientParcelable> CREATOR = new Creator<ClientParcelable>() {
         @Override
-        public com.iSales.model.ClientParcelable createFromParcel(Parcel source) {
-            return new com.iSales.model.ClientParcelable(source);
+        public ClientParcelable createFromParcel(Parcel source) {
+            return new ClientParcelable(source);
         }
 
         @Override
-        public com.iSales.model.ClientParcelable[] newArray(int size) {
-            return new com.iSales.model.ClientParcelable[size];
+        public ClientParcelable[] newArray(int size) {
+            return new ClientParcelable[size];
         }
     };
 }

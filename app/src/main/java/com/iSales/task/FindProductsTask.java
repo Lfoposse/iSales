@@ -53,12 +53,14 @@ public class FindProductsTask extends AsyncTask<Void, Void, FindProductsREST> {
 
     @Override
     protected FindProductsREST doInBackground(Void... voids) {
+//        filtre les produits qui sont en vente
+        String sqlfilters = "tosell=1";
 //        Requete de connexion de l'internaute sur le serveur
         Call<ArrayList<Product>> call = null;
         if (page < 0) {
-            call = ApiUtils.getISalesService(context).findProductsByCategorie(sortfield, this.sortorder, this.limit, this.category, this.mode);
+            call = ApiUtils.getISalesService(context).findProductsByCategorie(sqlfilters, sortfield, this.sortorder, this.limit, this.category, this.mode);
         } else {
-            call = ApiUtils.getISalesService(context).findProducts(sortfield, this.sortorder, this.limit, this.page, this.mode);
+            call = ApiUtils.getISalesService(context).findProducts(sqlfilters, sortfield, this.sortorder, this.limit, this.page, this.mode);
         }
         try {
             Response<ArrayList<Product>> response = call.execute();

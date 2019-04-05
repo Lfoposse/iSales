@@ -8,4 +8,5 @@ import com.iSales.remote.rest.FindProductsREST;
 
 public interface FindProductsListener {
     void onFindProductsCompleted(FindProductsREST findProductsREST);
+    void onFindAllProductsCompleted();
 }

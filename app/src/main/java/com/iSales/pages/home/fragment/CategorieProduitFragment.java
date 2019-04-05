@@ -32,11 +32,13 @@ import com.iSales.decoration.MyDividerItemDecoration;
 import com.iSales.interfaces.CategorieProduitAdapterListener;
 import com.iSales.interfaces.DialogCategorieListener;
 import com.iSales.interfaces.FindCategorieListener;
+import com.iSales.interfaces.FindProductsListener;
 import com.iSales.model.CategorieParcelable;
 import com.iSales.remote.ConnectionManager;
 import com.iSales.remote.model.Categorie;
 import com.iSales.remote.model.DolPhoto;
 import com.iSales.remote.rest.FindCategoriesREST;
+import com.iSales.remote.rest.FindProductsREST;
 import com.iSales.task.FindCategorieTask;
 import com.iSales.utility.ISalesUtility;
 
@@ -48,7 +50,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CategorieProduitFragment extends Fragment implements FindCategorieListener, CategorieProduitAdapterListener {
+public class CategorieProduitFragment extends Fragment implements FindCategorieListener, FindProductsListener, CategorieProduitAdapterListener {
     public static String TAG = com.iSales.pages.home.fragment.CategorieProduitFragment.class.getSimpleName();
 
     //    views
@@ -373,5 +375,15 @@ public class CategorieProduitFragment extends Fragment implements FindCategorieL
         }
 
         super.onDestroy();
+    }
+
+    @Override
+    public void onFindProductsCompleted(FindProductsREST findProductsREST) {
+
+    }
+
+    @Override
+    public void onFindAllProductsCompleted() {
+        loadCategories();
     }
 }

@@ -78,7 +78,7 @@
                             android:layout_height="wrap_content"
                             android:background="@null"
                             android:gravity="center_vertical"
-                            android:hint="Adresse du serveur"
+                            android:hint="@string/nom_compagnie_incorrect"
                             android:inputType="text"
                             android:editable="true"
                             android:focusable="true"

@@ -460,6 +460,11 @@ public class SynchronisationActivity extends AppCompatActivity
     }
 
     @Override
+    public void onFindAllProductsCompleted() {
+
+    }
+
+    @Override
     public void onFindCategorieCompleted(FindCategoriesREST findCategoriesREST) {
         mFindCategorieTask = null;
 

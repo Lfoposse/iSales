@@ -106,7 +106,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 
     private AppDatabase mDb;
 
-    private int mLimit = 10;
+    private int mLimit = 50;
     private long mLastProduitId = 0;
 
     public CategoriesFragment() {
@@ -514,6 +514,11 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             }
 
         }
+
+    }
+
+    @Override
+    public void onFindAllProductsCompleted() {
 
     }
 

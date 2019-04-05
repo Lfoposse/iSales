@@ -39,7 +39,8 @@ public interface ISalesServicesRemote {
 
     //  Recupération de la liste des produits
     @GET("products")
-    Call<ArrayList<Product>> findProductsByCategorie(@Query(ApiUtils.sortfield) String sortfield,
+    Call<ArrayList<Product>> findProductsByCategorie(@Query(ApiUtils.sqlfilters) String sqlfilters,
+                                                     @Query(ApiUtils.sortfield) String sortfield,
                                                      @Query(ApiUtils.sortorder) String sortorder,
                                                      @Query(ApiUtils.limit) long limit,
                                                      @Query(ApiUtils.category) long category,
@@ -47,7 +48,8 @@ public interface ISalesServicesRemote {
 
     //  Recupération de la liste des produits
     @GET("products")
-    Call<ArrayList<Product>> findProducts(@Query(ApiUtils.sortfield) String sortfield,
+    Call<ArrayList<Product>> findProducts(@Query(ApiUtils.sqlfilters) String sqlfilters,
+                                          @Query(ApiUtils.sortfield) String sortfield,
                                           @Query(ApiUtils.sortorder) String sortorder,
                                           @Query(ApiUtils.limit) long limit,
                                           @Query(ApiUtils.page) long page,

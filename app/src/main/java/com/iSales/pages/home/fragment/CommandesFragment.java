@@ -94,7 +94,7 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
 
     //    task de recuperation des produits
     private com.iSales.task.FindOrderTask mFindOrderTask = null;
-    private int mLimit = 8;
+    private int mLimit = 50;
     private int mPageOrder = 0;
     private long mLastCmdeId = 0;
 

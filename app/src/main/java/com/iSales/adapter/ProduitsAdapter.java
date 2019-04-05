@@ -172,7 +172,7 @@ public class ProduitsAdapter extends RecyclerView.Adapter<com.iSales.adapter.Pro
                     @Override
                     public void onSuccess() {
 //                        Log.e(TAG, "onSuccess: Picasso loadin img");
-                        if (mContext != null && position >= produitsListFiltered.size()) {
+                        if (mContext != null && position <= produitsListFiltered.size()) {
                             Bitmap imageBitmap = ((BitmapDrawable) holder.poster.getDrawable()).getBitmap();
 
                             String pathFile = ISalesUtility.saveProduitImage(mContext, imageBitmap, produitsListFiltered.get(position).getRef());

@@ -93,6 +93,7 @@
     <string name="commande_enregistre_succes">Bon de commande enregistré avec succès.</string>
     <string name="informations_client_modifie">Informations du client modifiées avec succès.</string>
     <string name="client_creee_succes">Client crée avec succès.</string>
+    <string name="client_creee_local_succes">Client crée en local avec succès.</string>
     <string name="enregistrement_encours">Enregistrement en cours...</string>
     <string name="enregistrement_commande_encours">Enregistrement de la commande en cours...</string>
     <string name="validation_commande_encours">Validation de la commande en cours...</string>
@@ -200,6 +201,8 @@
     <string name="client_en_attente_synchronisation">Des clients sont en attente de synchronisation. Veuillez synchroniser les clients.</string>
     <string name="valider_le_panier">Valider le panier</string>
     <string name="vider_le_panier">Vider le panier</string>
+    <string name="nom_compagnie_incorrect">Nom Compagnie Incorrect.</string>
+    <string name="nom_compagnie">Nom Compagnie</string>
 
     <!-- Strings related to Settings -->
 

@@ -44,7 +44,7 @@ public class FindThirdpartieTask extends AsyncTask<Void, Void, FindThirdpartieRE
             Response<ArrayList<Thirdpartie>> response = call.execute();
             if (response.isSuccessful()) {
                 ArrayList<Thirdpartie> productArrayList = response.body();
-                Log.e(TAG, "doInBackground: products=" + productArrayList.size());
+//                Log.e(TAG, "doInBackground: products=" + productArrayList.size());
 
                 return new FindThirdpartieREST(productArrayList);
             } else {

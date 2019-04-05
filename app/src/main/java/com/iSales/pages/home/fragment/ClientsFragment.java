@@ -73,16 +73,15 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
     private TextView mCategoryTV;
 
     private ArrayList<ClientParcelable> clientParcelableList;
+    private ArrayList<ClientParcelable> clientParcelableListFiltered;
     private ClientsAdapter mAdapter;
 
     //    task de recuperation des clients
     private FindThirdpartieTask mFindClientTask = null;
     ProgressDialog mProgressDialog;
 
-    private int mLimit = 10;
+    private int mLimit = 50;
     private int mPageClient = 0;
-    private long mLastClientId = 0;
-    private int mLastPosition;
 
     //    database instance
     private AppDatabase mDb;
@@ -110,73 +109,62 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
     }
 
     //    Recupere la lsite des clients dans la bd locale
-    private void loadClients(List<ClientEntry> clientEntryList) {
-        List<ClientEntry> clientEntries;
-        if (clientEntryList == null) {
-            clientEntries = mDb.clientDao().getClientsLimit(mLastClientId, mLimit);
-        } else {
-            clientEntries = clientEntryList;
+    private void loadClients() {
+        showProgress(true);
+//        Log.e(TAG, "loadClients: sizeInit="+clientParcelableList.size());
+        if (clientParcelableList.size() > 0) {
+            if (mLimit < clientParcelableList.size()) {
+                clientParcelableListFiltered.addAll(clientParcelableList.subList(0, mLimit));
+            } else {
+                clientParcelableListFiltered.addAll(clientParcelableList.subList(0, clientParcelableList.size()));
+            }
+            mAdapter.notifyDataSetChanged();
         }
-
-        if (clientEntries.size() <= 0) {
-//            Toast.makeText(getContext(), getString(R.string.aucun_produit_trouve), Toast.LENGTH_LONG).show();
-
-//        affichage de l'image d'attente
-            showProgress(false);
-
-//        Suppression des images des clients en local
-//            ISalesUtility.deleteClientsImgFolder();
-
-//            recupere la liste des clients sur le serveur
-//            executeFindClients();
-
-            return;
-        }
-
-//        Affichage de la liste des produits sur la vue
-        ArrayList<ClientParcelable> clientParcelables = new ArrayList<>();
-        for (ClientEntry clientEntry : clientEntries) {
-            ClientParcelable clientParcelable = new ClientParcelable();
-            clientParcelable.setName(clientEntry.getName());
-            clientParcelable.setFirstname(clientEntry.getFirstname());
-            clientParcelable.setLastname(clientEntry.getLastname());
-            clientParcelable.setAddress(clientEntry.getAddress());
-            clientParcelable.setTown(clientEntry.getTown());
-            clientParcelable.setLogo(clientEntry.getLogo());
-            clientParcelable.setDate_creation(clientEntry.getDate_creation());
-            clientParcelable.setDate_modification(clientEntry.getDate_modification());
-            clientParcelable.setId(clientEntry.getId());
-            clientParcelable.setEmail(clientEntry.getEmail());
-            clientParcelable.setPhone(clientEntry.getPhone());
-            clientParcelable.setPays(clientEntry.getPays());
-            clientParcelable.setRegion(clientEntry.getRegion());
-            clientParcelable.setDepartement(clientEntry.getDepartement());
-            clientParcelable.setCode_client(clientEntry.getCode_client());
-            clientParcelable.setIs_synchro(clientEntry.getIs_synchro());
-            clientParcelable.setIs_current(clientEntry.getIs_current());
-//            initialisation du poster du client
-            clientParcelable.setPoster(new DolPhoto());
-            clientParcelable.getPoster().setContent(clientEntry.getLogo_content());
-//            produitParcelable.setPoster_name(ISalesUtility.getImgProduit(productItem.getDescription()));
-
-            clientParcelables.add(clientParcelable);
-        }
-
-        Log.e(TAG, "onFindThirdpartieCompleted: mLastClientId=" + mLastClientId);
-//        incrementation du nombre de page
-        mLastClientId = clientEntries.get(clientEntries.size() - 1).getId();
-
-//        if (clientParcelableList.size() > 0 && mLastClientId <= 0) {
-//            clientParcelableList.clear();
-//        }
-
-        clientParcelableList.addAll(clientParcelables);
-
-        mAdapter.notifyDataSetChanged();
-
 //        affichage de l'image d'attente
         showProgress(false);
         showProgressDialog(false, null, null);
+    }
+
+    //    Recupere la lsite des clients dans la bd locale
+    private void initClients() {
+        List<ClientEntry> clientEntries = mDb.clientDao().getAllClient();
+        clientParcelableList = new ArrayList<>();
+
+        ArrayList<ClientParcelable> clientParcelables = new ArrayList<>();
+        for (ClientEntry clientEntry : clientEntries) {
+//            Log.e(TAG, "loadClients: itemClient oid=" + clientEntry.getOid()+" id="+clientEntry.getId());
+
+            if (clientEntry.getId() != null) {
+                ClientParcelable clientParcelable = new ClientParcelable();
+                clientParcelable.setName(clientEntry.getName());
+                clientParcelable.setFirstname(clientEntry.getFirstname());
+                clientParcelable.setLastname(clientEntry.getLastname());
+                clientParcelable.setAddress(clientEntry.getAddress());
+                clientParcelable.setTown(clientEntry.getTown());
+                clientParcelable.setLogo(clientEntry.getLogo());
+                clientParcelable.setDate_creation(clientEntry.getDate_creation());
+                clientParcelable.setDate_modification(clientEntry.getDate_modification());
+                clientParcelable.setId(clientEntry.getId());
+                clientParcelable.setClient_id(clientEntry.getClient_id());
+                clientParcelable.setOid(clientEntry.getOid());
+                clientParcelable.setEmail(clientEntry.getEmail());
+                clientParcelable.setPhone(clientEntry.getPhone());
+                clientParcelable.setPays(clientEntry.getPays());
+                clientParcelable.setRegion(clientEntry.getRegion());
+                clientParcelable.setDepartement(clientEntry.getDepartement());
+                clientParcelable.setCode_client(clientEntry.getCode_client());
+                clientParcelable.setIs_synchro(clientEntry.getIs_synchro());
+                clientParcelable.setIs_current(clientEntry.getIs_current());
+//            initialisation du poster du client
+                clientParcelable.setPoster(new DolPhoto());
+                clientParcelable.getPoster().setContent(clientEntry.getLogo_content());
+//            produitParcelable.setPoster_name(ISalesUtility.getImgProduit(productItem.getDescription()));
+
+                clientParcelables.add(clientParcelable);
+            }
+        }
+
+        clientParcelableList = clientParcelables;
     }
 
     //    arrete le processus de recupération des infos sur le serveur
@@ -267,6 +255,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
                         public void onClick(DialogInterface dialogInterface, int i) {
                             // remove the item from recycler view
                             mAdapter.removeItem(viewHolder.getAdapterPosition());
+                            onClientsSelected(null, 0);
                         }
                     })
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -307,8 +296,11 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
             mPageClient = 0;
             Toast.makeText(getContext(), getString(R.string.comptes_clients_synchronises), Toast.LENGTH_LONG).show();
 
-            mLastClientId = 0;
-            loadClients(null);
+//            mLastClientId = 0;
+//            loadClients(null);
+            initClients();
+            loadClients();
+
             showProgressDialog(false, null, null);
 
             return;
@@ -380,6 +372,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
         super.onCreate(savedInstanceState);
 
         mDb = AppDatabase.getInstance(getContext().getApplicationContext());
+        initClients();
     }
 
     @Override
@@ -389,7 +382,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
         View rootView = inflater.inflate(R.layout.fragment_clients, container, false);
 
         setHasOptionsMenu(true);
-        mLastClientId = 0;
+//        mLastClientId = 0;
 
 //        referencement des vues
         mRecyclerView = rootView.findViewById(R.id.recycler_view);
@@ -408,9 +401,9 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
         mCategoryTV = (TextView) rootView.findViewById(R.id.tv_selected_categorie_client);
 
 
-        clientParcelableList = new ArrayList<>();
+        clientParcelableListFiltered = new ArrayList<>();
 
-        mAdapter = new ClientsAdapter(getContext(), clientParcelableList, com.iSales.pages.home.fragment.ClientsFragment.this);
+        mAdapter = new ClientsAdapter(getContext(), clientParcelableListFiltered, com.iSales.pages.home.fragment.ClientsFragment.this);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -428,11 +421,20 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 
                     int itemsCount = recyclerView.getAdapter().getItemCount();
 
-//                    Log.e(TAG, "onScroll: lastPosition=" + lastPosition + " itemsCount=" + itemsCount + " mLastClientId=" + mLastClientId);
-                    if (lastPosition > 0 && (lastPosition + 2) >= itemsCount) {
+                    /*Log.e(TAG, "onScroll: lastPosition=" + lastPosition + " itemsCount=" + itemsCount
+                            + " mLastClientId2=" + clientParcelableList.get(lastPosition).getId()
+                            + " mLastClientIdItemsCount=" + clientParcelableList.get(itemsCount - 1).getId()
+                            + " mLastClientClientId2=" + clientParcelableList.get(lastPosition).getClient_id()
+                            + " oid1=" + clientParcelableList.get(lastPosition).getOid()
+                            + " mLastClientClientIdItemsCount=" + clientParcelableList.get(itemsCount - 1).getClient_id()
+                            + " oid=" + clientParcelableList.get(itemsCount - 1).getOid()); */
+                    if (clientParcelableListFiltered.get(lastPosition).getId() == clientParcelableListFiltered.get(itemsCount - 1).getId()
+                    && (lastPosition+1+mLimit) < clientParcelableList.size()) {
 //        affichage de l'image d'attente
                         showProgress(true);
-                        loadClients(null);
+                        clientParcelableListFiltered.addAll(clientParcelableList.subList(lastPosition+1, lastPosition+1+mLimit));
+                        mAdapter.notifyDataSetChanged();
+                        showProgress(false);
                     }
                 }
             }
@@ -454,13 +456,11 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String searchString = charSequence.toString();
+                Log.e(TAG, "onTextChanged: searchString=" + searchString);
 
-                List<ClientEntry> clientEntries = mDb.clientDao().getClientsLikeLimit(mLimit, searchString);
-
-                clientParcelableList.clear();
-                loadClients(clientEntries);
-//                Log.e(TAG, "onTextChanged: searchString="+searchString);
-                mAdapter.performFiltering(searchString);
+                perfomFiltering(searchString);
+//                loadClients(clientEntries);
+//                mAdapter.performFiltering(searchString);
 
             }
 
@@ -522,8 +522,9 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
                 resetClientList();
 
 //        recuperation des clients sur le serveur
-                mLastClientId = 0;
-                loadClients(null);
+//                mLastClientId = 0;
+                initClients();
+                loadClients();
                 mMenuFAM.close(true);
             }
         });
@@ -534,9 +535,36 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 //
 //        }
 //        recuperation des clients sur le serveur
-        loadClients(null);
+        initClients();
+        loadClients();
 
         return rootView;
+    }
+
+    void perfomFiltering(String searchString) {
+
+        showProgress(true);
+        clientParcelableListFiltered.clear();
+        mAdapter.notifyDataSetChanged();
+
+        if (searchString.equals("")) {
+            loadClients();
+        } else {
+            ArrayList<ClientParcelable> filteredList = new ArrayList<>();
+            for (ClientParcelable row : clientParcelableList) {
+
+                // name match condition. this might differ depending on your requirement
+                // here we are looking for name or phone number match
+                if (row.getName().toLowerCase().contains(searchString.toLowerCase())
+                        || row.getAddress().toLowerCase().contains(searchString.toLowerCase())) {
+                    filteredList.add(row);
+                }
+            }
+            clientParcelableListFiltered.addAll(filteredList);
+            mAdapter.notifyDataSetChanged();
+        }
+
+        showProgress(false);
     }
 
     @Override
@@ -554,9 +582,16 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
         Log.e(TAG, "onResume: ");
 
         if (clientParcelableList.size() <= 0) {
-            loadClients(null);
+            initClients();
+            loadClients();
         } else {
             mAdapter.notifyDataSetChanged();
+        }
+
+        String searchString = searchET.getText().toString();
+
+        if (!searchString.equals("")) {
+            perfomFiltering(searchString);
         }
     }
 
@@ -583,7 +618,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
                 showProgressDialog(true, null, getString(R.string.synchro_comptes_cient_encours));
 
                 List<ClientEntry> clientEntriesSynchro = mDb.clientDao().getAllClientBySynchro(0);
-                Log.e(TAG, "onOptionsItemSelected:clientEntriesSynchro size="+clientEntriesSynchro.size() );
+                Log.e(TAG, "onOptionsItemSelected:clientEntriesSynchro size=" + clientEntriesSynchro.size());
                 if (clientEntriesSynchro.size() > 0) {
                     for (int i = 0; i < clientEntriesSynchro.size(); i++) {
                         ClientEntry itemClient = clientEntriesSynchro.get(i);

@@ -187,31 +187,32 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
         mRadioBtnCurrent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (mClientParcelable != null) {
+//                    Log.e(TAG, "onCheckedChanged: BEFORE checked=" + mRadioBtnCurrent.isChecked() +
+//                            " is_current=" + mClientParcelable.getIs_current() +
+//                            " idclient=" + mClientParcelable.getId());
 
-                Log.e(TAG, "onCheckedChanged: BEFORE checked=" + mRadioBtnCurrent.isChecked() +
-                        " is_current=" + mClientParcelable.getIs_current() +
-                        " idclient=" + mClientParcelable.getId());
+                    if (mClientParcelable.getIs_current() == 0) {
+                        mRadioBtnCurrent.setChecked(true);
+                        mClientParcelable.setIs_current(1);
 
-                if (mClientParcelable.getIs_current() == 0) {
-                    mRadioBtnCurrent.setChecked(true);
-                    mClientParcelable.setIs_current(1);
-
-                    mDb.clientDao().updateAllCurrentClient();
-                    mDb.clientDao().updateCurrentClient(1, mClientParcelable.getId());
+                        mDb.clientDao().updateAllCurrentClient();
+                        mDb.clientDao().updateCurrentClient(1, mClientParcelable.getId());
 
 //        Si le téléphone est connecté et le client synchronise avec le serveur
-                    if (com.iSales.remote.ConnectionManager.isPhoneConnected(getContext()) && mClientParcelable.getIs_synchro() == 1) {
-                        com.iSales.task.FindProductCustomerPriceTask task = new FindProductCustomerPriceTask(getContext(), mClientParcelable.getId(), null);
-                        task.execute();
-                    }
-                } else {
-                    mRadioBtnCurrent.setChecked(false);
-                    mClientParcelable.setIs_current(0);
+                        if (com.iSales.remote.ConnectionManager.isPhoneConnected(getContext()) && mClientParcelable.getIs_synchro() == 1) {
+                            com.iSales.task.FindProductCustomerPriceTask task = new FindProductCustomerPriceTask(getContext(), mClientParcelable.getId(), null);
+                            task.execute();
+                        }
+                    } else {
+                        mRadioBtnCurrent.setChecked(false);
+                        mClientParcelable.setIs_current(0);
 
-                    mDb.clientDao().updateAllCurrentClient();
-                    mDb.productCustPriceDao().deleteAllProductCustPrice();
+                        mDb.clientDao().updateAllCurrentClient();
+                        mDb.productCustPriceDao().deleteAllProductCustPrice();
+                    }
+//                    Log.e(TAG, "onCheckedChanged: AFTER checked=" + mRadioBtnCurrent.isChecked()  + " is_current=" + mClientParcelable.getIs_current());
                 }
-                Log.e(TAG, "onCheckedChanged: AFTER checked=" + mRadioBtnCurrent.isChecked()  + " is_current=" + mClientParcelable.getIs_current());
             }
         });
 
@@ -252,9 +253,15 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
 //        passage des parametres de la requete au fragment
         mClientParcelable = clientParcelable;
         mPosition = position;
-        Log.e(TAG, "onClientDialogSelected: name=" + mClientParcelable.getName() + " mPosition=" + mPosition);
+        if (mClientParcelable == null) {
+            Log.e(TAG, "onClientDialogSelected: mClientParcelable nulll");
+            initViewContent_null();
 
-        initViewContent();
+        } else {
+            Log.e(TAG, "onClientDialogSelected: name=" + mClientParcelable.getName() + " mPosition=" + mPosition);
+
+            initViewContent();
+        }
     }
 
     public void dialPhoneNumber(String phoneNumber) {
@@ -386,7 +393,15 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
         mVille.setText(mClientParcelable.getTown());
         mCodeClient.setText(mClientParcelable.getCode_client());
 
-        Log.e(TAG, "initViewContent: clientId="+mClientParcelable.getId() );
+        Log.e(TAG, "initViewContent: clientId="+mClientParcelable.getId()+" test is_synchro="+mClientParcelable.getIs_synchro() );
+
+
+//        masque le radio de sélection du client s'il n'est pas synchronisé avec le serveur
+        if (mClientParcelable.getIs_synchro() == 0) {
+            mRadioBtnCurrent.setEnabled(false);
+        } else {
+            mRadioBtnCurrent.setEnabled(true);
+        }
 
         mRadioBtnCurrent.setChecked(false);
         ClientEntry clientEntry = mDb.clientDao().getCurrentClient(1);
@@ -394,11 +409,6 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
             if (mClientParcelable.getId() == clientEntry.getId()) {
                 mRadioBtnCurrent.setChecked(true);
             }
-        }
-
-//        masque le radio de sélection du client s'il n'est pas synchronisé avec le serveur
-        if (mClientParcelable.getIs_synchro() == 0) {
-            mRadioBtnCurrent.setEnabled(false);
         }
 
 //        date de creation et de modification du client
@@ -418,6 +428,52 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
         } else {
             mDatemodification.setText("");
         }
+    }
+
+    private void initViewContent_null() {
+//        Log.e(TAG, "initViewContent: poster="+mClientParcelable.getPoster().getContent());
+
+        Picasso.with(getContext())
+                .load(R.drawable.isales_user_profile)
+                .error(R.drawable.isales_user_profile)
+                .into(mPoster, new com.squareup.picasso.Callback() {
+                    @Override
+                    public void onSuccess() {
+//                        Log.e(TAG, "onSuccess: Picasso loadin img");
+                        if (getContext() != null) {
+                            Bitmap imageBitmap = ((BitmapDrawable) mPoster.getDrawable()).getBitmap();
+                            Bitmap blurredBitmap = BlurBuilder.blur(getContext(), imageBitmap);
+                            mPosterBlurry.setBackground(new BitmapDrawable(getResources(), blurredBitmap));
+                        }
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
+
+
+        mNomEntreprise.setText("");
+        mAdresse.setText("");
+        mEmail.setText("");
+        mPhone.setText("");
+        mNote.setText("");
+        mPays.setText("");
+        mRegion.setText("");
+        mDepartement.setText("");
+        mVille.setText("");
+        mCodeClient.setText("");
+
+        mRadioBtnCurrent.setChecked(false);
+
+//        masque le radio de sélection du client s'il n'est pas synchronisé avec le serveur
+        mRadioBtnCurrent.setEnabled(false);
+
+//        date de creation et de modification du client
+        mDatecreation.setText("");
+
+        mDatemodification.setText("");
     }
 
     private void beginCrop(Uri source) {

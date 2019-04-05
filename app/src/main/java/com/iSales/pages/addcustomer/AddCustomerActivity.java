@@ -150,34 +150,39 @@ public class AddCustomerActivity extends AppCompatActivity {
             Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.veuillez_choisir_logo), Toast.LENGTH_LONG).show();
             return;
         } else { */
-            saveOfflineClient(nom, adresse, email, telephone, note, pays, region, departement, ville);
+        saveOfflineClient(nom, adresse, email, telephone, note, pays, region, departement, ville);
 
-            if (!mSwitchSynchro.isChecked()) {
+        if (!mSwitchSynchro.isChecked()) {
 
-                Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.client_creee_succes), Toast.LENGTH_LONG).show();
-                finish();
-                return;
-            }
-            saveOnlineClient(nom, adresse, email, telephone, note, pays, region, departement, ville);
+            Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.client_creee_local_succes), Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        saveOnlineClient(nom, adresse, email, telephone, note, pays, region, departement, ville);
 //        }
     }
 
     //    enregistre un client dans le serveur
     private void saveOfflineClient(final String nom, final String adresse, final String email, final String telephone, final String note, final String pays, final String region, final String departement, final String ville) {
 
-//        recuperation du logo en bitmap
-        Bitmap logoBitmap = mLogoBitmap;
-
-//        conversion du logo en base64
-        ByteArrayOutputStream baosLogo = new ByteArrayOutputStream();
-        logoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baosLogo);
-        byte[] bytesSignComm = baosLogo.toByteArray();
-
         final Date today = new Date();
         final SimpleDateFormat logoFormat = new SimpleDateFormat("yyMMdd-HHmmss");
-        final String logoName = String.format("client_logo_%s", logoFormat.format(today));
-        String encodeContent = Base64.encodeToString(bytesSignComm, Base64.NO_WRAP);
-        final String filename = String.format("%s.jpeg", logoName);
+        String encodeContent = "";
+        String filename = "";
+
+        if (mLogoBitmap != null) {
+//        recuperation du logo en bitmap
+            Bitmap logoBitmap = mLogoBitmap;
+
+//        conversion du logo en base64
+            ByteArrayOutputStream baosLogo = new ByteArrayOutputStream();
+            logoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baosLogo);
+            byte[] bytesSignComm = baosLogo.toByteArray();
+
+            final String logoName = String.format("client_logo_%s", logoFormat.format(today));
+            encodeContent = Base64.encodeToString(bytesSignComm, Base64.NO_WRAP);
+            filename = String.format("%s.jpeg", logoName);
+        }
 
         ClientEntry clientEntry = new ClientEntry();
         clientEntry.setAddress(adresse);
@@ -198,9 +203,9 @@ public class AddCustomerActivity extends AppCompatActivity {
         clientEntry.setTown(ville);
         clientEntry.setRegion(region);
 
-        Log.e(TAG, "saveOfflineClient: name="+clientEntry.getName()+
-                " logo="+clientEntry.getLogo()+
-                " logoContent="+clientEntry.getLogo_content());
+        Log.e(TAG, "saveOfflineClient: name=" + clientEntry.getName() +
+                " logo=" + clientEntry.getLogo() +
+                " logoContent=" + clientEntry.getLogo_content());
         mDb.clientDao().insertClient(clientEntry);
     }
 
@@ -220,196 +225,207 @@ public class AddCustomerActivity extends AppCompatActivity {
         progressDialog.setProgressDrawable(getResources().getDrawable(R.drawable.circular_progress_view));
         progressDialog.show();
 
-
-//        recuperation du logo en bitmap
-        Bitmap logoBitmap = mLogoBitmap;
-
-//        conversion du logo en base64
-        ByteArrayOutputStream baosLogo = new ByteArrayOutputStream();
-        logoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baosLogo);
-        byte[] bytesSignComm = baosLogo.toByteArray();
-
         final Date today = new Date();
         final SimpleDateFormat logoFormat = new SimpleDateFormat("yyMMdd-HHmmss");
-        final String logoName = String.format("client_logo_%s", logoFormat.format(today));
-        String encodeSignComm = Base64.encodeToString(bytesSignComm, Base64.NO_WRAP);
-        final String filenameComm = String.format("%s.jpeg", logoName);
-//        creation du document signature client
-        Document logoClient = new Document();
-        logoClient.setFilecontent(encodeSignComm);
-        logoClient.setFilename(filenameComm);
-        logoClient.setFileencoding("base64");
-        logoClient.setModulepart("societe");
+//        final String filenameComm = "";
 
-        Call<String> callUploadLogoClient = ApiUtils.getISalesService(com.iSales.pages.addcustomer.AddCustomerActivity.this).uploadDocument(logoClient);
-        callUploadLogoClient.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> responseLogoClient) {
-                if (responseLogoClient.isSuccessful()) {
-                    String responseLogoClientBody = responseLogoClient.body();
-                    Log.e(TAG, "onResponse: responseLogoClient=" + responseLogoClientBody);
+        if (mLogoBitmap != null) {
+//            Log.e(TAG, "saveOnlineClient: mLogoBitmap not null" );
+//        recuperation du logo en bitmap
+            Bitmap logoBitmap = mLogoBitmap;
+
+//        conversion du logo en base64
+            ByteArrayOutputStream baosLogo = new ByteArrayOutputStream();
+            logoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baosLogo);
+            byte[] bytesSignComm = baosLogo.toByteArray();
+
+            final String logoName = String.format("client_logo_%s", logoFormat.format(today));
+            String encodeSignComm = Base64.encodeToString(bytesSignComm, Base64.NO_WRAP);
+            final String filenameComm = String.format("%s.jpeg", logoName);
+
+//        creation du document signature client
+            Document logoClient = new Document();
+            logoClient.setFilecontent(encodeSignComm);
+            logoClient.setFilename(filenameComm);
+            logoClient.setFileencoding("base64");
+            logoClient.setModulepart("societe");
+
+            Call<String> callUploadLogoClient = ApiUtils.getISalesService(com.iSales.pages.addcustomer.AddCustomerActivity.this).uploadDocument(logoClient);
+            callUploadLogoClient.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> responseLogoClient) {
+                    if (responseLogoClient.isSuccessful()) {
+                        String responseLogoClientBody = responseLogoClient.body();
+//                        Log.e(TAG, "onResponse: responseLogoClient=" + responseLogoClientBody);
 
 //                    Date today = new Date();
-                    final SimpleDateFormat refOrderFormat = new SimpleDateFormat("yyMMdd-HHmmss");
-                    final String codeCLient = String.format("CU%s", refOrderFormat.format(today));
+                        final SimpleDateFormat refOrderFormat = new SimpleDateFormat("yyMMdd-HHmmss");
+                        final String codeCLient = String.format("CU%s", refOrderFormat.format(today));
 
-                    Thirdpartie queryBody = new Thirdpartie();
-                    queryBody.setAddress(adresse);
-                    queryBody.setTown(ville);
-                    queryBody.setRegion(region);
-                    queryBody.setDepartement(departement);
-                    queryBody.setPays(pays);
-                    queryBody.setPhone(telephone);
-                    queryBody.setNote(note);
-                    queryBody.setLogo(filenameComm);
-                    queryBody.setNote_private(note);
-                    queryBody.setEmail(email);
-                    queryBody.setFirstname(nom);
-                    queryBody.setName(String.format("%s", nom));
-                    queryBody.setCode_client(codeCLient);
-                    queryBody.setClient("1");
+                        Thirdpartie queryBody = new Thirdpartie();
+                        queryBody.setAddress(adresse);
+                        queryBody.setTown(ville);
+                        queryBody.setRegion(region);
+                        queryBody.setDepartement(departement);
+                        queryBody.setPays(pays);
+                        queryBody.setPhone(telephone);
+                        queryBody.setNote(note);
+                        queryBody.setLogo(filenameComm);
+                        queryBody.setNote_private(note);
+                        queryBody.setEmail(email);
+                        queryBody.setFirstname(nom);
+                        queryBody.setName(String.format("%s", nom));
+                        queryBody.setCode_client(codeCLient);
+                        queryBody.setClient("1");
 //                    queryBody.setName_alias(responseLogoClientBody);659331009
-                    queryBody.setName_alias("");
+                        queryBody.setName_alias("");
 
-                    Call<Long> callSaveClient = ApiUtils.getISalesService(com.iSales.pages.addcustomer.AddCustomerActivity.this).saveThirdpartie(queryBody);
-                    callSaveClient.enqueue(new Callback<Long>() {
-                        @Override
-                        public void onResponse(Call<Long> call, Response<Long> response) {
-                            if (response.isSuccessful()) {
-                                progressDialog.dismiss();
+                        Call<Long> callSaveClient = ApiUtils.getISalesService(com.iSales.pages.addcustomer.AddCustomerActivity.this).saveThirdpartie(queryBody);
+                        callSaveClient.enqueue(new Callback<Long>() {
+                            @Override
+                            public void onResponse(Call<Long> call, Response<Long> response) {
+                                if (response.isSuccessful()) {
+                                    progressDialog.dismiss();
 
-                                Long responseBody = response.body();
-                                Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.client_creee_succes), Toast.LENGTH_LONG).show();
-                                finish();
-                            } else {
-                                progressDialog.dismiss();
-
-                                try {
-                                    Log.e(TAG, "doEvaluationTransfert onResponse err: message=" + response.message() + " | code=" + response.code() + " | code=" + response.errorBody().string());
-                                } catch (IOException e) {
-                                    Log.e(TAG, "onResponse: message=" + e.getMessage());
-                                }
-                                if (response.code() == 404) {
-                                    Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
-                                    return;
-                                }
-                                if (response.code() == 401) {
-                                    Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.echec_authentification), Toast.LENGTH_LONG).show();
-                                    return;
+                                    Long responseBody = response.body();
+//                                    Log.e(TAG, "onResponse:callSaveClient responseBody="+responseBody);
+                                    mDb.clientDao().updateSynchroClient(1, responseBody);
+                                    Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.client_creee_succes), Toast.LENGTH_LONG).show();
+                                    finish();
                                 } else {
-                                    Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
-                                    return;
+                                    progressDialog.dismiss();
+
+                                    try {
+                                        Log.e(TAG, "doEvaluationTransfert onResponse err: message=" + response.message() + " | code=" + response.code() + " | code=" + response.errorBody().string());
+                                    } catch (IOException e) {
+                                        Log.e(TAG, "onResponse: message=" + e.getMessage());
+                                    }
+                                    if (response.code() == 404) {
+                                        Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
+                                        return;
+                                    }
+                                    if (response.code() == 401) {
+                                        Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.echec_authentification), Toast.LENGTH_LONG).show();
+                                        return;
+                                    } else {
+                                        Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
+                                        return;
+                                    }
                                 }
                             }
+
+                            @Override
+                            public void onFailure(Call<Long> call, Throwable t) {
+                                progressDialog.dismiss();
+
+                                Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                        });
+
+                    } else {
+
+                        try {
+                            String errBody = responseLogoClient.body();
+                            Log.e(TAG, "uploadDocument onResponse LogoClient err: message=" + responseLogoClient.message() +
+                                    " | code=" + responseLogoClient.code() + " | code=" + responseLogoClient.errorBody().string() + " errBody=" + errBody);
+                        } catch (IOException e) {
+                            Log.e(TAG, "onResponse: message=" + e.getMessage());
                         }
-
-                        @Override
-                        public void onFailure(Call<Long> call, Throwable t) {
-                            progressDialog.dismiss();
-
-                            Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                    });
-
-                } else {
-
-                    try {
-                        String errBody = responseLogoClient.body();
-                        Log.e(TAG, "uploadDocument onResponse LogoClient err: message=" + responseLogoClient.message() +
-                                " | code=" + responseLogoClient.code() + " | code=" + responseLogoClient.errorBody().string()+" errBody="+errBody);
-                    } catch (IOException e) {
-                        Log.e(TAG, "onResponse: message=" + e.getMessage());
-                    }
 
 //                    if (responseLogoClient.code() == 404) {
 //                        Toast.makeText(AddCustomerActivity.this, getString(R.string.echec_envoi_logo_client), Toast.LENGTH_LONG).show();
 //                        return;
 //                    }
-                    if (responseLogoClient.code() == 401) {
-                        progressDialog.dismiss();
-
-                        Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.echec_authentification), Toast.LENGTH_LONG).show();
-                        return;
-                    } else {
-                        Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.echec_envoi_logo_client), Toast.LENGTH_LONG).show();
-                    }
-
-                    Date today = new Date();
-                    final SimpleDateFormat refOrderFormat = new SimpleDateFormat("yyMMdd-HHmmss");
-                    final String codeCLient = String.format("CU%s", refOrderFormat.format(today));
-
-                    Thirdpartie queryBody = new Thirdpartie();
-                    queryBody.setAddress(adresse);
-                    queryBody.setTown(ville);
-                    queryBody.setRegion(region);
-                    queryBody.setDepartement(departement);
-                    queryBody.setPays(pays);
-                    queryBody.setPhone(telephone);
-                    queryBody.setNote(note);
-                    queryBody.setNote_private(note);
-                    queryBody.setLogo(filenameComm);
-                    queryBody.setEmail(email);
-                    queryBody.setFirstname(nom);
-                    queryBody.setName(String.format("%s", nom));
-                    queryBody.setCode_client(codeCLient);
-                    queryBody.setClient("1");
-                    queryBody.setName_alias("");
-
-                    Call<Long> callSaveClient = ApiUtils.getISalesService(com.iSales.pages.addcustomer.AddCustomerActivity.this).saveThirdpartie(queryBody);
-                    callSaveClient.enqueue(new Callback<Long>() {
-                        @Override
-                        public void onResponse(Call<Long> call, Response<Long> response) {
-                            if (response.isSuccessful()) {
-                                progressDialog.dismiss();
-
-                                Long responseBody = response.body();
-                                Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.client_creee_succes), Toast.LENGTH_LONG).show();
-                                finish();
-                            } else {
-                                progressDialog.dismiss();
-
-                                try {
-                                    Log.e(TAG, "doEvaluationTransfert onResponse err: message=" + response.message() + " | code=" + response.code() + " | code=" + response.errorBody().string());
-                                } catch (IOException e) {
-                                    Log.e(TAG, "onResponse: message=" + e.getMessage());
-                                }
-                                if (response.code() == 404) {
-                                    Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
-                                    return;
-                                }
-                                if (response.code() == 401) {
-                                    Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.echec_authentification), Toast.LENGTH_LONG).show();
-                                    return;
-                                } else {
-                                    Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
-                                    return;
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<Long> call, Throwable t) {
+                        if (responseLogoClient.code() == 401) {
                             progressDialog.dismiss();
 
-                            Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
+                            Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.echec_authentification), Toast.LENGTH_LONG).show();
                             return;
+                        } else {
+                            Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.echec_envoi_logo_client), Toast.LENGTH_LONG).show();
                         }
-                    });
+                    }
+
                 }
 
-            }
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    progressDialog.dismiss();
 
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                progressDialog.dismiss();
+                    Log.e(TAG, "onFailure: message=" + t.getMessage());
+                    Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
+                    return;
 
-                Log.e(TAG, "onFailure: message="+t.getMessage());
-                Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
-                return;
+                }
+            });
+        } else {
+//            Log.e(TAG, "saveOnlineClient: mLogoBitmap null" );
+//                    Date today = new Date();
+            final SimpleDateFormat refOrderFormat = new SimpleDateFormat("yyMMdd-HHmmss");
+            final String codeCLient = String.format("CU%s", refOrderFormat.format(today));
 
-            }
-        });
+            Thirdpartie queryBody = new Thirdpartie();
+            queryBody.setAddress(adresse);
+            queryBody.setTown(ville);
+            queryBody.setRegion(region);
+            queryBody.setDepartement(departement);
+            queryBody.setPays(pays);
+            queryBody.setPhone(telephone);
+            queryBody.setNote(note);
+            queryBody.setLogo("");
+            queryBody.setNote_private(note);
+            queryBody.setEmail(email);
+            queryBody.setFirstname(nom);
+            queryBody.setName(String.format("%s", nom));
+            queryBody.setCode_client(codeCLient);
+            queryBody.setClient("1");
+//                    queryBody.setName_alias(responseLogoClientBody);659331009
+            queryBody.setName_alias("");
+
+            Call<Long> callSaveClient = ApiUtils.getISalesService(com.iSales.pages.addcustomer.AddCustomerActivity.this).saveThirdpartie(queryBody);
+            callSaveClient.enqueue(new Callback<Long>() {
+                @Override
+                public void onResponse(Call<Long> call, Response<Long> response) {
+                    if (response.isSuccessful()) {
+                        progressDialog.dismiss();
+
+                        Long responseBody = response.body();
+                        Log.e(TAG, "onResponse:callSaveClient responseBody="+responseBody);
+                        mDb.clientDao().updateSynchroClient(1, responseBody);
+                        Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.client_creee_succes), Toast.LENGTH_LONG).show();
+                        finish();
+                    } else {
+                        progressDialog.dismiss();
+
+                        try {
+                            Log.e(TAG, "doEvaluationTransfert onResponse err: message=" + response.message() + " | code=" + response.code() + " | errorString=" + response.errorBody().string());
+                        } catch (IOException e) {
+                            Log.e(TAG, "onResponse: message=" + e.getMessage());
+                        }
+                        if (response.code() == 404) {
+                            Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        if (response.code() == 401) {
+                            Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.echec_authentification), Toast.LENGTH_LONG).show();
+                            return;
+                        } else {
+                            Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Long> call, Throwable t) {
+                    progressDialog.dismiss();
+
+                    Toast.makeText(com.iSales.pages.addcustomer.AddCustomerActivity.this, getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
+                    return;
+                }
+            });
+        }
 
     }
 

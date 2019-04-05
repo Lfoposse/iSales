@@ -295,9 +295,10 @@ public class HomeActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
 
             activeTab = savedInstanceState.getInt("activeTab");
-            Log.e(TAG, "onCreate: activeTab="+activeTab );
+//            Log.e(TAG, "onCreate: activeTab="+activeTab );
 
             switchTab(activeTab);
+            tablayout.getTabAt(activeTab).select();
         }
     }
 
@@ -306,8 +307,6 @@ public class HomeActivity extends AppCompatActivity {
         tablayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-
-
                 switchTab(tab.getPosition());
             }
 

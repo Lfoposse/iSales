@@ -221,48 +221,62 @@ public class ClientsAdapter extends RecyclerView.Adapter<com.iSales.adapter.Clie
             progressDialog.setProgressDrawable(mContext.getResources().getDrawable(R.drawable.circular_progress_view));
             progressDialog.show();
 
+            if(clientsListFiltered.get(position).getIs_synchro() == 0) {
+                mDb.clientDao().deleteClientById(clientsListFiltered.get(position).getId());
+
+                clientsListFiltered.remove(position);
+                // notify the item removed by position
+                // to perform recycler view delete animations
+                // NOTE: don't call notifyDataSetChanged()
+                notifyItemRemoved(position);
+
+                progressDialog.dismiss();
+                return;
+            } else {
 //        Requete de connexion de l'internaute sur le serveur
-            Call<Long> call = ApiUtils.getISalesService(mContext).deleteThirdpartie(clientsListFiltered.get(position).getId());
-            call.enqueue(new Callback<Long>() {
-                @Override
-                public void onResponse(Call<Long> call, Response<Long> response) {
-                    if (response.isSuccessful()) {
-                        Long responseBody = response.body();
+                Call<Long> call = ApiUtils.getISalesService(mContext).deleteThirdpartie(clientsListFiltered.get(position).getId());
+                call.enqueue(new Callback<Long>() {
+                    @Override
+                    public void onResponse(Call<Long> call, Response<Long> response) {
+                        if (response.isSuccessful()) {
+                            Long responseBody = response.body();
 
-                        mDb.clientDao().deleteClientById(clientsListFiltered.get(position).getId());
+                            mDb.clientDao().deleteClientByClientId(clientsListFiltered.get(position).getClient_id());
 
-                        clientsListFiltered.remove(position);
-                        // notify the item removed by position
-                        // to perform recycler view delete animations
-                        // NOTE: don't call notifyDataSetChanged()
-                        notifyItemRemoved(position);
+                            clientsListFiltered.remove(position);
+                            // notify the item removed by position
+                            // to perform recycler view delete animations
+                            // NOTE: don't call notifyDataSetChanged()
+                            notifyItemRemoved(position);
 
-                        progressDialog.dismiss();
-                        return;
-                    } else {
-                        String error = null;
-                        try {
-                            error = response.errorBody().string();
-                            Log.e(TAG, "doInBackground: onResponse err: " + error + " code=" + response.code());
+                            progressDialog.dismiss();
+                            return;
+                        } else {
+                            String error = null;
+                            try {
+                                error = response.errorBody().string();
+                                Log.e(TAG, "doInBackground: onResponse err: " + error + " code=" + response.code());
 
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            notifyItemChanged(position);
+                            progressDialog.dismiss();
+
+                            Toast.makeText(mContext, mContext.getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
                         }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Long> call, Throwable t) {
                         notifyItemChanged(position);
                         progressDialog.dismiss();
 
                         Toast.makeText(mContext, mContext.getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
+                        return;
                     }
-                }
-
-                @Override
-                public void onFailure(Call<Long> call, Throwable t) {
-                    notifyItemChanged(position);
-                    progressDialog.dismiss();
-
-                    Toast.makeText(mContext, mContext.getString(R.string.service_indisponible), Toast.LENGTH_LONG).show();
-                }
-            });
+                });
+            }
         }
 
     }

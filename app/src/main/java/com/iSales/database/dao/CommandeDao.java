@@ -21,16 +21,16 @@ public interface CommandeDao {
     @Query("SELECT * FROM commande")
     LiveData<List<CommandeEntry>> loadAllCmde();
 
-    @Query("SELECT * FROM commande ORDER BY ref")
+    @Query("SELECT * FROM commande ORDER BY date_commande ASC")
     List<CommandeEntry> getAllCmde();
 
-    @Query("SELECT * FROM commande WHERE socid = :clientId ORDER BY ref")
+    @Query("SELECT * FROM commande WHERE socid = :clientId ORDER BY date_commande ASC")
     List<CommandeEntry> getAllCmdeByClient(long clientId);
 
-    @Query("SELECT * FROM commande WHERE date_commande >= :dateDebut AND date_commande <= :dateFin ORDER BY ref")
+    @Query("SELECT * FROM commande WHERE date_commande >= :dateDebut AND date_commande <= :dateFin ORDER BY date_commande ASC")
     List<CommandeEntry> getAllCmdeOnPeriod(long dateDebut, long dateFin);
 
-    @Query("SELECT * FROM commande WHERE date_commande >= :dateDebut AND date_commande <= :dateFin AND socid = :clientId ORDER BY ref")
+    @Query("SELECT * FROM commande WHERE date_commande >= :dateDebut AND date_commande <= :dateFin AND socid = :clientId ORDER BY date_commande ASC")
     List<CommandeEntry> getAllCmdeOnPeriodByClient(long dateDebut, long dateFin, long clientId);
 
     @Query("SELECT * FROM commande WHERE is_synchro = 0")

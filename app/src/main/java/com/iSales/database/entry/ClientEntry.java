@@ -9,8 +9,10 @@ import android.arch.persistence.room.PrimaryKey;
 
 @Entity(tableName = "client")
 public class ClientEntry {
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
+    private Long client_id;
     private Long id;
+    private Long oid;
     private String name;
     private String name_alias;
     private String firstname;
@@ -210,5 +212,21 @@ public class ClientEntry {
 
     public void setIs_current(int is_current) {
         this.is_current = is_current;
+    }
+
+    public Long getClient_id() {
+        return client_id;
+    }
+
+    public void setClient_id(Long client_id) {
+        this.client_id = client_id;
+    }
+
+    public Long getOid() {
+        return oid;
+    }
+
+    public void setOid(Long oid) {
+        this.oid = oid;
     }
 }

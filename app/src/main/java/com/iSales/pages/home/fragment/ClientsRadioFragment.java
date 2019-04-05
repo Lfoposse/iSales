@@ -45,6 +45,7 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
     private ImageButton searchIB, searchCancelIB;
 
     private ArrayList<ClientParcelable> clientParcelableList;
+    private ArrayList<ClientParcelable> clientParcelableListFiltered;
     private ClientsRadioAdapter mAdapter;
 
     //    task de recuperation des clients
@@ -52,7 +53,7 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
 
     private static DialogClientListener dialogClientListener;
 
-    private int mLimit = 10;
+    private int mLimit = 50;
     private long mLastClientId = 0;
 
     //    database instance
@@ -70,62 +71,62 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
     }
 
     //    Recupere la lsite des clients dans la bd locale
-    private void loadClients(List<ClientEntry> clientEntriesSearch) {
-        List<ClientEntry> clientEntries;
-        if (clientEntriesSearch == null) {
-            clientEntries = mDb.clientDao().getClientsLimit(mLastClientId, mLimit);
-        } else {
-            clientEntries = clientEntriesSearch;
+    private void loadClients() {
+        showProgress(true);
+
+        if (clientParcelableList.size() > 0) {
+            if (mLimit < clientParcelableList.size()) {
+                clientParcelableListFiltered.addAll(clientParcelableList.subList(0, mLimit));
+            } else {
+                clientParcelableListFiltered.addAll(clientParcelableList.subList(0, clientParcelableList.size()));
+            }
+            mAdapter.notifyDataSetChanged();
         }
-
-        if (clientEntries.size() <= 0) {
-//            Toast.makeText(getContext(), getString(R.string.aucun_produit_trouve), Toast.LENGTH_LONG).show();
-//        affichage de l'image d'attente
-            showProgress(false);
-            return;
-        }
-
-//        Affichage de la liste des produits sur la vue
-        ArrayList<ClientParcelable> clientParcelables = new ArrayList<>();
-        for (ClientEntry clientEntry : clientEntries) {
-            ClientParcelable clientParcelable = new ClientParcelable();
-            clientParcelable.setName(clientEntry.getName());
-            clientParcelable.setFirstname(clientEntry.getFirstname());
-            clientParcelable.setLastname(clientEntry.getLastname());
-            clientParcelable.setAddress(clientEntry.getAddress());
-            clientParcelable.setTown(clientEntry.getTown());
-            clientParcelable.setLogo(clientEntry.getName_alias());
-            clientParcelable.setDate_creation(clientEntry.getDate_creation());
-            clientParcelable.setDate_modification(clientEntry.getDate_modification());
-            clientParcelable.setId(clientEntry.getId());
-            clientParcelable.setEmail(clientEntry.getEmail());
-            clientParcelable.setPhone(clientEntry.getPhone());
-            clientParcelable.setPays(clientEntry.getPays());
-            clientParcelable.setRegion(clientEntry.getRegion());
-            clientParcelable.setDepartement(clientEntry.getDepartement());
-            clientParcelable.setIs_synchro(clientEntry.getIs_synchro());
-//            initialisation du poster du client
-            clientParcelable.setPoster(new DolPhoto());
-            clientParcelable.getPoster().setContent(clientEntry.getLogo_content());
-//            produitParcelable.setPoster_name(ISalesUtility.getImgProduit(productItem.getDescription()));
-
-            clientParcelables.add(clientParcelable);
-        }
-
-        Log.e(TAG, "onFindThirdpartieCompleted: mLastClientId="+ mLastClientId);
-//        incrementation du nombre de page
-        mLastClientId = clientEntries.get(clientEntries.size()-1).getId();
-
-//        if (clientParcelables.size() > 0 && mLastClientId <= 0) {
-//            clientParcelableList.clear();
-//        }
-
-        clientParcelableList.addAll(clientParcelables);
-
-        mAdapter.notifyDataSetChanged();
 
 //        affichage de l'image d'attente
         showProgress(false);
+    }
+
+    //    Recupere la lsite des clients dans la bd locale
+    private void initClients() {
+        List<ClientEntry> clientEntries = mDb.clientDao().getAllClient();
+        clientParcelableList = new ArrayList<>();
+
+        ArrayList<ClientParcelable> clientParcelables = new ArrayList<>();
+        for (ClientEntry clientEntry : clientEntries) {
+//            Log.e(TAG, "loadClients: itemClient oid=" + clientEntry.getOid()+" id="+clientEntry.getId());
+
+            if (clientEntry.getId() != null) {
+                ClientParcelable clientParcelable = new ClientParcelable();
+                clientParcelable.setName(clientEntry.getName());
+                clientParcelable.setFirstname(clientEntry.getFirstname());
+                clientParcelable.setLastname(clientEntry.getLastname());
+                clientParcelable.setAddress(clientEntry.getAddress());
+                clientParcelable.setTown(clientEntry.getTown());
+                clientParcelable.setLogo(clientEntry.getLogo());
+                clientParcelable.setDate_creation(clientEntry.getDate_creation());
+                clientParcelable.setDate_modification(clientEntry.getDate_modification());
+                clientParcelable.setId(clientEntry.getId());
+                clientParcelable.setClient_id(clientEntry.getClient_id());
+                clientParcelable.setOid(clientEntry.getOid());
+                clientParcelable.setEmail(clientEntry.getEmail());
+                clientParcelable.setPhone(clientEntry.getPhone());
+                clientParcelable.setPays(clientEntry.getPays());
+                clientParcelable.setRegion(clientEntry.getRegion());
+                clientParcelable.setDepartement(clientEntry.getDepartement());
+                clientParcelable.setCode_client(clientEntry.getCode_client());
+                clientParcelable.setIs_synchro(clientEntry.getIs_synchro());
+                clientParcelable.setIs_current(clientEntry.getIs_current());
+//            initialisation du poster du client
+                clientParcelable.setPoster(new DolPhoto());
+                clientParcelable.getPoster().setContent(clientEntry.getLogo_content());
+//            produitParcelable.setPoster_name(ISalesUtility.getImgProduit(productItem.getDescription()));
+
+                clientParcelables.add(clientParcelable);
+            }
+        }
+
+        clientParcelableList = clientParcelables;
     }
 
     //    arrete le processus de recupération des infos sur le serveur
@@ -178,9 +179,9 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
         searchIB = rootView.findViewById(R.id.imgbtn_search_clientradio);
         searchCancelIB = rootView.findViewById(R.id.imgbtn_search_clientradio_cancel);
 
-        clientParcelableList = new ArrayList<>();
+        clientParcelableListFiltered = new ArrayList<>();
 
-        mAdapter = new ClientsRadioAdapter(getContext(), clientParcelableList, com.iSales.pages.home.fragment.ClientsRadioFragment.this);
+        mAdapter = new ClientsRadioAdapter(getContext(), clientParcelableListFiltered, com.iSales.pages.home.fragment.ClientsRadioFragment.this);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -191,18 +192,27 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-//        affichage de l'image d'attente
-                showProgress(true);
 
-                if (dy > 0 ) {
+                if (dy > 0) {
 
                     int lastPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
 
                     int itemsCount = recyclerView.getAdapter().getItemCount();
 
-                    Log.e(TAG, "onScroll: lastPosition=" + lastPosition + " itemsCount=" + itemsCount);
-                    if (lastPosition > 0 && (lastPosition + 2) >= itemsCount) {
-                        loadClients(null);
+                    /*Log.e(TAG, "onScroll: lastPosition=" + lastPosition + " itemsCount=" + itemsCount
+                            + " mLastClientId2=" + clientParcelableList.get(lastPosition).getId()
+                            + " mLastClientIdItemsCount=" + clientParcelableList.get(itemsCount - 1).getId()
+                            + " mLastClientClientId2=" + clientParcelableList.get(lastPosition).getClient_id()
+                            + " oid1=" + clientParcelableList.get(lastPosition).getOid()
+                            + " mLastClientClientIdItemsCount=" + clientParcelableList.get(itemsCount - 1).getClient_id()
+                            + " oid=" + clientParcelableList.get(itemsCount - 1).getOid()); */
+                    if (clientParcelableListFiltered.get(lastPosition).getId() == clientParcelableListFiltered.get(itemsCount - 1).getId()
+                            && (lastPosition+1+mLimit) < clientParcelableList.size()) {
+//        affichage de l'image d'attente
+                        showProgress(true);
+                        clientParcelableListFiltered.addAll(clientParcelableList.subList(lastPosition+1, lastPosition+1+mLimit));
+                        mAdapter.notifyDataSetChanged();
+                        showProgress(false);
                     }
                 }
             }
@@ -221,23 +231,16 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
                 showProgress(true);
 
                 String searchString = charSequence.toString();
+                Log.e(TAG, "onTextChanged: searchString=" + searchString);
 
-                List<ClientEntry> clientEntries = mDb.clientDao().getClientsLikeLimit(mLimit, searchString);
-
-                clientParcelableList.clear();
-                mAdapter.notifyDataSetChanged();
-                loadClients(clientEntries);
-//                Log.e(TAG, "onTextChanged: searchString="+searchString);
-                mAdapter.performFiltering(searchString);
-//        affichage de l'image d'attente
-                showProgress(false);
+                perfomFiltering(searchString);
 
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
 
-                Log.e(TAG, "afterTextChanged: string="+editable.toString() );
+//                Log.e(TAG, "afterTextChanged: string="+editable.toString() );
                 if (editable.toString().equals("")) {
                     searchCancelIB.setVisibility(View.GONE);
                     searchIB.setVisibility(View.VISIBLE);
@@ -258,9 +261,57 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
 //        executeFindClients();
 //        affichage de l'image d'attente
         showProgress(true);
-        loadClients(null);
+
+        initClients();
+        loadClients();
 
         return rootView;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.e(TAG, "onResume: ");
+
+        if (clientParcelableList.size() <= 0) {
+            initClients();
+            loadClients();
+        } else {
+            mAdapter.notifyDataSetChanged();
+        }
+
+        String searchString = searchET.getText().toString();
+
+        if (!searchString.equals("")) {
+            perfomFiltering(searchString);
+        }
+    }
+
+    void perfomFiltering(String searchString) {
+
+        showProgress(true);
+        clientParcelableListFiltered.clear();
+        mAdapter.notifyDataSetChanged();
+
+        if (searchString.equals("")) {
+            loadClients();
+        } else {
+            ArrayList<ClientParcelable> filteredList = new ArrayList<>();
+            for (ClientParcelable row : clientParcelableList) {
+
+                // name match condition. this might differ depending on your requirement
+                // here we are looking for name or phone number match
+                if (row.getName().toLowerCase().contains(searchString.toLowerCase())
+                        || row.getAddress().toLowerCase().contains(searchString.toLowerCase())) {
+                    filteredList.add(row);
+                }
+            }
+            clientParcelableListFiltered.addAll(filteredList);
+            mAdapter.notifyDataSetChanged();
+        }
+
+        showProgress(false);
     }
 
     @Override
