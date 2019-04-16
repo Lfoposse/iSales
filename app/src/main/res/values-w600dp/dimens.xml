@@ -17,4 +17,5 @@
     <dimen name="produit_avatar_height">260dp</dimen>
     <dimen name="client_avatar_margin">48dp</dimen>
     <dimen name="signatureview_height">236dp</dimen>
+    <dimen name="isales_height_apropos">350dp</dimen>
 </resources>

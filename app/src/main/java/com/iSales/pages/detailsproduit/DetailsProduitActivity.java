@@ -2,6 +2,7 @@ package com.iSales.pages.detailsproduit;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -168,50 +169,48 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
         imm.showSoftInput(mQuantiteNumberBtn, InputMethodManager.SHOW_IMPLICIT);
 
         if (mProduitParcelable.getLocal_poster_path() != null) {
+        Log.e(TAG, "onBindViewHolder: getLocal_poster_path="+mProduitParcelable.getLocal_poster_path());
 //            si le fichier existe dans la memoire locale
             File imgFile = new File(mProduitParcelable.getLocal_poster_path());
             if (imgFile.exists()) {
-                Picasso.with(com.iSales.pages.detailsproduit.DetailsProduitActivity.this)
-                        .load(imgFile)
-                        .into(mPosterIV);
+                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+                mPosterIV.setImageBitmap(myBitmap);
                 return;
 
             } else {
-                Picasso.with(com.iSales.pages.detailsproduit.DetailsProduitActivity.this)
-                        .load(R.drawable.isales_no_image)
-                        .into(mPosterIV);
+//        Log.e(TAG, "onBindViewHolder: downloadLinkImg="+ApiUtils.getDownloadImg(mContext, module_part, original_file));
+                mPosterIV.setImageResource(R.drawable.isales_no_image);
             }
         } else {
-            Picasso.with(com.iSales.pages.detailsproduit.DetailsProduitActivity.this)
-                    .load(R.drawable.isales_no_image)
-                    .into(mPosterIV);
-        }
+            Log.e(TAG, "onBindViewHolder: getLocal_poster_path="+mProduitParcelable.getLocal_poster_path());
 
-//        Log.e(TAG, "onBindViewHolder: downloadLinkImg="+ApiUtils.getDownloadImg(mContext, module_part, original_file));
-        Picasso.with(com.iSales.pages.detailsproduit.DetailsProduitActivity.this)
-                .load(ApiUtils.getDownloadProductImg(com.iSales.pages.detailsproduit.DetailsProduitActivity.this, mProduitParcelable.getRef()))
-                .placeholder(R.drawable.isales_no_image)
-                .error(R.drawable.isales_no_image)
-                .into(mPosterIV, new com.squareup.picasso.Callback() {
-                    @Override
-                    public void onSuccess() {
+            mPosterIV.setImageResource(R.drawable.isales_no_image);
+            /*Picasso.with(com.iSales.pages.detailsproduit.DetailsProduitActivity.this)
+                    .load(ApiUtils.getDownloadProductImg(com.iSales.pages.detailsproduit.DetailsProduitActivity.this, mProduitParcelable.getRef()))
+                    .placeholder(R.drawable.isales_no_image)
+                    .error(R.drawable.isales_no_image)
+                    .into(mPosterIV, new com.squareup.picasso.Callback() {
+                        @Override
+                        public void onSuccess() {
 //                        Log.e(TAG, "onSuccess: Picasso loadin img");
-                        Bitmap imageBitmap = ((BitmapDrawable) mPosterIV.getDrawable()).getBitmap();
+                            Bitmap imageBitmap = ((BitmapDrawable) mPosterIV.getDrawable()).getBitmap();
 
-                        String pathFile = ISalesUtility.saveProduitImage(com.iSales.pages.detailsproduit.DetailsProduitActivity.this, imageBitmap, mProduitParcelable.getRef());
+                            String pathFile = ISalesUtility.saveProduitImage(com.iSales.pages.detailsproduit.DetailsProduitActivity.this, imageBitmap, mProduitParcelable.getRef());
 //                        Log.e(TAG, "onPostExecute: pathFile=" + pathFile);
 
-                        if (pathFile != null) mProduitParcelable.setLocal_poster_path(pathFile);
+                            if (pathFile != null) mProduitParcelable.setLocal_poster_path(pathFile);
 
 //                    Modification du path de la photo du produit
-                        mDb.produitDao().updateLocalImgPath(mProduitParcelable.getId(), pathFile);
-                    }
+                            mDb.produitDao().updateLocalImgPath(mProduitParcelable.getId(), pathFile);
+                        }
 
-                    @Override
-                    public void onError() {
+                        @Override
+                        public void onError() {
 
-                    }
-                });
+                        }
+                    });*/
+        }
     }
 
     private void updateProductValues(ProductVirtual productVirtual) {
@@ -385,6 +384,7 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
         panierEntry.setLabel(mProductVirtual.getLabel());
         panierEntry.setDescription(mProductVirtual.getDescription());
         panierEntry.setRef(mProductVirtual.getRef());
+        panierEntry.setFile_content(mProduitParcelable.getLocal_poster_path());
         panierEntry.setPoster_content(mProduitParcelable.getLocal_poster_path());
 //        panierEntry.setStock_reel(mProduitParcelable.getStock_reel());
         panierEntry.setTva_tx(mProductVirtual.getTva_tx());
@@ -461,6 +461,10 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
         mRemiseValeur = (EditText) findViewById(R.id.et_produitdetails_remise_valeur);
         mRemisePourcentage = (EditText) findViewById(R.id.et_produitdetails_remise_percent);
 
+//            fix image in view
+        mPosterIV.setAdjustViewBounds(true);
+        mPosterIV.setScaleType(ImageView.ScaleType.FIT_XY);
+
         productVirtualList = new ArrayList<>();
 
         productVirtualAdapter = new ProductVirtualAdapter(com.iSales.pages.detailsproduit.DetailsProduitActivity.this, productVirtualList, com.iSales.pages.detailsproduit.DetailsProduitActivity.this);
@@ -508,7 +512,7 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
 
                 double newValue = Double.parseDouble(editable.toString().replace(",", "."));
 
-                Log.e(TAG, "afterTextChanged:mPriceUnitaireET newValue=" + newValue+" mProductVirtual="+mProductVirtual.getLabel());
+                Log.e(TAG, "afterTextChanged:mPriceUnitaireET newValue=" + newValue + " mProductVirtual=" + mProductVirtual.getLabel());
 
                 if (mProductVirtual.getLabel().toLowerCase().contains("palette")) {
                     double price = newValue * Integer.parseInt(productVirtualList.get(1).getQty()) * Integer.parseInt(mProductVirtual.getQty());
@@ -553,8 +557,8 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
                 findProductVirtualREST.getProductVirtuals().get(0).setPrice_ttc("" + priceTTC0);
 
                 for (int i = 1; i < findProductVirtualREST.getProductVirtuals().size(); i++) {
-                    double price = Double.parseDouble(findProductVirtualREST.getProductVirtuals().get(i-1).getPrice()) * Integer.parseInt(findProductVirtualREST.getProductVirtuals().get(i).getQty());
-                    double priceTTC = Double.parseDouble(findProductVirtualREST.getProductVirtuals().get(i-1).getPrice_ttc()) * Integer.parseInt(findProductVirtualREST.getProductVirtuals().get(i).getQty());
+                    double price = Double.parseDouble(findProductVirtualREST.getProductVirtuals().get(i - 1).getPrice()) * Integer.parseInt(findProductVirtualREST.getProductVirtuals().get(i).getQty());
+                    double priceTTC = Double.parseDouble(findProductVirtualREST.getProductVirtuals().get(i - 1).getPrice_ttc()) * Integer.parseInt(findProductVirtualREST.getProductVirtuals().get(i).getQty());
                     findProductVirtualREST.getProductVirtuals().get(i).setPrice("" + price);
                     findProductVirtualREST.getProductVirtuals().get(i).setPrice_ttc("" + priceTTC);
                 }

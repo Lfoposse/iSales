@@ -82,7 +82,7 @@ public class FindPaymentTypesTask extends AsyncTask<Void, Void, FindPaymentTypes
     protected void onPostExecute(FindPaymentTypesREST findPaymentTypesREST) {
         Log.e(TAG, "onPostExecute: ");
 
-        if (findPaymentTypesREST.getPaymentTypes() != null) {
+        if (findPaymentTypesREST != null && findPaymentTypesREST.getPaymentTypes() != null) {
 //        Insertion dans la BD
             List<PaymentTypesEntry> paymentTypesEntries = new ArrayList<>();
             for (PaymentTypes paymentTypes : findPaymentTypesREST.getPaymentTypes()) {

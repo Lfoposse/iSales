@@ -8,20 +8,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal"
+        android:gravity="center"
+        android:layout_gravity="center"
         android:orientation="vertical"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin">
 
         <!-- Login progress -->
-        <ProgressBar
-            android:id="@+id/login_progress"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone" />
 
         <ImageView
             android:layout_width="@dimen/login_page_logo_width"
@@ -30,6 +24,14 @@
             android:background="@drawable/logo_isales"
             android:elevation="@dimen/login_page_logo_elevation"
             tools:ignore="UnusedAttribute" />
+        <ProgressBar
+            android:id="@+id/login_progress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="28dp"
+            android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/email_login_form"

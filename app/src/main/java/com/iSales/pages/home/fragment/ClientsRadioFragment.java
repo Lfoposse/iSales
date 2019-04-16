@@ -94,36 +94,36 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
 
         ArrayList<ClientParcelable> clientParcelables = new ArrayList<>();
         for (ClientEntry clientEntry : clientEntries) {
+            if (clientEntry.getId() == null) {
+                clientEntry.setId((long) -1);
+            }
 //            Log.e(TAG, "loadClients: itemClient oid=" + clientEntry.getOid()+" id="+clientEntry.getId());
-
-            if (clientEntry.getId() != null) {
-                ClientParcelable clientParcelable = new ClientParcelable();
-                clientParcelable.setName(clientEntry.getName());
-                clientParcelable.setFirstname(clientEntry.getFirstname());
-                clientParcelable.setLastname(clientEntry.getLastname());
-                clientParcelable.setAddress(clientEntry.getAddress());
-                clientParcelable.setTown(clientEntry.getTown());
-                clientParcelable.setLogo(clientEntry.getLogo());
-                clientParcelable.setDate_creation(clientEntry.getDate_creation());
-                clientParcelable.setDate_modification(clientEntry.getDate_modification());
-                clientParcelable.setId(clientEntry.getId());
-                clientParcelable.setClient_id(clientEntry.getClient_id());
-                clientParcelable.setOid(clientEntry.getOid());
-                clientParcelable.setEmail(clientEntry.getEmail());
-                clientParcelable.setPhone(clientEntry.getPhone());
-                clientParcelable.setPays(clientEntry.getPays());
-                clientParcelable.setRegion(clientEntry.getRegion());
-                clientParcelable.setDepartement(clientEntry.getDepartement());
-                clientParcelable.setCode_client(clientEntry.getCode_client());
-                clientParcelable.setIs_synchro(clientEntry.getIs_synchro());
-                clientParcelable.setIs_current(clientEntry.getIs_current());
+            ClientParcelable clientParcelable = new ClientParcelable();
+            clientParcelable.setName(clientEntry.getName());
+            clientParcelable.setFirstname(clientEntry.getFirstname());
+            clientParcelable.setLastname(clientEntry.getLastname());
+            clientParcelable.setAddress(clientEntry.getAddress());
+            clientParcelable.setTown(clientEntry.getTown());
+            clientParcelable.setLogo(clientEntry.getLogo());
+            clientParcelable.setDate_creation(clientEntry.getDate_creation());
+            clientParcelable.setDate_modification(clientEntry.getDate_modification());
+            clientParcelable.setId(clientEntry.getId());
+            clientParcelable.setClient_id(clientEntry.getClient_id());
+            clientParcelable.setOid(clientEntry.getOid());
+            clientParcelable.setEmail(clientEntry.getEmail());
+            clientParcelable.setPhone(clientEntry.getPhone());
+            clientParcelable.setPays(clientEntry.getPays());
+            clientParcelable.setRegion(clientEntry.getRegion());
+            clientParcelable.setDepartement(clientEntry.getDepartement());
+            clientParcelable.setCode_client(clientEntry.getCode_client());
+            clientParcelable.setIs_synchro(clientEntry.getIs_synchro());
+            clientParcelable.setIs_current(clientEntry.getIs_current());
 //            initialisation du poster du client
-                clientParcelable.setPoster(new DolPhoto());
-                clientParcelable.getPoster().setContent(clientEntry.getLogo_content());
+            clientParcelable.setPoster(new DolPhoto());
+            clientParcelable.getPoster().setContent(clientEntry.getLogo_content());
 //            produitParcelable.setPoster_name(ISalesUtility.getImgProduit(productItem.getDescription()));
 
-                clientParcelables.add(clientParcelable);
-            }
+            clientParcelables.add(clientParcelable);
         }
 
         clientParcelableList = clientParcelables;
@@ -142,6 +142,7 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
         clientParcelableList.clear();
         mAdapter.notifyDataSetChanged();
     }
+
     /**
      * Shows the progress UI and hides.
      */
@@ -207,10 +208,10 @@ public class ClientsRadioFragment extends Fragment implements ClientsAdapterList
                             + " mLastClientClientIdItemsCount=" + clientParcelableList.get(itemsCount - 1).getClient_id()
                             + " oid=" + clientParcelableList.get(itemsCount - 1).getOid()); */
                     if (clientParcelableListFiltered.get(lastPosition).getId() == clientParcelableListFiltered.get(itemsCount - 1).getId()
-                            && (lastPosition+1+mLimit) < clientParcelableList.size()) {
+                            && (lastPosition + 1 + mLimit) < clientParcelableList.size()) {
 //        affichage de l'image d'attente
                         showProgress(true);
-                        clientParcelableListFiltered.addAll(clientParcelableList.subList(lastPosition+1, lastPosition+1+mLimit));
+                        clientParcelableListFiltered.addAll(clientParcelableList.subList(lastPosition + 1, lastPosition + 1 + mLimit));
                         mAdapter.notifyDataSetChanged();
                         showProgress(false);
                     }

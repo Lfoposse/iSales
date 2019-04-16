@@ -222,7 +222,7 @@ public class ClientsAdapter extends RecyclerView.Adapter<com.iSales.adapter.Clie
             progressDialog.show();
 
             if(clientsListFiltered.get(position).getIs_synchro() == 0) {
-                mDb.clientDao().deleteClientById(clientsListFiltered.get(position).getId());
+                mDb.clientDao().deleteClientByClientId(clientsListFiltered.get(position).getClient_id());
 
                 clientsListFiltered.remove(position);
                 // notify the item removed by position

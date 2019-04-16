@@ -1,137 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:sign="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:sign="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <ScrollView
+    <LinearLayout
         android:id="@+id/view_boncmde_signature_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="32dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="30dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="2.2"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="8dp">
+
             <RelativeLayout
                 android:id="@+id/view_boncmde_datelivraison"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="true"
+                android:layout_marginBottom="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                android:layout_marginBottom="4dp">
+                android:clickable="true">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:text="Date de Livraison"
-                    android:textColor="@color/black"
-                    android:layout_centerVertical="true" />
+                    android:textColor="@color/black" />
+
                 <TextView
                     android:id="@+id/tv_boncmde_datelivraison"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/iv_boncmde_datelivraison"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="4dp"
+                    android:layout_toStartOf="@+id/iv_boncmde_datelivraison"
                     android:text="09/01/2019" />
+
                 <ImageView
                     android:id="@+id/iv_boncmde_datelivraison"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/ic_date_black_24dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"/>
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/ic_date_black_24dp" />
             </RelativeLayout>
+
             <RelativeLayout
                 android:id="@+id/view_boncmde_modereglement"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="true"
+                android:layout_marginBottom="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                android:layout_marginBottom="4dp">
+                android:clickable="true">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:text="Mode de Règlement"
-                    android:textColor="@color/black"
-                    android:layout_centerVertical="true" />
+                    android:textColor="@color/black" />
+
                 <TextView
                     android:id="@+id/tv_boncmde_modereglement"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/iv_boncmde_modereglement"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="4dp"
+                    android:layout_toStartOf="@+id/iv_boncmde_modereglement"
                     android:text="..." />
+
                 <ImageView
                     android:id="@+id/iv_boncmde_modereglement"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/ic_arrow_drop_down_primary_24dp"
                     android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"/>
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/ic_arrow_drop_down_primary_24dp" />
             </RelativeLayout>
-            <LinearLayout
-                android:id="@+id/view_boncmde_acompte"
+
+
+            <EditText
+                android:id="@+id/et_boncmde_acompte"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:clickable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                android:layout_marginBottom="4dp">
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="4dp"
+                android:hint="Entrer l'acompte"
+                android:inputType="number" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
                 <EditText
-                    android:id="@+id/et_boncmde_acompte"
+                    android:id="@+id/et_boncmde_remise"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="4dp"
-                    android:hint="Entrer l'acompte"
-                    android:inputType="number"/>
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <EditText
-                        android:id="@+id/et_boncmde_remise"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_toStartOf="@+id/tv_boncmde_remise"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="4dp"
-                        android:hint="Remise en pourcentage"
-                        android:inputType="numberSigned|numberDecimal"/>
-                    <TextView
-                        android:id="@+id/tv_boncmde_remise"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginStart="8dp"
-                        android:text="%"
-                        android:textSize="17sp"
-                        android:textStyle="bold"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"/>
-                </RelativeLayout>
-            </LinearLayout>
+                    android:layout_toStartOf="@+id/tv_boncmde_remise"
+                    android:hint="Remise en pourcentage"
+                    android:inputType="numberSigned|numberDecimal" />
+
+                <TextView
+                    android:id="@+id/tv_boncmde_remise"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="%"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
             <Switch
                 android:id="@+id/switch_boncmde_signature"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textOn="Oui"
-                android:textOff="Non"
                 android:checked="true"
                 android:includeFontPadding="true"
-                android:text="Synchroniser avec le serveur" />
+                android:text="Synchroniser avec le serveur"
+                android:textOff="Non"
+                android:textOn="Oui" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
@@ -143,13 +152,15 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="4dp"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:padding="4dp">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -163,50 +174,62 @@
                             android:id="@+id/tv_boncmde_signature_client_name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            tools:text="Romuald YOUMSI"
-                            android:textSize="15sp"
                             android:layout_marginStart="4dp"
-                            android:textStyle="bold" />
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            tools:text="Romuald YOUMSI" />
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/bg_outline_primary"
                         android:layout_weight="1"
+                        android:background="@drawable/bg_outline_primary"
                         android:orientation="vertical">
 
-                        <TextView
+                        <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="3dp"
-                            android:background="@color/colorPrimary"
-                            android:text="@string/signature_client"
-                            android:textAlignment="center"
-                            android:textColor="@color/white"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:layout_height="30dp"
+                            android:background="@color/colorPrimary">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="4dp"
+                                android:text="@string/signature_client"
+                                android:textAlignment="center"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <Button
+                                android:id="@+id/btn_boncmde_signature_client_annuler"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:background="@color/black"
+                                android:minHeight="0dp"
+                                android:text="@string/annuler"
+                                android:textColor="@color/white"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </RelativeLayout>
 
                         <com.kyanogen.signatureview.SignatureView
                             android:id="@+id/signatureview_boncmde_signature_client"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/signatureview_height"
+                            android:layout_height="match_parent"
                             sign:backgroundColor="#ffffff"
                             sign:enableSignature="true"
                             sign:penColor="#000000"
                             sign:penSize="3dp" />
-
-                        <Button
-                            android:id="@+id/btn_boncmde_signature_client_annuler"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@color/black"
-                            android:text="@string/annuler"
-                            android:textColor="@color/white"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
+
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -214,15 +237,18 @@
                 android:background="@android:color/white"
                 card_view:cardElevation="@dimen/card_album_elevation"
                 card_view:cardUseCompatPadding="true">
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="4dp"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:padding="4dp">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -236,57 +262,71 @@
                             android:id="@+id/tv_boncmde_signature_commercial_name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            tools:text="R@inbow-CL"
-                            android:textSize="15sp"
                             android:layout_marginStart="4dp"
-                            android:textStyle="bold" />
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            tools:text="R@inbow-CL" />
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/bg_outline_primary"
                         android:layout_weight="0.6"
+                        android:background="@drawable/bg_outline_primary"
                         android:orientation="vertical">
 
-                        <TextView
+
+                        <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="3dp"
-                            android:background="@color/colorPrimary"
-                            android:text="@string/signature_commercial"
-                            android:textAlignment="center"
-                            android:textColor="@color/white"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:layout_height="30dp"
+                            android:background="@color/colorPrimary">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="4dp"
+                                android:text="@string/signature_commercial"
+                                android:textAlignment="center"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <Button
+                                android:id="@+id/btn_boncmde_signature_commercial_annuler"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:background="@color/black"
+                                android:minHeight="0dp"
+                                android:text="@string/annuler"
+                                android:textColor="@color/white"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </RelativeLayout>
 
                         <com.kyanogen.signatureview.SignatureView
                             android:id="@+id/signatureview_boncmde_signature_commercial"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/signatureview_height"
+                            android:layout_height="match_parent"
                             sign:backgroundColor="#ffffff"
                             sign:enableSignature="true"
                             sign:penColor="#000000"
                             sign:penSize="3dp" />
-
-                        <Button
-                            android:id="@+id/btn_boncmde_signature_commercial_annuler"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@color/black"
-                            android:text="@string/annuler"
-                            android:textColor="@color/white"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
         </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
+
     <Button
         android:id="@+id/btn_boncmde_signature_enregistrer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
+        android:minHeight="0dp"
         android:layout_alignParentBottom="true"
         android:background="@color/colorPrimary"
         android:text="@string/enregistrer"

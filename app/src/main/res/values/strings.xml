@@ -28,6 +28,7 @@
     <string name="adresse_mail_invalide">Adresse mail invalide.</string>
     <string name="veuillez_remplir_libelle">Veuillez remplir le libellé.</string>
     <string name="voulez_vous_supprimer_client">Voulez-vous vraiment supprimer ce client ?</string>
+    <string name="action_risque_prendre_dutemps">Cette action risque de prendre du temps, veuillez ne pas arreter l\'application durant cette opération.</string>
     <string name="veuillez_remplir_description">Veuillez remplir la description.</string>
     <string name="veuillez_remplir_password">Veuillez remplir le mot de passe.</string>
     <string name="error_incorrect_password">This password is incorrect</string>
@@ -203,6 +204,8 @@
     <string name="vider_le_panier">Vider le panier</string>
     <string name="nom_compagnie_incorrect">Nom Compagnie Incorrect.</string>
     <string name="nom_compagnie">Nom Compagnie</string>
+    <string name="miseajour_images_produits">Mise a jour des images produits en cours</string>
+    <string name="miseajour_images_produits_effectuee">Mise a jour des images produits éffectuée avec succès.</string>
 
     <!-- Strings related to Settings -->
 

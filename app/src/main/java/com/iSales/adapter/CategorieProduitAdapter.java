@@ -93,7 +93,7 @@ public class CategorieProduitAdapter extends RecyclerView.Adapter<com.iSales.ada
 
         String original_file = categorieListFiltered.get(position).getId() + "/0/"+ categorieListFiltered.get(position).getId() + "/photos/" + categorieListFiltered.get(position).getPoster().getFilename();
         String module_part = "category";
-        Log.e(TAG, "onBindViewHolder: module="+module_part+" original_file="+original_file );
+//        Log.e(TAG, "onBindViewHolder: module="+module_part+" original_file="+original_file );
         Picasso.with(mContext)
                 .load(ApiUtils.getDownloadImg(mContext, module_part, original_file))
                 .placeholder(R.drawable.isales_no_image)

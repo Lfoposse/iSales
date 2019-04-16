@@ -39,8 +39,8 @@ public final class ISalesUtility {
 
     public static String CURRENCY = "€";
     public static String ISALES_PATH_FOLDER = "iSales";
-    public static String ISALES_PRODUCTS_IMAGESPATH_FOLDER = "i-Sales/i-Sales Produits";
-    public static String ISALES_CUSTOMER_IMAGESPATH_FOLDER = "i-Sales/i-Sales Clients";
+    public static String ISALES_PRODUCTS_IMAGESPATH_FOLDER = "iSales/iSales Produits";
+    public static String ISALES_CUSTOMER_IMAGESPATH_FOLDER = "iSales/iSales Clients";
 
     public static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();

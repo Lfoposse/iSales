@@ -55,6 +55,10 @@ public class CmdeProduitAdapter extends RecyclerView.Adapter<com.iSales.adapter.
             qtyPrice = view.findViewById(R.id.tv_detailscmde_produit_qtyprice);
             total = view.findViewById(R.id.tv_detailscmde_produit_total);
             poster = view.findViewById(R.id.iv_detailscmde_produit);
+
+//            fix image in view
+            poster.setAdjustViewBounds(true);
+            poster.setScaleType(ImageView.ScaleType.FIT_XY);
         }
     }
 
@@ -88,12 +92,12 @@ public class CmdeProduitAdapter extends RecyclerView.Adapter<com.iSales.adapter.
                 ISalesUtility.amountFormat2(produitsList.get(position).getTotal_ht()),
                 ISalesUtility.CURRENCY) );
 
-        String original_file = produitsList.get(position).getRef() + "/" + produitsList.get(position).getPoster().getFilename();
+        String original_file = produitsList.get(position).getRef() + "/" + produitsList.get(position).getLocal_poster_path();
         String module_part = "produit";
         Log.e(TAG, "onBindViewHolder: getDownloadImg= "+ApiUtils.getDownloadImg(mContext, module_part, original_file));
         Picasso.with(mContext)
-                .load(ApiUtils.getDownloadImg(mContext, module_part, original_file))
-                .placeholder(R.drawable.isales_no_image)
+                .load(ApiUtils.getDownloadProductImg(mContext, produitsList.get(position).getRef()))
+                .placeholder(R.drawable.isales_img_loading)
                 .error(R.drawable.isales_no_image)
                 .into(holder.poster);
 

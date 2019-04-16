@@ -55,4 +55,5 @@
     <dimen name="apropos_title_size">18sp</dimen>
     <dimen name="apropos_description_size">15sp</dimen>
     <dimen name="width_partenaire_item">260dp</dimen>
+    <dimen name="isales_height_apropos">250dp</dimen>
 </resources>

@@ -3,6 +3,8 @@ package com.iSales.pages.home.fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -58,6 +60,7 @@ import com.iSales.utility.ISalesUtility;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ClientsFragment extends Fragment implements ClientsAdapterListener,
         DialogCategorieListener, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener, MyCropImageListener, FindThirdpartieListener {
@@ -111,7 +114,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
     //    Recupere la lsite des clients dans la bd locale
     private void loadClients() {
         showProgress(true);
-//        Log.e(TAG, "loadClients: sizeInit="+clientParcelableList.size());
+//        Log.e(TAG, "loadClients: clientParcelableList=" + clientParcelableList.size() + " clientParcelableListFiltered=" + clientParcelableListFiltered.size());
         if (clientParcelableList.size() > 0) {
             if (mLimit < clientParcelableList.size()) {
                 clientParcelableListFiltered.addAll(clientParcelableList.subList(0, mLimit));
@@ -132,39 +135,43 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 
         ArrayList<ClientParcelable> clientParcelables = new ArrayList<>();
         for (ClientEntry clientEntry : clientEntries) {
-//            Log.e(TAG, "loadClients: itemClient oid=" + clientEntry.getOid()+" id="+clientEntry.getId());
 
-            if (clientEntry.getId() != null) {
-                ClientParcelable clientParcelable = new ClientParcelable();
-                clientParcelable.setName(clientEntry.getName());
-                clientParcelable.setFirstname(clientEntry.getFirstname());
-                clientParcelable.setLastname(clientEntry.getLastname());
-                clientParcelable.setAddress(clientEntry.getAddress());
-                clientParcelable.setTown(clientEntry.getTown());
-                clientParcelable.setLogo(clientEntry.getLogo());
-                clientParcelable.setDate_creation(clientEntry.getDate_creation());
-                clientParcelable.setDate_modification(clientEntry.getDate_modification());
-                clientParcelable.setId(clientEntry.getId());
-                clientParcelable.setClient_id(clientEntry.getClient_id());
-                clientParcelable.setOid(clientEntry.getOid());
-                clientParcelable.setEmail(clientEntry.getEmail());
-                clientParcelable.setPhone(clientEntry.getPhone());
-                clientParcelable.setPays(clientEntry.getPays());
-                clientParcelable.setRegion(clientEntry.getRegion());
-                clientParcelable.setDepartement(clientEntry.getDepartement());
-                clientParcelable.setCode_client(clientEntry.getCode_client());
-                clientParcelable.setIs_synchro(clientEntry.getIs_synchro());
-                clientParcelable.setIs_current(clientEntry.getIs_current());
+            if (clientEntry.getId() == null) {
+                clientEntry.setId((long) -1);
+            }
+//            Log.e(TAG, "loadClients: itemClient oid=" + clientEntry.getOid() +
+//                    " id=" + clientEntry.getId() +
+//                    " client_id=" + clientEntry.getClient_id() +
+//                    " name=" + clientEntry.getName());
+            ClientParcelable clientParcelable = new ClientParcelable();
+            clientParcelable.setName(clientEntry.getName());
+            clientParcelable.setFirstname(clientEntry.getFirstname());
+            clientParcelable.setLastname(clientEntry.getLastname());
+            clientParcelable.setAddress(clientEntry.getAddress());
+            clientParcelable.setTown(clientEntry.getTown());
+            clientParcelable.setLogo(clientEntry.getLogo());
+            clientParcelable.setDate_creation(clientEntry.getDate_creation());
+            clientParcelable.setDate_modification(clientEntry.getDate_modification());
+            clientParcelable.setId(clientEntry.getId());
+            clientParcelable.setClient_id(clientEntry.getClient_id());
+            clientParcelable.setOid(clientEntry.getOid());
+            clientParcelable.setEmail(clientEntry.getEmail());
+            clientParcelable.setPhone(clientEntry.getPhone());
+            clientParcelable.setPays(clientEntry.getPays());
+            clientParcelable.setRegion(clientEntry.getRegion());
+            clientParcelable.setDepartement(clientEntry.getDepartement());
+            clientParcelable.setCode_client(clientEntry.getCode_client());
+            clientParcelable.setIs_synchro(clientEntry.getIs_synchro());
+            clientParcelable.setIs_current(clientEntry.getIs_current());
 //            initialisation du poster du client
-                clientParcelable.setPoster(new DolPhoto());
-                clientParcelable.getPoster().setContent(clientEntry.getLogo_content());
+            clientParcelable.setPoster(new DolPhoto());
+            clientParcelable.getPoster().setContent(clientEntry.getLogo_content());
 //            produitParcelable.setPoster_name(ISalesUtility.getImgProduit(productItem.getDescription()));
 
-                clientParcelables.add(clientParcelable);
-            }
+            clientParcelables.add(clientParcelable);
         }
 
-        clientParcelableList = clientParcelables;
+        clientParcelableList.addAll(clientParcelables);
     }
 
     //    arrete le processus de recupération des infos sur le serveur
@@ -241,10 +248,10 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
     public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction, int position) {
         if (viewHolder instanceof ClientsAdapter.ClientsViewHolder) {
             // get the removed item name to display it in snack bar
-            String name = clientParcelableList.get(viewHolder.getAdapterPosition()).getName();
+            String name = clientParcelableListFiltered.get(viewHolder.getAdapterPosition()).getName();
 
             // backup of removed item for undo purpose
-            final ClientParcelable deletedItem = clientParcelableList.get(viewHolder.getAdapterPosition());
+            final ClientParcelable deletedItem = clientParcelableListFiltered.get(viewHolder.getAdapterPosition());
             final int deletedIndex = viewHolder.getAdapterPosition();
 
             AlertDialog dialog = new AlertDialog.Builder(getContext())
@@ -255,7 +262,9 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
                         public void onClick(DialogInterface dialogInterface, int i) {
                             // remove the item from recycler view
                             mAdapter.removeItem(viewHolder.getAdapterPosition());
-                            onClientsSelected(null, 0);
+                            if (isTabletMode) {
+                                onClientsSelected(null, 0);
+                            }
                         }
                     })
                     .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -290,6 +299,8 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
         }
         if (findThirdpartieREST.getThirdparties() == null) {
             Log.e(TAG, "onFindThirdpartieCompleted: findThirdpartieREST getThirdparties null");
+            Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+
             //        Fermeture du loader
             showProgressDialog(false, null, null);
 //            reinitialisation du nombre de page
@@ -429,10 +440,10 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
                             + " mLastClientClientIdItemsCount=" + clientParcelableList.get(itemsCount - 1).getClient_id()
                             + " oid=" + clientParcelableList.get(itemsCount - 1).getOid()); */
                     if (clientParcelableListFiltered.get(lastPosition).getId() == clientParcelableListFiltered.get(itemsCount - 1).getId()
-                    && (lastPosition+1+mLimit) < clientParcelableList.size()) {
+                            && (lastPosition + 1 + mLimit) < clientParcelableList.size()) {
 //        affichage de l'image d'attente
                         showProgress(true);
-                        clientParcelableListFiltered.addAll(clientParcelableList.subList(lastPosition+1, lastPosition+1+mLimit));
+                        clientParcelableListFiltered.addAll(clientParcelableList.subList(lastPosition + 1, lastPosition + 1 + mLimit));
                         mAdapter.notifyDataSetChanged();
                         showProgress(false);
                     }
@@ -535,8 +546,8 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 //
 //        }
 //        recuperation des clients sur le serveur
-        initClients();
-        loadClients();
+//        initClients();
+//        loadClients();
 
         return rootView;
     }
@@ -579,14 +590,12 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
     @Override
     public void onResume() {
         super.onResume();
-        Log.e(TAG, "onResume: ");
+//        Log.e(TAG, "onResume: ");
 
-        if (clientParcelableList.size() <= 0) {
-            initClients();
-            loadClients();
-        } else {
-            mAdapter.notifyDataSetChanged();
-        }
+        clientParcelableListFiltered.clear();
+        mAdapter.notifyDataSetChanged();
+        initClients();
+        loadClients();
 
         String searchString = searchET.getText().toString();
 
@@ -597,6 +606,7 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.frag_client_menu, menu);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -612,6 +622,13 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
                 if (!ConnectionManager.isPhoneConnected(getContext())) {
                     Toast.makeText(getContext(), getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
                     return true;
+                }
+
+//                                Log.e(TAG, "onFindImagesProductsComplete: currOrientation="+currOrientation );
+                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                } else {
+                    Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 }
 
 //                affichage du loader dialog

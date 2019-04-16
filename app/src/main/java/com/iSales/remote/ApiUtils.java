@@ -78,7 +78,7 @@ public final class ApiUtils {
         com.iSales.database.entry.ServerEntry serverEntry = mDb.serverDao().getActiveServer(true);
 //        http://localhost:8888/Images.iSales/download.php?module_part=produit&original_file=cheese_cake/cheese_cake-Cheese_cake.jpg&DOLAPIKEY=9c524dc13288320153128086e6e69144fa743be3
         String url = String.format("%s/product.php?ref=%s&DOLAPIKEY=%s", serverEntry.getHostname_img(), ref, tokenEntry.getToken());
-        Log.e(TAG, "getDownloadImg: url="+url);
+//        Log.e(TAG, "getDownloadImg: url="+url);
         return url;
     }
 

@@ -203,10 +203,12 @@ public class AddCustomerActivity extends AppCompatActivity {
         clientEntry.setTown(ville);
         clientEntry.setRegion(region);
 
+        long inserted = mDb.clientDao().insertClient(clientEntry);
+
         Log.e(TAG, "saveOfflineClient: name=" + clientEntry.getName() +
                 " logo=" + clientEntry.getLogo() +
-                " logoContent=" + clientEntry.getLogo_content());
-        mDb.clientDao().insertClient(clientEntry);
+                " logoContent=" + clientEntry.getLogo_content() +
+                " inserted=" + inserted);
     }
 
     //    enregistre un client dans le serveur

@@ -648,7 +648,7 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
             cancel = true;
         }
         // Test de validité de l'adresse
-        if (TextUtils.isEmpty(adresse) && !cancel) {
+        /*if (TextUtils.isEmpty(adresse) && !cancel) {
             mAdresse.setError(getString(R.string.veuillez_remplir_ce_champs));
             focusView = mAdresse;
             cancel = true;
@@ -693,7 +693,7 @@ public class ClientProfileFragment extends Fragment implements DialogClientListe
             mVille.setError(getString(R.string.veuillez_remplir_ce_champs));
             focusView = mVille;
             cancel = true;
-        }
+        }*/
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first

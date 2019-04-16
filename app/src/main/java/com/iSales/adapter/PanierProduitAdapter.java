@@ -1,6 +1,8 @@
 package com.iSales.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -58,6 +60,9 @@ public class PanierProduitAdapter extends RecyclerView.Adapter<com.iSales.adapte
             quantite = view.findViewById(R.id.numbtn_panier_produit);
             removeProduit = view.findViewById(R.id.ib_panier_produit_delete);
 
+//            fix image in view
+            poster.setAdjustViewBounds(true);
+            poster.setScaleType(ImageView.ScaleType.FIT_XY);
             quantite.setOnValueChangeListener(new ElegantNumberButton.OnValueChangeListener() {
                 @Override
                 public void onValueChange(ElegantNumberButton view, int oldValue, int newValue) {
@@ -179,38 +184,41 @@ public class PanierProduitAdapter extends RecyclerView.Adapter<com.iSales.adapte
             }
         }); */
 
-        if (panierListFiltered.get(position).getPoster_content() != null) {
-            Log.e(TAG, "onBindViewHolder: getPoster_content"+panierListFiltered.get(position).getPoster_content());
+        if (panierListFiltered.get(position).getFile_content() != null) {
+//            Log.e(TAG, "onBindViewHolder: getPoster_content"+panierListFiltered.get(position).getPoster_content());
 //            si le fichier existe dans la memoire locale
-            File imgFile = new File(panierListFiltered.get(position).getPoster_content());
+            File imgFile = new File(panierListFiltered.get(position).getFile_content());
             if (imgFile.exists()) {
-                Picasso.with(mContext)
+                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+                holder.poster.setImageBitmap(myBitmap);
+                /*Picasso.with(mContext)
                         .load(imgFile)
-                        .into(holder.poster);
+                        .placeholder(R.drawable.isales_no_image)
+                        .into(holder.poster); */
                 return;
 
             } else {
-                Picasso.with(mContext)
+                holder.poster.setImageResource(R.drawable.isales_no_image);
+                /*Picasso.with(mContext)
                         .load(R.drawable.isales_no_image)
-                        .into(holder.poster);
+                        .into(holder.poster);*/
 //                holder.poster.setBackgroundResource(R.drawable.isales_no_image);
+                return;
             }
         } else {
-//            holder.poster.setBackgroundResource(R.drawable.isales_no_image);
-            Picasso.with(mContext)
-                    .load(R.drawable.isales_no_image)
-                    .into(holder.poster);
-        }
 
 //        holder.poster.setBackgroundResource(R.drawable.isales_no_image);
-        String original_file = panierListFiltered.get(position).getRef() + "/" + panierListFiltered.get(position).getPoster_content();
-        String module_part = "produit";
-        Log.e(TAG, "onBindViewHolder: downloadLinkImg=" + ApiUtils.getDownloadProductImg(mContext, panierListFiltered.get(position).getRef()));
-        Picasso.with(mContext)
-                .load(ApiUtils.getDownloadProductImg(mContext, panierListFiltered.get(position).getRef()))
-                .placeholder(R.drawable.isales_no_image)
-                .error(R.drawable.isales_no_image)
-                .into(holder.poster);
+//            String original_file = panierListFiltered.get(position).getRef() + "/" + panierListFiltered.get(position).getPoster_content();
+//            String module_part = "produit";
+//            Log.e(TAG, "onBindViewHolder:Panier downloadLinkImg=" + ApiUtils.getDownloadProductImg(mContext, panierListFiltered.get(position).getRef()));
+            /*Picasso.with(mContext)
+                    .load(ApiUtils.getDownloadProductImg(mContext, panierListFiltered.get(position).getRef()))
+                    .placeholder(R.drawable.isales_img_loading)
+                    .error(R.drawable.isales_no_image)
+                    .into(holder.poster);*/
+            return;
+        }
     }
 
     @Override

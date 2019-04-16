@@ -41,7 +41,7 @@ public interface ClientDao {
     List<ClientEntry> getClientsLikeLimit(int limit, String keyword);
 
     @Insert
-    void insertClient(ClientEntry clientEntry);
+    Long insertClient(ClientEntry clientEntry);
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     void updateClient(ClientEntry clientEntry);
@@ -75,6 +75,9 @@ public interface ClientDao {
 
     @Query("SELECT * FROM client WHERE id = :id")
     ClientEntry getClientById(long id);
+
+    @Query("SELECT * FROM client WHERE client_id = :id")
+    ClientEntry getClientByClientId(long id);
 
     @Delete
     void deleteClient(ClientEntry clientEntry);

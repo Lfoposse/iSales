@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.READ_LOGS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
 
     <application
         android:allowBackup="true"
@@ -65,7 +67,6 @@
         <activity
             android:name="com.iSales.pages.boncmdesignature.BonCmdeSignatureActivity"
             android:label="@string/signature"
-            android:screenOrientation="portrait"
             android:parentActivityName="com.iSales.pages.boncmdeverification.BonCmdeVerificationActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

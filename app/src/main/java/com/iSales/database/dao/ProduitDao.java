@@ -28,7 +28,7 @@ public interface ProduitDao {
     List<com.iSales.database.entry.ProduitEntry> getProduitsLimitByStr(long lastId, int limit, String keyword);
 
     @Query("SELECT * FROM produit")
-    List<com.iSales.database.entry.ProduitEntry> getProduits();
+    List<com.iSales.database.entry.ProduitEntry> getAllProduits();
 
     @Query("SELECT * FROM produit WHERE stock_reel > 0 AND id > :lastId ORDER BY id LIMIT :limit")
     List<com.iSales.database.entry.ProduitEntry> getProduitsLimitAZero(long lastId, int limit);

@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -66,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -679,6 +682,7 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.frag_commande_menu, menu);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -729,24 +733,12 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
                     return true;
                 }
 
-                /*
-//                Verification s'il existe des clients non synchro au serveur
-                List<ClientEntry> clientEntriesSynchro = mDb.clientDao().getAllClientBySynchro(0);
-                Log.e(TAG, "onOptionsItemSelected:clientEntriesSynchro size="+clientEntriesSynchro.size() );
-                if (clientEntriesSynchro.size() > 0) {
-                    AlertDialog alert = new AlertDialog.Builder(getContext()).create();
-                    alert.setTitle("ATTENTION");
-                    alert.setMessage(getString(R.string.client_en_attente_synchronisation));
-                    alert.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    alert.show();
-                    return true;
-                } */
-
+//                                Log.e(TAG, "onFindImagesProductsComplete: currOrientation="+currOrientation );
+                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                } else {
+                    Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                }
 
 //                affichage du loader dialog
                 showProgressDialog(true, null, getString(R.string.synchro_commandes_recuperer_encours));
@@ -812,6 +804,7 @@ public class CommandesFragment extends Fragment implements CommandeAdapterListen
         }
         if (findOrdersREST.getOrders() == null) {
 //            Log.e(TAG, "onFindOrdersTaskComplete: findOrderTaskComplete getThirdparties null");
+            Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
             //        Fermeture du loader
             showProgressDialog(false, null, null);
 //            reinitialisation du nombre de page

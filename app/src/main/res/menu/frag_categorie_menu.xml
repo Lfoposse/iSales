@@ -10,4 +10,13 @@
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
         app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/action_fragcategorie_sync_image"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/ic_image_white_24dp"
+        android:orderInCategory="100"
+        android:title="Synchro Images"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
+        app:showAsAction="ifRoom|withText" />
 </menu>

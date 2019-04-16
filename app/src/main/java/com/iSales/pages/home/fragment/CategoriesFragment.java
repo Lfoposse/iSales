@@ -1,17 +1,25 @@
 package com.iSales.pages.home.fragment;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,6 +53,7 @@ import com.iSales.database.entry.ProductCustPriceEntry;
 import com.iSales.database.entry.ProduitEntry;
 import com.iSales.interfaces.DialogCategorieListener;
 import com.iSales.interfaces.FindCategorieListener;
+import com.iSales.interfaces.FindImagesProductsListener;
 import com.iSales.interfaces.FindProductsListener;
 import com.iSales.interfaces.ProduitsAdapterListener;
 import com.iSales.model.CategorieParcelable;
@@ -52,6 +61,7 @@ import com.iSales.model.ProduitParcelable;
 import com.iSales.pages.addcategorie.AddCategorieActivity;
 import com.iSales.pages.detailsproduit.DetailsProduitActivity;
 import com.iSales.pages.home.dialog.FullScreenCatPdtDialog;
+import com.iSales.remote.ApiUtils;
 import com.iSales.remote.ConnectionManager;
 import com.iSales.remote.model.Categorie;
 import com.iSales.remote.model.DolPhoto;
@@ -59,16 +69,20 @@ import com.iSales.remote.model.Product;
 import com.iSales.remote.rest.FindCategoriesREST;
 import com.iSales.remote.rest.FindProductsREST;
 import com.iSales.task.FindCategorieTask;
+import com.iSales.task.FindImagesProductsTask;
 import com.iSales.task.FindProductsTask;
 import com.iSales.utility.ISalesUtility;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CategoriesFragment extends Fragment implements ProduitsAdapterListener, DialogCategorieListener,
-        FindProductsListener, FindCategorieListener {
+        FindProductsListener, FindCategorieListener, FindImagesProductsListener {
 
     private static final String TAG = com.iSales.pages.home.fragment.CategoriesFragment.class.getSimpleName();
 
@@ -107,6 +121,8 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
     private AppDatabase mDb;
 
     private int mLimit = 50;
+    private int mCountRequestImg = 0;
+    private int mCountRequestImgTotal = 0;
     private long mLastProduitId = 0;
 
     public CategoriesFragment() {
@@ -280,17 +296,6 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
         if (produitEntries.size() <= 0) {
 //        affichage de l'image d'attente
             showProgress(false);
-
-//            Toast.makeText(getContext(), getString(R.string.aucun_produit_trouve), Toast.LENGTH_SHORT).show();
-
-            /*
-//        Suppression des images des clients en local
-            ISalesUtility.deleteProduitsImgFolder();
-
-            if (categorieId <= 0) {
-                Log.e(TAG, "loadProduits: executeFindCategorieProducts");
-                executeFindCategorieProducts();
-            } */
             return;
         }
 
@@ -330,12 +335,12 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             produitParcelables.add(produitParcelable);
         }
 
-        Log.e(TAG, "onFindThirdpartieCompleted: mLastClientId=" + mLastProduitId);
+//        Log.e(TAG, "loadClient: produitParcelables=" + produitParcelables.size());
 //        incrementation du nombre de page
         mLastProduitId = produitEntries.get(produitEntries.size() - 1).getId();
 
         if (produitsParcelableList.size() > 0 && mLastProduitId <= 0) {
-            produitsParcelableList.clear();
+            produitsParcelableList = new ArrayList<>();
         }
         this.produitsParcelableList.addAll(produitParcelables);
 
@@ -352,6 +357,9 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             mFindProductsTask = null;
         }
     }
+//    public static void setAutoOrientationEnabled(Context context, boolean enabled) {
+//        Settings.System.putInt(context.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, enabled ? 1 : 0);
+//    }
 
     /**
      * Shows the progress UI and hides.
@@ -458,13 +466,13 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
     public void onFindProductsCompleted(FindProductsREST findProductsREST) {
 //            modification de la position de la requete courante de recupération des produits
         mCurrentPdtQuery++;
-        Log.e(TAG, "onFindProductsCompleted: FindProductsREST getThirdparties mCurrentPdtQuery=" + mCurrentPdtQuery + " mTotalPdtQuery=" + mTotalPdtQuery);
+//        Log.e(TAG, "onFindProductsCompleted: FindProductsREST getThirdparties mCurrentPdtQuery=" + mCurrentPdtQuery + " mTotalPdtQuery=" + mTotalPdtQuery);
 
         if (findProductsREST != null && findProductsREST.getProducts() != null) {
 //            Log.e(TAG, "onFindProductsCompleted: saving product categorie=" + findProductsREST.getCategorie_id() + " pdtSize=" + findProductsREST.getProducts().size());
             for (Product productItem : findProductsREST.getProducts()) {
-                Log.e(TAG, "onFindProductsCompleted: tva_tx=" + productItem.getTva_tx());
-                ProduitEntry produitEntry = new ProduitEntry();
+//                Log.e(TAG, "onFindProductsCompleted: tva_tx=" + productItem.getTva_tx());
+                final ProduitEntry produitEntry = new ProduitEntry();
                 produitEntry.setId(Long.parseLong(productItem.getId()));
                 produitEntry.setCategorie_id(findProductsREST.getCategorie_id());
                 produitEntry.setLabel(productItem.getLabel());
@@ -484,10 +492,10 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
                     mDb.produitDao().insertProduit(produitEntry);
                 }
             }
-            Log.e(TAG, "onFindProductsCompleted: mPage=" + mCurrentPdtQuery);
+//            Log.e(TAG, "onFindProductsCompleted: mPage=" + mCurrentPdtQuery);
 
             if (mCurrentPdtQuery >= mTotalPdtQuery - 1) {
-
+                Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 //        Fermeture du loader
                 //        Fermeture du loader
                 showProgressDialog(false, null, null);
@@ -498,12 +506,10 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
                 return;
             }
         } else {
-
-            Log.e(TAG, "onFindProductsCompleted: FindProductsREST getThirdparties null");
+//            Log.e(TAG, "onFindProductsCompleted: FindProductsREST getThirdparties null");
 
             if (mCurrentPdtQuery >= mTotalPdtQuery - 1) {
-
-//        Fermeture du loader
+                Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
                 //        Fermeture du loader
                 showProgressDialog(false, null, null);
 
@@ -512,14 +518,59 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 
                 return;
             }
-
         }
 
+    }
+
+    void findImage() {
+
+        final List<ProduitEntry> produitEntries = mDb.produitDao().getAllProduits();
+        mCountRequestImg = 0;
+        mCountRequestImgTotal = produitEntries.size();
+        Log.e(TAG, "findImage: produitEntriesSize="+produitEntries.size()+" mCountRequestImgTotal="+mCountRequestImgTotal );
+        if (produitEntries.size() > 0) {
+//            setAutoOrientationEnabled(getContext(), true);
+            for (ProduitEntry produitEntry : produitEntries) {
+
+//        Si le téléphone n'est pas connecté
+                if (!ConnectionManager.isPhoneConnected(getContext())) {
+                    showProgressDialog(false, null, null);
+                    Toast.makeText(getContext(), getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
+                    break;
+                }
+
+                FindImagesProductsTask task = new FindImagesProductsTask(getContext(), CategoriesFragment.this, produitEntry);
+                task.execute();
+            }
+            return;
+        } else {
+            showProgressDialog(false, null, null);
+            Toast.makeText(getContext(), "Aucun produits", Toast.LENGTH_LONG).show();
+            return;
+        }
     }
 
     @Override
     public void onFindAllProductsCompleted() {
 
+    }
+
+    @Override
+    public void onFindImagesProductsComplete(String pathFile) {
+        mCountRequestImg++;
+//        Log.e(TAG, "onFindImagesProductsComplete: pathFile="+pathFile+" mCountRequestImg="+mCountRequestImg+" mCountRequestImgTotal="+mCountRequestImgTotal);
+        if (mProgressDialog != null) {
+            mProgressDialog.setMessage(String.format("%s. %s / %s ", getString(R.string.miseajour_images_produits), mCountRequestImg, mCountRequestImgTotal));
+        }
+        if (mCountRequestImg >= mCountRequestImgTotal) {
+            mProduitsAdapter.notifyDataSetChanged();
+            Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+
+            showProgressDialog(false, null, null);
+//            setAutoOrientationEnabled(getContext(), false);
+            Toast.makeText(getContext(), getString(R.string.miseajour_images_produits_effectuee), Toast.LENGTH_LONG).show();
+            return;
+        }
     }
 
     @Override
@@ -534,7 +585,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             return;
         }
         if (findCategoriesREST.getCategories() == null) {
-            Log.e(TAG, "onFindCategorieCompleted: findCategoriesREST findCategoriesREST null");
+//            Log.e(TAG, "onFindCategorieCompleted: findCategoriesREST findCategoriesREST null");
 //            showProgressDialog(false, null, null);
 //            reinitialisation du nombre de page
             mPageCategorie = 0;
@@ -729,6 +780,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.frag_categorie_menu, menu);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -739,14 +791,17 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
         switch (item.getItemId()) {
 //        redirige le user vers la page de synchronisation
             case R.id.action_fragcategorie_sync:
-                /*
-                Intent intent = new Intent(getContext(), SynchronisationActivity.class);
-                startActivity(intent); */
 
 //        Si le téléphone n'est pas connecté
                 if (!ConnectionManager.isPhoneConnected(getContext())) {
                     Toast.makeText(getContext(), getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
                     return true;
+                }
+//                Log.e(TAG, "onFindImagesProductsComplete: currOrientation="+currOrientation );
+                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                } else {
+                    Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 }
 
 //                affichage du loader dialog
@@ -754,12 +809,50 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 
                 mDb.categorieDao().deleteAllCategorie();
                 mDb.produitDao().deleteAllProduit();
-//        Suppression des images des clients en local
-                ISalesUtility.deleteProduitsImgFolder();
 
 //            recupere la liste des clients sur le serveur
                 executeFindCategorieProducts();
                 return true;
+            case R.id.action_fragcategorie_sync_image:
+
+                final AlertDialog dialog = new AlertDialog.Builder(getContext())
+                        .setTitle("Confirmer la mise a jour des images produits. ")
+                        .setMessage(String.format("%s", getResources().getString(R.string.action_risque_prendre_dutemps)))
+                        .setCancelable(false)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+//        Si le téléphone n'est pas connecté
+                                if (!ConnectionManager.isPhoneConnected(getContext())) {
+                                    Toast.makeText(getContext(), getString(R.string.erreur_connexion), Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+
+//                                Log.e(TAG, "onFindImagesProductsComplete: currOrientation="+currOrientation );
+                                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                                    Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                                } else {
+                                    Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                                }
+
+//                affichage du loader dialog
+                                showProgressDialog(true, null, getString(R.string.miseajour_images_produits));
+
+//        Suppression des images des clients en local
+                                ISalesUtility.deleteProduitsImgFolder();
+
+                                findImage();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .create();
+                dialog.show();
+                break;
             default:
                 break;
 
@@ -807,6 +900,9 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 
     @Override
     public void onCategorieDialogSelected(CategorieParcelable categorieParcelable) {
+
+//        scroll du recyclerview en debut de liste
+        mRecyclerViewProduits.smoothScrollToPosition(0);
         if (categorieParcelable == null) {
             return;
         } else if (categorieParcelable.getId().equals("-1")) {
@@ -816,6 +912,9 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 //            chargement de la photo par defaut dans la vue
             mCategoryIV.setBackgroundResource(R.drawable.ic_view_list);
 
+            mLastProduitId = 0;
+            produitsParcelableList.clear();
+            mProduitsAdapter.notifyDataSetChanged();
             loadProduits(0, null);
             return;
         }
