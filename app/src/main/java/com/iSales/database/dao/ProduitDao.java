@@ -27,7 +27,7 @@ public interface ProduitDao {
     @Query("SELECT * FROM produit WHERE id > :lastId AND (LOWER(label) LIKE '%'||:keyword||'%' OR LOWER(ref) LIKE '%'||:keyword||'%') ORDER BY id LIMIT :limit")
     List<com.iSales.database.entry.ProduitEntry> getProduitsLimitByStr(long lastId, int limit, String keyword);
 
-    @Query("SELECT * FROM produit")
+    @Query("SELECT * FROM produit ORDER BY label")
     List<com.iSales.database.entry.ProduitEntry> getAllProduits();
 
     @Query("SELECT * FROM produit WHERE stock_reel > 0 AND id > :lastId ORDER BY id LIMIT :limit")

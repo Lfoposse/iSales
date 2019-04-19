@@ -379,7 +379,9 @@ public class CategorieProduitFragment extends Fragment implements FindCategorieL
 
     @Override
     public void onFindProductsCompleted(FindProductsREST findProductsREST) {
-
+        Log.e(TAG, "onFindProductsCompleted: in categorieProdutiFragment");
+//        Recupération de la liste des categorie produits sur le serveur
+        loadCategories();
     }
 
     @Override

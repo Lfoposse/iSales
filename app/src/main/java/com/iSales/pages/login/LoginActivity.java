@@ -475,6 +475,7 @@ public class LoginActivity extends AppCompatActivity implements OnInternauteLogi
         serverEntries.add(new ServerEntry("http://food.apps-dev.fr/api/index.php", "http://food.apps-dev.fr/api/ryimg", "France Food company FFC", "2 rue Charles De Gaulle ZI La Mariniere,", "91070", "Bondoufle", "91 - Essonne", "France", "EURO", "0758542161", "contact@francefoodcompany.fr", "", "", "France Food company FFC", false));
         serverEntries.add(new ServerEntry("http://soifexpress.apps-dev.fr/api/index.php", "http://soifexpress.apps-dev.fr/api/ryimg", "Soif Express", "7 AV Gabriel Peri", "91600", "Savigny Sur Orge", "91 - Essonne", "France", "EURO", "0758088361", "", "www.test.com", "", "SOIF EXPRESS", false));
         serverEntries.add(new ServerEntry("http://asiafood.apps-dev.fr/api/index.php", "http://82.253.71.109/prod/asiafood_v8/api/ryimg", "Asia Food", "8 avenue Duval le Camus", "92210", "ST CLOUD", "92 - Hauts-de-Seine", "France", "EURO", "+33(0)177583700", "contact@asiafoodco.com", "http://www.asiafoodco.com", "", "ASIA FOOD", false));
+        serverEntries.add(new ServerEntry("http://bdc.apps-dev.fr/api/index.php", "http://82.253.71.109/prod/bdc_v8/api/ryimg", "BDC", "17 BD DE LA MUETTE", "95140", "GARGES LES GONESSE", "95 - Val-d Oise", "France", "EURO", "", "", "http://www.bigdataconsulting.fr", "", "BDC", false));
 
 //        ServerEntry serverEntry = mDb.serverDao().getActiveServer(true);
 //        if (serverEntry == null) {

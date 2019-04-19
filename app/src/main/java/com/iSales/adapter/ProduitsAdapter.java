@@ -25,6 +25,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by netserve on 29/08/2018.
@@ -113,6 +114,16 @@ public class ProduitsAdapter extends RecyclerView.Adapter<com.iSales.adapter.Pro
         notifyDataSetChanged();
     }
 
+    public void setContentList(List<ProduitParcelable> produitParcelables, boolean clearing) {
+
+        Log.e(TAG, "setContentList: produitParcelables="+produitParcelables.size());
+        if (clearing) {
+            this.produitsListFiltered.clear();
+        }
+        this.produitsListFiltered.addAll(produitParcelables);
+        notifyDataSetChanged();
+    }
+
 
     public ProduitsAdapter(Context context, ArrayList<ProduitParcelable> produitParcelables, ProduitsAdapterListener listener) {
         this.mContext = context;
@@ -120,6 +131,16 @@ public class ProduitsAdapter extends RecyclerView.Adapter<com.iSales.adapter.Pro
         this.mListener = listener;
         this.produitsListFiltered = produitParcelables;
         mDb = AppDatabase.getInstance(context.getApplicationContext());
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
     @Override
@@ -134,24 +155,12 @@ public class ProduitsAdapter extends RecyclerView.Adapter<com.iSales.adapter.Pro
     public void onBindViewHolder(@NonNull final com.iSales.adapter.ProduitsAdapter.ProduitsViewHolder holder, final int position) {
 //        Log.e(TAG, "onBindViewHolder: categorieId="+produitsListFiltered.get(position).getCategorie_id()+" label="+produitsListFiltered.get(position).getLabel()+" id="+produitsListFiltered.get(position).getId());
 
-        ProduitEntry produitEntry = mDb.produitDao().getProduitById(produitsListFiltered.get(position).getId());
-
-        holder.label.setText(produitsListFiltered.get(position).getLabel());
-        holder.priceHT.setText(String.format("%s %s HT",
-                ISalesUtility.amountFormat2(produitsListFiltered.get(position).getPrice()),
-                ISalesUtility.CURRENCY));
-        holder.priceTTC.setText(String.format("%s %s TTC",
-                ISalesUtility.amountFormat2(produitsListFiltered.get(position).getPrice_ttc()),
-                ISalesUtility.CURRENCY));
-        holder.stock.setText(String.format("%s unités en stock  •  TVA: %s %s", produitsListFiltered.get(position).getStock_reel(), ISalesUtility.amountFormat2(produitsListFiltered.get(position).getTva_tx()), "%"));
-
 //                    chargement de la photo dans la vue
 //        holder.poster.setImageBitmap(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.isales_no_image));
 
-        if (produitEntry.getFile_content() != null) {
+        if (produitsListFiltered.get(position).getLocal_poster_path() != null) {
 //            si le fichier existe dans la memoire locale
-//            Log.e(TAG, "onBindViewHolder: getLocal_poster_path="+produitsListFiltered.get(position).getLocal_poster_path());
-            File imgFile = new File(produitEntry.getFile_content());
+            File imgFile = new File(produitsListFiltered.get(position).getLocal_poster_path());
             if (imgFile.exists()) {
 //                Log.e(TAG, "onBindViewHolder: file exist");
                 Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
@@ -161,7 +170,6 @@ public class ProduitsAdapter extends RecyclerView.Adapter<com.iSales.adapter.Pro
                         .load(imgFile)
                         .placeholder(R.drawable.isales_no_image)
                         .into(holder.poster);*/
-                return;
 
             } else {
 //                Log.e(TAG, "onBindViewHolder: file not exist");
@@ -170,13 +178,13 @@ public class ProduitsAdapter extends RecyclerView.Adapter<com.iSales.adapter.Pro
                 holder.poster.setImageResource(R.drawable.isales_no_image);
                 /*Picasso.with(mContext)
                         .load(R.drawable.isales_no_image)
-                        .into(holder.poster); */
-                return;
+                        .into(holder.poster);*/
             }
 
         } else {
 //            Log.e(TAG, "onBindViewHolder: getFilename="+produitsListFiltered.get(position).getPoster().getFilename());
 
+            holder.poster.setImageResource(R.drawable.isales_no_image);
 //        Log.e(TAG, "onBindViewHolder: downloadLinkImg="+ApiUtils.getDownloadImg(mContext, module_part, original_file));
            /* Picasso.with(mContext)
                     .load(ApiUtils.getDownloadProductImg(mContext, produitsListFiltered.get(position).getRef()))
@@ -207,6 +215,19 @@ public class ProduitsAdapter extends RecyclerView.Adapter<com.iSales.adapter.Pro
                     });
             return;*/
         }
+
+//        ProduitEntry produitEntry = mDb.produitDao().getProduitById(produitsListFiltered.get(position).getId());
+
+//        Log.e(TAG, "onBindViewHolder: getLocal_poster_path="+produitsListFiltered.get(position).getLocal_poster_path());
+        holder.label.setText(produitsListFiltered.get(position).getLabel());
+        holder.priceHT.setText(String.format("%s %s HT",
+                ISalesUtility.amountFormat2(produitsListFiltered.get(position).getPrice()),
+                ISalesUtility.CURRENCY));
+        holder.priceTTC.setText(String.format("%s %s TTC",
+                ISalesUtility.amountFormat2(produitsListFiltered.get(position).getPrice_ttc()),
+                ISalesUtility.CURRENCY));
+        holder.stock.setText(String.format("%s unités en stock  •  TVA: %s %s", produitsListFiltered.get(position).getStock_reel(), ISalesUtility.amountFormat2(produitsListFiltered.get(position).getTva_tx()), "%"));
+
 
     }
 

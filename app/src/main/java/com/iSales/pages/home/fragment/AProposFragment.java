@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -52,6 +54,14 @@ public class AProposFragment extends Fragment {
     public void onResume() {
 
         super.onResume();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(0, menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
 }

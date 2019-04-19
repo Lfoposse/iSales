@@ -133,7 +133,10 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
         List<ClientEntry> clientEntries = mDb.clientDao().getAllClient();
         clientParcelableList = new ArrayList<>();
 
-        ArrayList<ClientParcelable> clientParcelables = new ArrayList<>();
+//        Reinitialisation du contenu de la vu
+        clientParcelableListFiltered.clear();
+        mAdapter.notifyDataSetChanged();
+
         for (ClientEntry clientEntry : clientEntries) {
 
             if (clientEntry.getId() == null) {
@@ -168,10 +171,9 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
             clientParcelable.getPoster().setContent(clientEntry.getLogo_content());
 //            produitParcelable.setPoster_name(ISalesUtility.getImgProduit(productItem.getDescription()));
 
-            clientParcelables.add(clientParcelable);
+            clientParcelableList.add(clientParcelable);
         }
 
-        clientParcelableList.addAll(clientParcelables);
     }
 
     //    arrete le processus de recupération des infos sur le serveur
@@ -383,7 +385,6 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
         super.onCreate(savedInstanceState);
 
         mDb = AppDatabase.getInstance(getContext().getApplicationContext());
-        initClients();
     }
 
     @Override
@@ -439,11 +440,18 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
                             + " oid1=" + clientParcelableList.get(lastPosition).getOid()
                             + " mLastClientClientIdItemsCount=" + clientParcelableList.get(itemsCount - 1).getClient_id()
                             + " oid=" + clientParcelableList.get(itemsCount - 1).getOid()); */
-                    if (clientParcelableListFiltered.get(lastPosition).getId() == clientParcelableListFiltered.get(itemsCount - 1).getId()
-                            && (lastPosition + 1 + mLimit) < clientParcelableList.size()) {
+                    if (clientParcelableListFiltered.get(lastPosition).getId() == clientParcelableListFiltered.get(itemsCount - 1).getId()) {
+                        if ((lastPosition + 1 + mLimit) < clientParcelableList.size()) {
 //        affichage de l'image d'attente
-                        showProgress(true);
-                        clientParcelableListFiltered.addAll(clientParcelableList.subList(lastPosition + 1, lastPosition + 1 + mLimit));
+                            showProgress(true);
+                            clientParcelableListFiltered.addAll(clientParcelableList.subList(lastPosition + 1, lastPosition + 1 + mLimit));
+
+                        } else {
+//        affichage de l'image d'attente
+                            showProgress(true);
+                            clientParcelableListFiltered.addAll(clientParcelableList.subList(lastPosition + 1, clientParcelableList.size()-1));
+
+                        }
                         mAdapter.notifyDataSetChanged();
                         showProgress(false);
                     }
@@ -546,8 +554,8 @@ public class ClientsFragment extends Fragment implements ClientsAdapterListener,
 //
 //        }
 //        recuperation des clients sur le serveur
-//        initClients();
-//        loadClients();
+        initClients();
+        loadClients();
 
         return rootView;
     }

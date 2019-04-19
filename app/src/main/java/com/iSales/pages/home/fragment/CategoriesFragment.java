@@ -1,8 +1,6 @@
 package com.iSales.pages.home.fragment;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,11 +9,9 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -61,7 +57,6 @@ import com.iSales.model.ProduitParcelable;
 import com.iSales.pages.addcategorie.AddCategorieActivity;
 import com.iSales.pages.detailsproduit.DetailsProduitActivity;
 import com.iSales.pages.home.dialog.FullScreenCatPdtDialog;
-import com.iSales.remote.ApiUtils;
 import com.iSales.remote.ConnectionManager;
 import com.iSales.remote.model.Categorie;
 import com.iSales.remote.model.DolPhoto;
@@ -72,8 +67,6 @@ import com.iSales.task.FindCategorieTask;
 import com.iSales.task.FindImagesProductsTask;
 import com.iSales.task.FindProductsTask;
 import com.iSales.utility.ISalesUtility;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.IOException;
@@ -115,15 +108,15 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
     private ProduitsAdapter mProduitsAdapter;
     //    liste des produits affichée sur la vue
     private ArrayList<ProduitParcelable> produitsParcelableList;
+    private ArrayList<ProduitParcelable> produitsParcelableListFiltered;
     //    Categorie des produits selectionée
     private CategorieParcelable mCategorieParcelable;
 
     private AppDatabase mDb;
 
-    private int mLimit = 50;
+    private int mLimit = 20;
     private int mCountRequestImg = 0;
     private int mCountRequestImgTotal = 0;
-    private long mLastProduitId = 0;
 
     public CategoriesFragment() {
         // Required empty public constructor
@@ -254,53 +247,17 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
         }
     }
 
-    private void loadProduits(long categorieId, String searchString) {
-        List<ProduitEntry> produitEntries;
-//        Getting the sharedPreference value
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-//        String mode = sharedPreferences.getString(getContext().getString(R.string.commande_mode), "online");
-        Boolean produitazero = sharedPreferences.getBoolean(getContext().getString(R.string.parametres_produits_azero), false);
-//        Log.e(TAG, "loadProduits: produitazero="+produitazero+" produits="+produits.size());
+    private void initContent() {
+        showProgress(true);
+        initProduits();
+        loadProduits(0, null, 0);
+        showProgress(false);
+    }
 
-        if (categorieId > 0) {
-            if (produitazero) {
-                if (searchString == null) {
-                    produitEntries = mDb.produitDao().getProduitsLimitByCategorieAZero(mLastProduitId, categorieId);
-                } else {
-                    produitEntries = mDb.produitDao().getProduitsLimitByCategorieStrAZero(mLastProduitId, categorieId, searchString);
-                }
-            } else {
-                if (searchString == null) {
-//                    produitEntries = mDb.produitDao().getProduitsLimitByCategorie(mLastProduitId, categorieId, mLimit);
-                    produitEntries = mDb.produitDao().getProduitsLimitByCategorie(mLastProduitId, categorieId);
-                } else {
-                    produitEntries = mDb.produitDao().getProduitsLimitByCategorieStr(mLastProduitId, categorieId, searchString);
-                }
-            }
-        } else {
-            if (produitazero) {
-                if (searchString == null) {
-                    produitEntries = mDb.produitDao().getProduitsLimitAZero(mLastProduitId, mLimit);
-                } else {
-                    produitEntries = mDb.produitDao().getProduitsLimitByStrAZero(mLastProduitId, mLimit, searchString);
-                }
-            } else {
-                if (searchString == null) {
-                    produitEntries = mDb.produitDao().getProduitsLimit(mLastProduitId, mLimit);
-                } else {
-                    produitEntries = mDb.produitDao().getProduitsLimitByStr(mLastProduitId, mLimit, searchString);
-                }
-            }
-        }
+    private void initProduits() {
+        List<ProduitEntry> produitEntries = mDb.produitDao().getAllProduits();
+        this.produitsParcelableList = new ArrayList<>();
 
-        if (produitEntries.size() <= 0) {
-//        affichage de l'image d'attente
-            showProgress(false);
-            return;
-        }
-
-//        Affichage de la liste des produits sur la vue
-        ArrayList<ProduitParcelable> produitParcelables = new ArrayList<>();
         for (ProduitEntry produitEntry : produitEntries) {
             ProductCustPriceEntry custPriceEntry = mDb.productCustPriceDao().getProductCustPriceByPrdt(produitEntry.getId());
 
@@ -309,6 +266,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             produitParcelable.setId(produitEntry.getId());
             produitParcelable.setLabel(produitEntry.getLabel());
 
+//            Log.e(TAG, "initProduits:produitEntry label="+produitEntry.getLabel()+" ref="+produitEntry.getRef());
 //            S'il existe un produit client ayant le meme id produit, alors on prends plutot celui-ci
             if (custPriceEntry != null) {
                 produitParcelable.setPrice(custPriceEntry.getPrice());
@@ -332,22 +290,197 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             produitParcelable.setNote_private(produitEntry.getNote_private());
             produitParcelable.setNote_public(produitEntry.getNote_public());
 
-            produitParcelables.add(produitParcelable);
+            produitsParcelableList.add(produitParcelable);
         }
 
-//        Log.e(TAG, "loadClient: produitParcelables=" + produitParcelables.size());
-//        incrementation du nombre de page
-        mLastProduitId = produitEntries.get(produitEntries.size() - 1).getId();
+    }
 
-        if (produitsParcelableList.size() > 0 && mLastProduitId <= 0) {
-            produitsParcelableList = new ArrayList<>();
+    private void loadProduits(long categorieId, String searchString, int lastposition) {
+        List<ProduitParcelable> produitParcelables;
+//        Getting the sharedPreference value
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+//        String mode = sharedPreferences.getString(getContext().getString(R.string.commande_mode), "online");
+        Boolean produitazero = sharedPreferences.getBoolean(getContext().getString(R.string.parametres_produits_azero), false);
+        Log.e(TAG, "loadProduits: produitazero=" + produitazero +
+                " categorieId=" + categorieId +
+                " searchString=" + searchString +
+                " lastposition=" + lastposition);
+
+//        reinitialisation de la vue
+        List<ProduitParcelable> emptyList = new ArrayList<>();
+        this.mProduitsAdapter.setContentList(emptyList, true);
+
+        if (categorieId > 0) {
+            if (produitazero) {
+//                Log.e(TAG, "loadProduits: produitazero");
+                if (searchString == null || searchString.equals("")) {
+                    produitParcelables = filterByCategorieAZero(categorieId);
+                } else {
+                    produitParcelables = filterByCategorieSearchstrAZero(categorieId, searchString);
+                }
+            } else {
+                if (searchString == null || searchString.equals("")) {
+                    produitParcelables = filterByCategorie(categorieId);
+                } else {
+                    produitParcelables = filterByCategorieSearchstr(categorieId, searchString);
+                }
+            }
+        } else {
+            if (produitazero) {
+                if (searchString == null || searchString.equals("")) {
+                    produitParcelables = filterByAZero();
+                } else {
+                    produitParcelables = filterBySearchstrAZero(searchString);
+                }
+            } else {
+                if (searchString == null || searchString.equals("")) {
+                    produitParcelables = filterBy();
+                } else {
+                    produitParcelables = filterByStr(searchString);
+                }
+            }
         }
-        this.produitsParcelableList.addAll(produitParcelables);
 
-        this.mProduitsAdapter.notifyDataSetChanged();
+        /*
+        if (produitEntries.size() <= 0) {
+//        affichage de l'image d'attente
+            showProgress(false);
+            return;
+        } */
+
+        produitsParcelableListFiltered.clear();
+        produitsParcelableListFiltered.addAll(produitParcelables);
+
+        Log.e(TAG, "loadProduits: produitParcelables=" + produitParcelables.size());
+
+        populateRecyclerviewContent(0, true);
 
 //        affichage de l'image d'attente
         showProgress(false);
+    }
+
+    private void populateRecyclerviewContent(int firstPosition, boolean clearing) {
+        int lastposition = firstPosition + mLimit;
+        Log.e(TAG, "loadProduits: produitsParcelableListFiltered=" + produitsParcelableListFiltered.size()+
+                " firstPosition="+firstPosition+
+                " lastposition="+lastposition);
+
+        if (lastposition < produitsParcelableListFiltered.size()) {
+            this.mProduitsAdapter.setContentList(produitsParcelableListFiltered.subList(firstPosition, lastposition), clearing);
+        } else {
+            this.mProduitsAdapter.setContentList(produitsParcelableListFiltered.subList(firstPosition, produitsParcelableListFiltered.size()), clearing);
+        }
+    }
+
+    private List<ProduitParcelable> filterByCategorieAZero(long categorieId) {
+//        Log.e(TAG, "filterByCategorieAZero: categorieId=" + categorieId + " parcelableList=" + produitsParcelableList.size());
+        List<ProduitParcelable> list = new ArrayList<>();
+
+        for (ProduitParcelable item : produitsParcelableList) {
+            if (item.getStock_reel() > 0 && item.getCategorie_id() == categorieId) {
+                list.add(item);
+            }
+        }
+
+        return list;
+    }
+
+    private List<ProduitParcelable> filterByCategorieSearchstrAZero(long categorieId, String searchString) {
+//        Log.e(TAG, "filterByCategorieSearchstrAZero: categorieId=" + categorieId + " parcelableList=" + produitsParcelableList.size());
+        List<ProduitParcelable> list = new ArrayList<>();
+
+        for (ProduitParcelable item : produitsParcelableList) {
+            if (item.getStock_reel() > 0 && item.getCategorie_id() == categorieId
+                    && (item.getLabel().toLowerCase().contains(searchString)
+                    || item.getRef().toLowerCase().contains(searchString))) {
+                list.add(item);
+            }
+        }
+
+        return list;
+    }
+
+    private List<ProduitParcelable> filterByCategorie(long categorieId) {
+//        Log.e(TAG, "filterByCategorie: categorieId=" + categorieId + " parcelableList=" + produitsParcelableList.size());
+        List<ProduitParcelable> list = new ArrayList<>();
+
+        for (ProduitParcelable item : produitsParcelableList) {
+//            Log.e(TAG, "filterByCategorie:item ref=" + item.getRef() + " cat_id=" + item.getCategorie_id());
+            if (item.getCategorie_id() == categorieId) {
+                list.add(item);
+            }
+        }
+
+        return list;
+    }
+
+    private List<ProduitParcelable> filterByCategorieSearchstr(long categorieId, String searchString) {
+//        Log.e(TAG, "filterByCategorieSearchstr: categorieId=" + categorieId + " parcelableList=" + produitsParcelableList.size());
+        List<ProduitParcelable> list = new ArrayList<>();
+
+        for (ProduitParcelable item : produitsParcelableList) {
+            if (item.getCategorie_id() == categorieId
+                    && (item.getLabel().toLowerCase().contains(searchString)
+                    || item.getRef().toLowerCase().contains(searchString))) {
+                list.add(item);
+            }
+        }
+
+        return list;
+    }
+
+    private List<ProduitParcelable> filterByAZero() {
+//        Log.e(TAG, "filterByAZero: parcelableList=" + produitsParcelableList.size());
+        List<ProduitParcelable> list = new ArrayList<>();
+
+        for (ProduitParcelable item : produitsParcelableList) {
+            if (item.getStock_reel() > 0) {
+                list.add(item);
+            }
+        }
+
+        return list;
+    }
+
+    private List<ProduitParcelable> filterBySearchstrAZero(String searchString) {
+//        Log.e(TAG, "filterByCategorieSearchstr: searchString=" + searchString + " parcelableList=" + produitsParcelableList.size());
+        List<ProduitParcelable> list = new ArrayList<>();
+
+        for (ProduitParcelable item : produitsParcelableList) {
+            if (item.getStock_reel() > 0
+                    && (item.getLabel().toLowerCase().contains(searchString)
+                    || item.getRef().toLowerCase().contains(searchString))) {
+                list.add(item);
+            }
+        }
+
+        return list;
+    }
+
+    private List<ProduitParcelable> filterBy() {
+//        Log.e(TAG, "filterBy: parcelableList=" + produitsParcelableList.size());
+        List<ProduitParcelable> list = new ArrayList<>();
+
+        for (ProduitParcelable item : produitsParcelableList) {
+            list.add(item);
+        }
+
+        return list;
+    }
+
+    private List<ProduitParcelable> filterByStr(String searchString) {
+//        Log.e(TAG, "filterByStr: searchString=" + searchString + " parcelableList=" + produitsParcelableList.size());
+        List<ProduitParcelable> list = new ArrayList<>();
+
+        for (ProduitParcelable item : produitsParcelableList) {
+//            Log.e(TAG, "filterByStr:item ref=" + item.getRef() + " cat_id=" + item.getCategorie_id());
+            if (item.getLabel().toLowerCase().contains(searchString)
+                    || item.getRef().toLowerCase().contains(searchString)) {
+                list.add(item);
+            }
+        }
+
+        return list;
     }
 
     //    arrete le processus de recupération des infos sur le serveur
@@ -500,8 +633,8 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
                 //        Fermeture du loader
                 showProgressDialog(false, null, null);
 
+                initContent();
                 Toast.makeText(getContext(), getString(R.string.liste_produits_synchronises), Toast.LENGTH_LONG).show();
-                loadProduits(-1, null);
 
                 return;
             }
@@ -514,7 +647,8 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
                 showProgressDialog(false, null, null);
 
                 Toast.makeText(getContext(), getString(R.string.liste_produits_synchronises), Toast.LENGTH_LONG).show();
-                loadProduits(-1, null);
+//                loadProduits(-1, null, 0);
+                initContent();
 
                 return;
             }
@@ -527,7 +661,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
         final List<ProduitEntry> produitEntries = mDb.produitDao().getAllProduits();
         mCountRequestImg = 0;
         mCountRequestImgTotal = produitEntries.size();
-        Log.e(TAG, "findImage: produitEntriesSize="+produitEntries.size()+" mCountRequestImgTotal="+mCountRequestImgTotal );
+        Log.e(TAG, "findImage: produitEntriesSize=" + produitEntries.size() + " mCountRequestImgTotal=" + mCountRequestImgTotal);
         if (produitEntries.size() > 0) {
 //            setAutoOrientationEnabled(getContext(), true);
             for (ProduitEntry produitEntry : produitEntries) {
@@ -563,9 +697,9 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             mProgressDialog.setMessage(String.format("%s. %s / %s ", getString(R.string.miseajour_images_produits), mCountRequestImg, mCountRequestImgTotal));
         }
         if (mCountRequestImg >= mCountRequestImgTotal) {
-            mProduitsAdapter.notifyDataSetChanged();
             Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
+            initContent();
             showProgressDialog(false, null, null);
 //            setAutoOrientationEnabled(getContext(), false);
             Toast.makeText(getContext(), getString(R.string.miseajour_images_produits_effectuee), Toast.LENGTH_LONG).show();
@@ -592,7 +726,6 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 //            Toast.makeText(SynchronisationActivity.this, getString(R.string.liste_produits_synchronises), Toast.LENGTH_LONG).show();
 
             executeFindProducts();
-//            loadProduits(-1);
 
 
             return;
@@ -647,10 +780,14 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
         mItemCategorieFAB = (FloatingActionButton) rootView.findViewById(R.id.fab_item_categorieproduit);
         mItemRafraichirFAB = (FloatingActionButton) rootView.findViewById(R.id.fab_item_rafraichir_produits);
 
-        produitsParcelableList = new ArrayList<>();
+        produitsParcelableListFiltered = new ArrayList<>();
+        ArrayList<ProduitParcelable> list = new ArrayList<>();
 
-        this.mProduitsAdapter = new ProduitsAdapter(getContext(), produitsParcelableList, com.iSales.pages.home.fragment.CategoriesFragment.this);
+        this.mProduitsAdapter = new ProduitsAdapter(getContext(), list, com.iSales.pages.home.fragment.CategoriesFragment.this);
 
+
+//        empeche le conflict des positions
+        this.mProduitsAdapter.setHasStableIds(true);
         GridLayoutManager mLayoutManager = new GridLayoutManager(getContext(), ISalesUtility.calculateNoOfColumns(getContext()));
         mRecyclerViewProduits.setLayoutManager(mLayoutManager);
         mRecyclerViewProduits.setItemAnimator(new DefaultItemAnimator());
@@ -666,16 +803,14 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 
                     int itemsCount = recyclerView.getAdapter().getItemCount();
 
-//                    Log.e(TAG, "onScroll: lastPosition=" + lastPosition + " itemsCount=" + itemsCount);
-                    if (lastPosition > 0 && (lastPosition + 2) >= itemsCount) {
-                        long idCategorie = 0;
-                        if (mCategorieParcelable == null) {
-                            loadProduits(idCategorie, null);
-                            /* idCategorie = Long.parseLong(mCategorieParcelable.getId());
-                            loadProduits(idCategorie, null);
-                            return; */
+                    if ((itemsCount - 1) < produitsParcelableListFiltered.size()) {
+                        Log.e(TAG, "onScroll: lastPosition=" + lastPosition + " itemsCount=" + itemsCount);
+                        if (produitsParcelableListFiltered.get(lastPosition).getId() == produitsParcelableListFiltered.get(itemsCount - 1).getId()
+                        && lastPosition < (produitsParcelableListFiltered.size() - 1)) {
+                            populateRecyclerviewContent(lastPosition, false);
+
                         }
-//                        executeFindProducts(idCategorie);
+
                     }
                 }
             }
@@ -708,9 +843,9 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String searchString = charSequence.toString();
 
-                loadProduits(-1, searchString);
+                loadProduits(-1, searchString, 0);
 //                Log.e(TAG, "onTextChanged: searchString="+searchString);
-                mProduitsAdapter.performFiltering(searchString);
+//                mProduitsAdapter.performFiltering(searchString);
 
             }
 
@@ -757,25 +892,15 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
         mItemRafraichirFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                resetProductsList();
 
 //        recuperation des clients sur le serveur
 //                executeFindProducts(Long.parseLong(mCategorieParcelable.getId()));
-                loadProduits(Long.parseLong(mCategorieParcelable.getId()), null);
+                loadProduits(Long.parseLong(mCategorieParcelable.getId()), null, 0);
                 mMenuFAM.close(true);
             }
         });
 
-//        Recupération de la liste des produits sur le serveur
-//        executeFindProducts(0);
-        loadProduits(0, null);
-
         return rootView;
-    }
-
-    private void resetProductsList() {
-        this.produitsParcelableList.clear();
-        mProduitsAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -798,7 +923,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
                     return true;
                 }
 //                Log.e(TAG, "onFindImagesProductsComplete: currOrientation="+currOrientation );
-                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                     Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 } else {
                     Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -829,7 +954,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
                                 }
 
 //                                Log.e(TAG, "onFindImagesProductsComplete: currOrientation="+currOrientation );
-                                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                                     Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                                 } else {
                                     Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -865,9 +990,11 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
         Log.e(TAG, "onResume: ");
         super.onResume();
 
-        if (produitsParcelableList.size() <= 0) {
-            loadProduits(mCategorieParcelable != null ? Long.parseLong(mCategorieParcelable.getId()) : -1, null);
+        if (produitsParcelableListFiltered.size() <= 0) {
+            initProduits();
+            loadProduits(mCategorieParcelable != null ? Long.parseLong(mCategorieParcelable.getId()) : -1, null, 0);
         } else {
+            Log.e(TAG, "onResume: notifyDataSetChanged");
             mProduitsAdapter.notifyDataSetChanged();
         }
     }
@@ -912,10 +1039,7 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 //            chargement de la photo par defaut dans la vue
             mCategoryIV.setBackgroundResource(R.drawable.ic_view_list);
 
-            mLastProduitId = 0;
-            produitsParcelableList.clear();
-            mProduitsAdapter.notifyDataSetChanged();
-            loadProduits(0, null);
+            loadProduits(0, null, 0);
             return;
         }
 //        Log.e(TAG, "onCategorieAdapterSelected: label="+categorieParcelable.getLabel()+" content="+categorieParcelable.getPoster().getContent());
@@ -923,9 +1047,6 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
 //        Toast.makeText(getContext(), "Category "+ categorieParcelable.getLabel(), Toast.LENGTH_SHORT).show();
 
         mCategorieParcelable = categorieParcelable;
-
-//        reinitialisation du nombre de page
-        mLastProduitId = 0;
 
 //        modification du label de la categorie
         mCategoryTV.setText(mCategorieParcelable.getLabel().toUpperCase());
@@ -942,14 +1063,8 @@ public class CategoriesFragment extends Fragment implements ProduitsAdapterListe
             mCategoryIV.setBackgroundResource(R.drawable.isales_no_image);
         }
 
-//        Suppresion des produits dans la vue
-        if (this.produitsParcelableList != null) {
-            resetProductsList();
-
-        }
-
 //        Mise a jour de la liste des produits
-        loadProduits(Long.parseLong(mCategorieParcelable.getId()), null);
+        loadProduits(Long.parseLong(mCategorieParcelable.getId()), null, 0);
     }
 
     @Override

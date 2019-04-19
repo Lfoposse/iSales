@@ -67,7 +67,7 @@ public class FindProductsTask extends AsyncTask<Void, Void, FindProductsREST> {
             if (response.isSuccessful()) {
                 ArrayList<Product> productArrayList = response.body();
                 ArrayList<Product> products = new ArrayList<>();
-                Log.e(TAG, "doInBackground: products=" + productArrayList.size());
+//                Log.e(TAG, "doInBackground: products=" + productArrayList.size());
 
                 return new FindProductsREST(productArrayList, category);
             } else {

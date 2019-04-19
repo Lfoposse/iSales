@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
@@ -172,4 +172,4 @@
             fab:fab_label="@string/ajouter_categorie_produit"
             fab:fab_size="mini"/>
     </com.github.clans.fab.FloatingActionMenu>
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
