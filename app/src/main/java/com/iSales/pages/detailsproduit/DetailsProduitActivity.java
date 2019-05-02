@@ -169,7 +169,7 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
         imm.showSoftInput(mQuantiteNumberBtn, InputMethodManager.SHOW_IMPLICIT);
 
         if (mProduitParcelable.getLocal_poster_path() != null) {
-        Log.e(TAG, "onBindViewHolder: getLocal_poster_path="+mProduitParcelable.getLocal_poster_path());
+            Log.e(TAG, "onBindViewHolder: getLocal_poster_path=" + mProduitParcelable.getLocal_poster_path());
 //            si le fichier existe dans la memoire locale
             File imgFile = new File(mProduitParcelable.getLocal_poster_path());
             if (imgFile.exists()) {
@@ -183,33 +183,36 @@ public class DetailsProduitActivity extends AppCompatActivity implements FindPro
                 mPosterIV.setImageResource(R.drawable.isales_no_image);
             }
         } else {
-            Log.e(TAG, "onBindViewHolder: getLocal_poster_path="+mProduitParcelable.getLocal_poster_path());
+            Log.e(TAG, "onBindViewHolder: getLocal_poster_path=" + mProduitParcelable.getLocal_poster_path());
 
-            mPosterIV.setImageResource(R.drawable.isales_no_image);
-            /*Picasso.with(com.iSales.pages.detailsproduit.DetailsProduitActivity.this)
-                    .load(ApiUtils.getDownloadProductImg(com.iSales.pages.detailsproduit.DetailsProduitActivity.this, mProduitParcelable.getRef()))
-                    .placeholder(R.drawable.isales_no_image)
-                    .error(R.drawable.isales_no_image)
-                    .into(mPosterIV, new com.squareup.picasso.Callback() {
-                        @Override
-                        public void onSuccess() {
+            if (mProduitParcelable.getLocal_poster_path() == null) {
+                Picasso.with(com.iSales.pages.detailsproduit.DetailsProduitActivity.this)
+                        .load(ApiUtils.getDownloadProductImg(com.iSales.pages.detailsproduit.DetailsProduitActivity.this, mProduitParcelable.getRef()))
+                        .placeholder(R.drawable.isales_no_image)
+                        .error(R.drawable.isales_no_image)
+                        .into(mPosterIV, new com.squareup.picasso.Callback() {
+                            @Override
+                            public void onSuccess() {
 //                        Log.e(TAG, "onSuccess: Picasso loadin img");
-                            Bitmap imageBitmap = ((BitmapDrawable) mPosterIV.getDrawable()).getBitmap();
+                                Bitmap imageBitmap = ((BitmapDrawable) mPosterIV.getDrawable()).getBitmap();
 
-                            String pathFile = ISalesUtility.saveProduitImage(com.iSales.pages.detailsproduit.DetailsProduitActivity.this, imageBitmap, mProduitParcelable.getRef());
+                                String pathFile = ISalesUtility.saveProduitImage(com.iSales.pages.detailsproduit.DetailsProduitActivity.this, imageBitmap, mProduitParcelable.getRef());
 //                        Log.e(TAG, "onPostExecute: pathFile=" + pathFile);
 
-                            if (pathFile != null) mProduitParcelable.setLocal_poster_path(pathFile);
+//                            if (pathFile != null) mProduitParcelable.setLocal_poster_path(pathFile);
 
 //                    Modification du path de la photo du produit
-                            mDb.produitDao().updateLocalImgPath(mProduitParcelable.getId(), pathFile);
-                        }
+                                mDb.produitDao().updateLocalImgPath(mProduitParcelable.getId(), pathFile);
+                            }
 
-                        @Override
-                        public void onError() {
+                            @Override
+                            public void onError() {
 
-                        }
-                    });*/
+                            }
+                        });
+            } else {
+                mPosterIV.setImageResource(R.drawable.isales_no_image);
+            }
         }
     }
 

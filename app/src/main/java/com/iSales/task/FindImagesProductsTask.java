@@ -69,7 +69,7 @@ public class FindImagesProductsTask extends AsyncTask<Void, Void, String> {
 
 
     private String downloadBitmapAndSave(String path) {
-//        Log.e(TAG, "downloadBitmapAndSave path="+path);
+        Log.e(TAG, "downloadBitmapAndSave path="+path);
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(path);
